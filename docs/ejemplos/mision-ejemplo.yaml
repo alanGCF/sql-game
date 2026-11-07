@@ -1,0 +1,104 @@
+# Ejemplo canónico de misión (T0-M2).
+# El esquema formal se implementa con Zod en F2-01; este archivo debe validar contra él.
+# Reglas: docs/plan/05-arquitectura.md §Esquema de misión y docs/plan/07-calidad-harness.md §Harness de contenido.
+
+id: t0-m02-el-leeme
+turno: 0
+orden: 2
+tipo: ticket                  # ticket | investigacion | repaso | evento | final
+titulo: El LEEME
+duracion_estimada_min: 4
+ensena: [linux.files.cat]     # máx. 2 conceptos nuevos
+requiere: [linux.nav.pwd, linux.nav.ls]
+host_inicial: srv-sistemas
+usuario_inicial: becario
+cwd_inicial: /home/becario
+apps: [terminal, mensajes, bitacora]
+
+mundo:
+  parches:
+    - tipo: archivo
+      host: srv-sistemas
+      ruta: /home/becario/LEEME.txt
+      propietario: rsalcido
+      grupo: sistemas
+      modo: "0644"
+      modificado: "2026-10-30T23:41:00"   # reloj de juego
+      contenido: |
+        Para quien me reemplace:
+
+        1. El usuario es "becario". La contraseña te la da Don Chuy.
+        2. Los tickets llegan a ~/tickets/. Uno por archivo.
+        3. Si la impresora de la Línea 2 falla, casi siempre es el cable.
+
+        Y una cosa más: no confíes en los números del turno nocturno.
+        Revisa todo dos veces.
+        — R.
+    - tipo: archivo
+      host: srv-sistemas
+      ruta: /home/becario/tickets/T-1042.txt
+      propietario: becario
+      contenido: |
+        Ticket T-1042
+        Solicita: Ing. Karla Ibáñez (Calidad)
+        Asunto: La ingeniera anterior dejó una nota en tu carpeta.
+        ¿Con qué inicial la firmó? Necesito saber si era ella.
+
+briefing:                      # 2–4 burbujas, ≤ 280 caracteres cada una
+  - quien: don_chuy
+    texto: Ese LEEME lo dejó la ingeniera Salcido el día que se fue. Nadie lo ha abierto.
+  - quien: don_chuy
+    texto: Yo no le sé a esas cosas. Ábrelo tú y me dices qué dice.
+
+objetivos:                     # 1–3; validación por resultado, nunca por texto del comando
+  - id: leer-leeme
+    descripcion: Lee el contenido de LEEME.txt
+    cuando:
+      archivo_leido: { host: srv-sistemas, ruta: /home/becario/LEEME.txt }
+    pistas:                    # empujón → concepto → solución ejecutable entre backticks
+      - Para ver qué hay DENTRO de un archivo no basta con listarlo.
+      - Hay un comando corto que muestra el contenido completo de un archivo. Su nombre viene de "concatenate".
+      - Escribe `cat LEEME.txt` (con mayúsculas, Linux las distingue).
+  - id: responder-ticket
+    descripcion: "Ticket T-1042: ¿con qué inicial firmó la ingeniera anterior?"
+    cuando:
+      respuesta:
+        acepta: ["r", "r."]    # se compara normalizado: minúsculas, sin acentos ni espacios extra
+    pistas:
+      - Las firmas suelen ir al final de una nota.
+      - Lee otra vez LEEME.txt y fíjate en la última línea.
+      - La última línea de `cat LEEME.txt` dice "— R.". Responde R.
+
+solucion:                      # el harness la ejecuta en un mundo recién cargado (regla C2)
+  - cat LEEME.txt
+  - responder: { objetivo: responder-ticket, valor: "R" }
+
+soluciones_alternativas:       # también deben completar la misión (regla C3)
+  - - cat /home/becario/LEEME.txt
+    - responder: { objetivo: responder-ticket, valor: "r." }
+  - - cat ~/LEEME.txt
+    - responder: { objetivo: responder-ticket, valor: "R" }
+  - - head -n 20 LEEME.txt     # head se enseña en T1; válido igual porque se valida por resultado
+    - responder: { objetivo: responder-ticket, valor: "R" }
+
+contraejemplos:                # NO deben cumplir el objetivo indicado (regla C4)
+  - objetivo: leer-leeme
+    pasos: [ls]
+  - objetivo: leer-leeme
+    pasos: [ls -l LEEME.txt]
+  - objetivo: responder-ticket
+    pasos:
+      - responder: { objetivo: responder-ticket, valor: "Rebeca" }
+
+recompensas:
+  xp: 50
+  bitacora: [linux.files.cat]
+  logros: []
+
+eventos:
+  al_completar:
+    - tipo: mensaje
+      de: don_chuy
+      texto: ¿Que no confíes en los números? Esa muchacha siempre fue rara... pero nunca se equivocaba.
+    - tipo: flag
+      nombre: leyo_leeme
