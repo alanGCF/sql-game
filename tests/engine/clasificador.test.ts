@@ -53,7 +53,8 @@ const TABLA: [string, Esperado][] = [
   ["cat -A a", "pensamiento:fuera_de_alcance"],
   ["ls --color=never", "pensamiento:fuera_de_alcance"],
   ["ls | sort", "pensamiento:fuera_de_alcance"],
-  ["ifconfig", "pensamiento:fuera_de_alcance"],
+  ["ifconfig", "ejecutar"],
+  ["netstat -tulpn", "ejecutar"],
   // sintaxis avanzada
   ["echo $(whoami)", "pensamiento:avanzado"],
   ["echo `date`", "pensamiento:avanzado"],

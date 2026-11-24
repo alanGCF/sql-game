@@ -70,7 +70,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ### F1-08 · Comandos T3 · `pendiente` · depende: F1-06
 - `grep wc sort uniq cut`.
 
-### F1-09 · Glosas, "quisiste decir", Windows y obsoletos · `pendiente` · depende: F1-06
+### F1-09 · Glosas, "quisiste decir", Windows y obsoletos · `hecha (2026-11-24)` *(Windows → globo con el equivalente; net-tools → command not found + herramienta moderna; dedazos con transposición)*
 - **Listo cuando:** tests de 30 errores típicos de novato con su glosa (incluye `ifconfig`, `netstat`, `dir`, `cls`).
 
 ### F1-10 · Autocompletado · `pendiente` · depende: F1-06

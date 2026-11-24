@@ -1,5 +1,6 @@
 import type { GameClock } from "../clock";
 import { MENSAJE, normalizar, type User, type Vfs, VfsError } from "../vfs";
+import { OBSOLETOS } from "./comandos-linux";
 import { expandirPalabra } from "./expand";
 import type { ComandoSimple, Programa } from "./parser";
 import { SUPERFICIE } from "./superficie";
@@ -61,21 +62,22 @@ export function errorVfs(e: unknown): string {
   throw e;
 }
 
+/** Distancia de edición con transposiciones (OSA): "sl" → "ls" cuesta 1, como un dedazo real. */
 function distancia(a: string, b: string): number {
-  const dp = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array<number>(b.length).fill(0)]);
-  for (let j = 1; j <= b.length; j++) (dp[0] as number[])[j] = j;
+  const d: number[][] = Array.from({ length: a.length + 1 }, () => Array<number>(b.length + 1).fill(0));
+  const at = (i: number, j: number) => (d[i] as number[])[j] as number;
+  for (let i = 0; i <= a.length; i++) (d[i] as number[])[0] = i;
+  for (let j = 0; j <= b.length; j++) (d[0] as number[])[j] = j;
   for (let i = 1; i <= a.length; i++) {
     for (let j = 1; j <= b.length; j++) {
-      const fila = dp[i] as number[];
-      const previa = dp[i - 1] as number[];
-      fila[j] = Math.min(
-        (previa[j] as number) + 1,
-        (fila[j - 1] as number) + 1,
-        (previa[j - 1] as number) + (a[i - 1] === b[j - 1] ? 0 : 1),
-      );
+      const costo = a[i - 1] === b[j - 1] ? 0 : 1;
+      let v = Math.min(at(i - 1, j) + 1, at(i, j - 1) + 1, at(i - 1, j - 1) + costo);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1])
+        v = Math.min(v, at(i - 2, j - 2) + 1);
+      (d[i] as number[])[j] = v;
     }
   }
-  return (dp[a.length] as number[])[b.length] as number;
+  return at(a.length, b.length);
 }
 
 export function sugerirComando(nombre: string): string | undefined {
@@ -154,12 +156,15 @@ async function ejecutarSimple(
   let codigo: number;
   if (!comando) {
     propios.push({ tipo: "stderr", texto: `bash: ${nombre}: command not found\n` });
+    const moderno = OBSOLETOS[nombre];
     const sug = sugerirComando(nombre);
     propios.push({
       tipo: "glosa",
-      texto: sug
-        ? `Ese comando no existe. ¿Quisiste decir \`${sug}\`?`
-        : "Ese comando no existe. Revisa cómo lo escribiste.",
+      texto: moderno
+        ? `${nombre} es una herramienta vieja que ya no viene instalada en Linux moderno. Hoy se usa \`${moderno}\`.`
+        : sug
+          ? `Ese comando no existe. ¿Quisiste decir \`${sug}\`?`
+          : "Ese comando no existe. Revisa cómo lo escribiste.",
     });
     codigo = 127;
   } else {
