@@ -1,0 +1,1 @@
+cut -d' ' -f9 auth.log | sort | uniq -c | sort -rn

@@ -1,0 +1,151 @@
+{
+ "cwd": "/home/becario",
+ "home": "/home/becario",
+ "usuario": "becario",
+ "usuarios": {
+  "becario": [
+   "sistemas"
+  ],
+  "rsalcido": [
+   "sistemas"
+  ]
+ },
+ "ahora": "2026-11-24T08:00:00Z",
+ "entradas": [
+  {
+   "ruta": "/home/",
+   "dueno": "root",
+   "modo": "755",
+   "mtime": "2026-10-01T09:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-27T15:30:00Z"
+  },
+  {
+   "ruta": "/home/becario/.bashrc",
+   "dueno": "becario",
+   "contenido": "# ~/.bashrc\nalias ls='ls --color=auto'\n",
+   "mtime": "2026-10-26T12:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/.profile",
+   "dueno": "becario",
+   "contenido": "# ~/.profile\n",
+   "mtime": "2026-10-26T12:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/LEEME.txt",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "contenido": "Para quien me reemplace:\n\n1. El usuario es \"becario\". La contraseña está en el post-it.\n2. Los tickets llegan a ~/tickets/. Uno por archivo.\n3. Si la impresora de la Línea 2 falla, casi siempre es el cable.\n\nY una cosa más: no confíes en los números del turno nocturno.\nRevisa todo dos veces.\n— R.\n",
+   "mtime": "2026-10-23T23:41:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-28T15:35:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/T-1042.txt",
+   "dueno": "becario",
+   "contenido": "Ticket T-1042\nSolicita: Ing. Karla Ibáñez (Calidad)\n",
+   "mtime": "2026-10-28T15:32:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/T-1043.txt",
+   "dueno": "becario",
+   "contenido": "Ticket T-1043\nSolicita: Don Chuy\nAsunto: la impresora otra vez\n",
+   "mtime": "2026-10-28T15:35:00Z"
+  },
+  {
+   "ruta": "/home/becario/.r/",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "modo": "755",
+   "mtime": "2026-10-23T23:50:00Z"
+  },
+  {
+   "ruta": "/home/becario/.r/hola",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "contenido": "Si encontraste esto, vas bien.\n",
+   "mtime": "2026-10-23T23:49:00Z"
+  },
+  {
+   "ruta": "/home/becario/.r/privado/",
+   "dueno": "rsalcido",
+   "grupo": "rsalcido",
+   "modo": "700",
+   "mtime": "2026-10-23T23:48:00Z"
+  },
+  {
+   "ruta": "/home/becario/respaldo.sh",
+   "dueno": "becario",
+   "modo": "755",
+   "contenido": "#!/bin/bash\necho respaldo\n",
+   "mtime": "2026-10-27T16:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/secreto.txt",
+   "dueno": "rsalcido",
+   "grupo": "rsalcido",
+   "modo": "600",
+   "contenido": "no deberías leer esto\n",
+   "mtime": "2026-10-22T10:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/datos/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-27T15:40:00Z"
+  },
+  {
+   "ruta": "/home/becario/datos/lineas.csv",
+   "dueno": "becario",
+   "contenido": "linea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\n",
+   "mtime": "2026-10-27T15:40:00Z"
+  },
+  {
+   "ruta": "/home/becario/auth.log",
+   "dueno": "becario",
+   "contenido": "2026-10-27T15:31:02.104211-06:00 srv-sistemas sshd[1188]: Accepted password for becario from 10.7.1.50 port 50211 ssh2\n2026-10-27T18:02:44.551002-06:00 srv-sistemas sshd[1190]: Accepted password for kibanez from 10.7.1.61 port 50332 ssh2\n2026-10-27T23:58:01.003190-06:00 srv-sistemas sshd[1203]: Accepted publickey for delta_svc from 10.7.3.99 port 51122 ssh2\n2026-10-28T15:30:12.882001-06:00 srv-sistemas sshd[1251]: Accepted password for becario from 10.7.1.50 port 50419 ssh2\n2026-10-28T23:58:03.117420-06:00 srv-sistemas sshd[1262]: Accepted publickey for delta_svc from 10.7.3.99 port 51140 ssh2\n2026-10-28T23:59:40.005512-06:00 srv-sistemas sshd[1263]: Failed password for root from 10.7.3.99 port 51141 ssh2\n2026-10-29T16:10:55.330120-06:00 srv-sistemas sshd[1301]: Accepted password for kibanez from 10.7.1.61 port 50501 ssh2\n2026-10-29T23:58:02.640031-06:00 srv-sistemas sshd[1315]: Accepted publickey for delta_svc from 10.7.3.99 port 51177 ssh2\n",
+   "mtime": "2026-10-29T23:58:02Z"
+  },
+  {
+   "ruta": "/home/becario/linea3.log",
+   "dueno": "becario",
+   "contenido": "2026-10-28T22:10:01 EST-FUGA OK valor=0.41\n2026-10-28T22:40:01 EST-FUGA OK valor=0.39\n2026-10-28T23:10:01 EST-FUGA ERROR sensor sin respuesta\n2026-10-28T23:41:01 EST-FUGA FUGA valor=1.87\n2026-10-28T23:59:00 EST-FUGA FUGA valor=2.04\n2026-10-28T23:59:30 EST-FUGA error de comunicacion\n2026-10-29T00:10:01 EST-FUGA OK valor=0.40\n2026-10-29T00:20:01 EST-ERR OK valor=0.38\n",
+   "mtime": "2026-10-29T00:20:01Z"
+  },
+  {
+   "ruta": "/home/becario/usuarios.txt",
+   "dueno": "becario",
+   "contenido": "delta_svc\nbecario\nkibanez\ndelta_svc\nbecario\ndelta_svc\nBecario\nroot\n"
+  },
+  {
+   "ruta": "/home/becario/numeros.txt",
+   "dueno": "becario",
+   "contenido": "10\n9\n100\n2\n-3\n2.5\nabc\n007\n"
+  },
+  {
+   "ruta": "/home/becario/datos.csv",
+   "dueno": "becario",
+   "contenido": "lote,linea,piezas\n4471,3,120\n4470,2,95\n4469,3,120\n4472,1,8\n"
+  },
+  {
+   "ruta": "/home/becario/espacios.txt",
+   "dueno": "becario",
+   "contenido": "a  zeta\nb alfa\nc   beta\n"
+  },
+  {
+   "ruta": "/home/becario/.r/notas.txt",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "contenido": "Parte 1\nEl lote 4471 no debió salir.\nRevisa mes.db\n"
+  }
+ ]
+}

@@ -27,6 +27,11 @@ export const SUPERFICIE: Record<string, Especificacion> = {
   cp: { cortas: "r", reales: "abdfHilLnPpRrsStTuvxZ" },
   mv: { cortas: "", reales: "bfintTuvZ" },
   rm: { cortas: "rf", reales: "dfiIrRv" },
+  grep: { cortas: "invcrwE", reales: "ABCDEFGHILPRTUVZabcdefhilmnoqrsuvwxyz" },
+  wc: { cortas: "lwc", reales: "clLmw" },
+  sort: { cortas: "rnukt", reales: "bcCdfghiMmnorRsSTtuVzk" },
+  uniq: { cortas: "cd", reales: "cdDfiszuw" },
+  cut: { cortas: "df", reales: "bcdfnsz" },
 };
 
 export function estaEnSuperficie(comando: string): boolean {

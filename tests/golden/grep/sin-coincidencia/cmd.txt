@@ -1,0 +1,1 @@
+grep zzz auth.log; echo $?

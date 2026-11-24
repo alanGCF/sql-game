@@ -1,0 +1,1 @@
+sort usuarios.txt | uniq -c

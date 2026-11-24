@@ -1,0 +1,3 @@
+2026-10-28T15:30:12.882001-06:00 srv-sistemas sshd[1251]: Accepted password for becario from 10.7.1.50 port 50419 ssh2
+2026-10-28T23:58:03.117420-06:00 srv-sistemas sshd[1262]: Accepted publickey for delta_svc from 10.7.3.99 port 51140 ssh2
+2026-10-28T23:59:40.005512-06:00 srv-sistemas sshd[1263]: Failed password for root from 10.7.3.99 port 51141 ssh2

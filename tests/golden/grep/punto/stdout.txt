@@ -1,0 +1,4 @@
+2026-10-27T23:58:01.003190-06:00 srv-sistemas sshd[1203]: Accepted publickey for delta_svc from 10.7.3.99 port 51122 ssh2
+2026-10-28T23:58:03.117420-06:00 srv-sistemas sshd[1262]: Accepted publickey for delta_svc from 10.7.3.99 port 51140 ssh2
+2026-10-28T23:59:40.005512-06:00 srv-sistemas sshd[1263]: Failed password for root from 10.7.3.99 port 51141 ssh2
+2026-10-29T23:58:02.640031-06:00 srv-sistemas sshd[1315]: Accepted publickey for delta_svc from 10.7.3.99 port 51177 ssh2

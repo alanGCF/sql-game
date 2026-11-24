@@ -1,0 +1,2 @@
+2026-10-28T23:10:01 EST-FUGA ERROR sensor sin respuesta
+2026-10-28T23:59:30 EST-FUGA error de comunicacion

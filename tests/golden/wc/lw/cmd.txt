@@ -1,0 +1,1 @@
+wc -lw auth.log

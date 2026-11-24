@@ -1,0 +1,1 @@
+cat auth.log | grep delta_svc | wc -l

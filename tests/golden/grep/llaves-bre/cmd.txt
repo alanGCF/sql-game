@@ -1,0 +1,1 @@
+grep 'valor=0\.4' linea3.log

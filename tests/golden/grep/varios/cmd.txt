@@ -1,0 +1,1 @@
+grep delta_svc auth.log linea3.log

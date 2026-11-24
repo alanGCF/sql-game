@@ -1,0 +1,1 @@
+grep -E 'FUGA|ERROR' linea3.log
