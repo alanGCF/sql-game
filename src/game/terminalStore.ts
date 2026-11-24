@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Shell } from "../engine";
 import { LIMPIAR_PANTALLA } from "../ui/ansi";
-import { crearShellInicial } from "./mundo";
+import { usePartida } from "./partidaStore";
 
 export type TipoLinea = "prompt" | "stdout" | "stderr" | "glosa";
 export interface LineaTerminal {
@@ -26,15 +26,15 @@ let siguienteId = 1;
 const MAX_LINEAS = 2000;
 
 export const useTerminal = create<EstadoTerminal>()((set, get) => ({
-  // shortcut: semilla fija hasta que exista la partida con su semilla (F4).
-  shell: crearShellInicial(1),
+  // La sesión es la de la partida: los comandos pasan por la misión en curso (F3-02).
+  shell: usePartida.getState().jornada.shell,
   lineas: [],
   ocupada: false,
   async enviar(linea) {
     const { shell } = get();
     const prompt = shell.prompt();
     set({ ocupada: true });
-    const r = await shell.ejecutar(linea);
+    const r = await usePartida.getState().ejecutar(linea);
     if (!r.ejecutada) {
       set({ ocupada: false });
       return { ejecutada: false, ...(r.pensamiento ? { pensamiento: r.pensamiento } : {}) };

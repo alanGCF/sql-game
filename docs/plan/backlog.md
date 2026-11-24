@@ -136,7 +136,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** cargar `turno-NN.json` y `comun.json`; un solo mundo por partida (semilla) que persiste entre misiones; avanzar misiones en orden; favores disponibles según `disponible_desde`; cola de efectos (diálogos, llamadas, visitas, flags) para la interfaz; respuestas por objetivo.
 - **Listo cuando:** pruebas unitarias juegan T1 completo con la solución de cada misión, encadenadas sobre el mismo mundo, con 25 semillas.
 
-### F3-02 · Terminal conectada a la misión en curso · `pendiente` · depende: F3-01
+### F3-02 · Terminal conectada a la misión en curso · `hecha (2026-11-24)` *(responder va por un gancho de prueba hasta la app Tickets, F3-03)* · depende: F3-01
 - **Hacer:** la terminal del monitor ejecuta a través de la misión en curso; al cumplirse un objetivo se notifica a la interfaz.
 - **Listo cuando:** e2e: en T1-M1, `pwd` + respuesta cumplen el objetivo y avanza a T1-M2.
 

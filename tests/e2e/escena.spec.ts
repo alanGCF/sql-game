@@ -90,3 +90,38 @@ test("Tab autocompleta y un segundo Tab lista las opciones", async ({ page }) =>
   await expect(page.getByTestId("terminal")).toContainText("linea1/  linea2/  linea3/");
   await expect(input).toHaveValue("cd /srv/lineas/linea");
 });
+
+test("T1-M1 se cumple desde la terminal y la partida avanza a T1-M2", async ({ page }) => {
+  await abrir(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const terminal = page.getByTestId("terminal");
+  const input = page.getByLabel("Comando");
+  const estado = () => page.evaluate(() => window.__planta7?.partida?.());
+
+  expect((await estado())?.mision).toBe("t1-m01-donde-estoy");
+  expect((await estado())?.eventos).toContain("dialogo");
+
+  await input.fill("pwd");
+  await input.press("Enter");
+  await expect(terminal).toContainText("/home/becario");
+  const carpeta = await page.evaluate(() =>
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+  );
+  expect(carpeta?.correcta).toBe(true);
+
+  await input.fill("ls tickets | wc -l");
+  await input.press("Enter");
+  const ultima = terminal.locator(".terminal-linea").last();
+  await expect(ultima).toHaveText(/^\d+$/);
+  const n = (await ultima.textContent())?.trim() ?? "";
+  const tickets = await page.evaluate(
+    (valor) => window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", valor),
+    n,
+  );
+  expect(tickets?.correcta).toBe(true);
+
+  const final = await estado();
+  expect(final?.mision).toBe("t1-m02-el-leeme");
+  expect(final?.eventos).toContain("mision_completada");
+  expect(final?.pendientes.some((p) => p.includes("t1-m02-el-leeme/leer-leeme"))).toBe(true);
+});

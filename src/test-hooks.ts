@@ -5,6 +5,9 @@ export interface TestHooks {
   info?: () => { calls: number; triangles: number };
   setVista?: (vista: string) => void;
   mirar?: (x: number, y: number) => void;
+  /** Responde un objetivo (mientras llega la app Tickets, F3-03). */
+  responder?: (mision: string, objetivo: string, valor: string) => Promise<{ correcta: boolean }>;
+  partida?: () => { mision: string | null; pendientes: string[]; eventos: string[] };
 }
 
 declare global {
