@@ -3,7 +3,13 @@ import { textoPlano, tokenizar } from "./lexer";
 import { ErrorSintaxis, type Programa, parsear } from "./parser";
 import { SUPERFICIE } from "./superficie";
 
-export type MotivoPensamiento = "fuera_de_alcance" | "avanzado" | "peligroso" | "anomalo" | "windows";
+export type MotivoPensamiento =
+  | "fuera_de_alcance"
+  | "avanzado"
+  | "peligroso"
+  | "anomalo"
+  | "windows"
+  | "historial";
 
 export type Clasificacion =
   | { tipo: "vacio" }
@@ -54,6 +60,12 @@ export function clasificar(linea: string): Clasificacion {
       for (const cmd of tuberia) {
         const [primera, ...resto] = cmd.palabras;
         if (!primera) continue;
+        // Expansión del historial de bash (!3, !!, !-2): este servidor no la tiene. Si el comando real
+        // está fuera de la superficie, manda ese motivo (sudo !!).
+        const nombre0 = textoPlano(primera);
+        const conHistorial = cmd.palabras.some((p) => /^!./.test(textoPlano(p)));
+        if (conHistorial && (SUPERFICIE[nombre0] || !COMANDOS_LINUX.has(nombre0)))
+          return { tipo: "pensamiento", motivo: "historial" };
         const nombre = textoPlano(primera);
         if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(nombre)) return { tipo: "pensamiento", motivo: "avanzado" };
         const windows = COMANDOS_WINDOWS[nombre.toLowerCase()];
@@ -98,6 +110,10 @@ const FRASES: Record<MotivoPensamiento, readonly string[]> = {
   ],
   anomalo: ["Creo que me dormí sobre el teclado.", "Eso no tiene ni pies ni cabeza. Mejor lo borro."],
   windows: ["Eso es de Windows. Aquí creo que se usa"],
+  historial: [
+    "Ese atajo del historial no jala aquí. Mejor la flecha para arriba.",
+    "Para repetir un comando aquí uso la flecha para arriba.",
+  ],
 };
 
 export function frasePensamiento(motivo: MotivoPensamiento, contador: number, sugerencia?: string): string {

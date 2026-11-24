@@ -1,0 +1,31 @@
+{
+ "cwd": "/home/becario",
+ "home": "/home/becario",
+ "usuario": "becario",
+ "usuarios": {
+  "becario": [
+   "sistemas"
+  ]
+ },
+ "ahora": "2026-11-24T08:00:00Z",
+ "entradas": [
+  {
+   "ruta": "/home/",
+   "dueno": "root",
+   "modo": "755",
+   "mtime": "2026-10-01T09:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-27T15:30:00Z"
+  },
+  {
+   "ruta": "/home/becario/datos.csv",
+   "dueno": "becario",
+   "contenido": "b,1,z\na,1,y\nc,0,x\nd,1,a\n",
+   "mtime": "2026-10-27T15:40:00Z"
+  }
+ ]
+}

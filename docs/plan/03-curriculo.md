@@ -143,6 +143,7 @@ Solo se implementa lo listado. Lo demás responde como en Linux real (`bash: X: 
 | `clear`, `history`, `exit` | `exit` en el servidor propio no cierra la terminal: globo "todavía no acaba mi turno" | 1 | bash 5.2 / ncurses 6 |
 | `echo` | `-n`, `-e` (solo `\n`, `\t`) | 2 | coreutils 9 / bash builtin |
 | `head`, `tail` | `-n N`, `-N` | 2 | coreutils 9 |
+| `!N`, `!!` (expansión del historial) | no: globo de pensamiento ("mejor la flecha para arriba") | — | bash 5.2 |
 | `less` | visor paginado propio (pendiente: F3, junto con la UI del monitor) | 2 | less 6xx |
 | `mkdir` | `-p` | 2 | coreutils 9 |
 | `touch` | — | 2 | coreutils 9 |
@@ -151,7 +152,7 @@ Solo se implementa lo listado. Lo demás responde como en Linux real (`bash: X: 
 | `rm` | `-r -f` (`-i` no: pide confirmación interactiva) | 2 | coreutils 9 |
 | `grep` | `-i -n -v -c -r -w -E` (ERE básico) | 3 | GNU grep 3.11 |
 | `wc` | `-l -w -c` | 3 | coreutils 9 |
-| `sort` | `-r -n -u -k N -t C` | 3 | coreutils 9 |
+| `sort` | `-r -n -u -k N[,M] -t C` | 3 | coreutils 9 |
 | `uniq` | `-c -d` | 3 | coreutils 9 |
 | `cut` | `-d -f` | 3 | coreutils 9 |
 | `sqlite3` | modo interactivo (`sqlite>`), `.tables .schema .headers on .mode column .quit`, modo `sqlite3 db "SQL"` | 4, 11 | SQLite 3.4x+ (la de sql.js) |

@@ -84,7 +84,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F1-10 · Autocompletado · `hecha (2026-11-24)` *(comandos y rutas, `~`, ocultos con prefijo `.`, doble Tab lista opciones)*
 
-### F1-12 · Correcciones de fidelidad halladas al verificar la libreta · `pendiente` · depende: F2-10
+### F1-12 · Correcciones de fidelidad halladas al verificar la libreta · `hecha (2026-11-24)` · depende: F2-10
 - **Hacer:** páginas de `man` en español para todos los comandos del motor (hoy faltan head, tail, mkdir, touch, cp, mv, rm, grep, wc, sort, uniq, cut y exit, y responden "No manual entry"); `cp`/`mv` con destino `carpeta/` inexistente dan el error real ("Not a directory") en vez de crear un archivo; `!N` (expansión del historial) da el globo de pensamiento en vez de "command not found"; `sort -k N,M` se implementa (hoy se trata como `-k N`). Goldens nuevos para cp, mv y sort.
 - **Listo cuando:** prueba que `man <cmd>` existe para cada comando; goldens nuevos en verde en el job `debian:stable`.
 

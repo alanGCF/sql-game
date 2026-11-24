@@ -67,6 +67,12 @@ const TABLA: [string, Esperado][] = [
   ["ifconfig", "ejecutar"],
   ["netstat -tulpn", "ejecutar"],
   // sintaxis avanzada
+  // expansión del historial de bash (!3, !!, !-2): fuera de la superficie
+  ["!3", "pensamiento:historial"],
+  ["!!", "pensamiento:historial"],
+  ["sudo !!", "pensamiento:fuera_de_alcance"],
+  ["cat !-2", "pensamiento:historial"],
+  ["echo hola!", "ejecutar"],
   ["echo $(whoami)", "pensamiento:avanzado"],
   ["echo `date`", "pensamiento:avanzado"],
   ['echo "$(ls)"', "pensamiento:avanzado"],

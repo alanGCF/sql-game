@@ -280,6 +280,19 @@ function inicioCampo(linea: string, campo: number, sep: string | undefined): num
   return pos;
 }
 
+/** Posición donde termina el campo N (sin el separador que lo sigue). */
+function finCampo(linea: string, campo: number, sep: string | undefined): number {
+  const inicio = inicioCampo(linea, campo, sep);
+  if (sep !== undefined) {
+    const s = linea.indexOf(sep, inicio);
+    return s === -1 ? linea.length : s;
+  }
+  let pos = inicio;
+  while (pos < linea.length && (linea[pos] === " " || linea[pos] === "\t")) pos++;
+  while (pos < linea.length && linea[pos] !== " " && linea[pos] !== "\t") pos++;
+  return pos;
+}
+
 function numeroInicial(s: string): number {
   const m = /^[ \t]*(-?\d*(?:\.\d+)?)/.exec(s);
   const v = m?.[1] ? Number(m[1]) : 0;
@@ -291,6 +304,7 @@ export function sort(ctx: Contexto): number {
   const op = new Set<string>();
   let sep: string | undefined;
   let campo: number | undefined;
+  let campoFin: number | undefined;
   const archivos: string[] = [];
   for (let i = 0; i < args.length; i++) {
     const a = args[i] as string;
@@ -303,7 +317,12 @@ export function sort(ctx: Contexto): number {
       if (l === "t" || l === "k") {
         const valor = a.slice(j + 1) || (args[++i] ?? "");
         if (l === "t") sep = valor;
-        else campo = Number.parseInt(valor, 10);
+        else {
+          // -k N (hasta el final del renglón) o -k N,M (del campo N al M).
+          const [n, m] = valor.split(",");
+          campo = Number.parseInt(n ?? "", 10);
+          campoFin = m === undefined ? undefined : Number.parseInt(m, 10);
+        }
         break;
       }
       if (!"rnu".includes(l)) {
@@ -321,7 +340,8 @@ export function sort(ctx: Contexto): number {
     if (texto === null) return 2;
     todas = todas.concat(lineas(texto));
   }
-  const clave = (l: string) => (campo ? l.slice(inicioCampo(l, campo, sep)) : l);
+  const clave = (l: string) =>
+    campo ? l.slice(inicioCampo(l, campo, sep), campoFin ? finCampo(l, campoFin, sep) : undefined) : l;
   const compararClave = (a: string, b: string) => {
     const ka = clave(a);
     const kb = clave(b);

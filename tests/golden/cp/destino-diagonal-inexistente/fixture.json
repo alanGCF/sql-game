@@ -1,0 +1,43 @@
+{
+ "cwd": "/home/becario",
+ "home": "/home/becario",
+ "usuario": "becario",
+ "usuarios": {
+  "becario": [
+   "sistemas"
+  ]
+ },
+ "ahora": "2026-11-24T08:00:00Z",
+ "entradas": [
+  {
+   "ruta": "/home/",
+   "dueno": "root",
+   "modo": "755",
+   "mtime": "2026-10-01T09:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-27T15:30:00Z"
+  },
+  {
+   "ruta": "/home/becario/LEEME.txt",
+   "dueno": "becario",
+   "contenido": "hola\n",
+   "mtime": "2026-10-23T23:41:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-28T15:35:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/T-1042.txt",
+   "dueno": "becario",
+   "contenido": "Ticket T-1042\n",
+   "mtime": "2026-10-28T15:32:00Z"
+  }
+ ]
+}

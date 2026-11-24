@@ -158,6 +158,21 @@ function destinoFinal(ctx: Contexto, origen: string, destino: string): string {
   return abs;
 }
 
+/** `archivo destino/` con destino inexistente: GNU no crea un archivo con ese nombre, falla. */
+function diagonalSinCarpeta(ctx: Contexto, origen: string, destino: string): boolean {
+  if (!destino.endsWith("/") || ctx.vfs.exists(resolver(ctx, destino))) return false;
+  try {
+    return ctx.vfs.lookup(resolver(ctx, origen)).type === "file";
+  } catch {
+    return false;
+  }
+}
+
+function glosaDiagonal(ctx: Contexto, destino: string): void {
+  const carpeta = destino.replace(/\/+$/, "");
+  ctx.glosa(`La carpeta ${carpeta}/ no existe. Créala primero con \`mkdir ${carpeta}\`.`);
+}
+
 function faltanOperandos(ctx: Contexto, prog: string, operandos: string[]): boolean {
   if (operandos.length === 0) {
     ctx.err(`${prog}: missing file operand\nTry '${prog} --help' for more information.\n`);
@@ -224,6 +239,12 @@ export function cp(ctx: Contexto): number {
         continue;
       }
       if (nodo.type === "file") ctx.vfs.readFile(resolver(ctx, origen), ctx.sesion.usuario);
+      if (diagonalSinCarpeta(ctx, origen, destino)) {
+        ctx.err(`cp: cannot create regular file '${destino}': Not a directory\n`);
+        glosaDiagonal(ctx, destino);
+        codigo = 1;
+        continue;
+      }
       const absFinal = destinoFinal(ctx, origen, destino);
       if (!copiarNodo(ctx, nodo, origen.replace(/\/+$/, ""), absFinal)) codigo = 1;
       ctx.registro.leidos.add(resolver(ctx, origen));
@@ -256,6 +277,12 @@ export function mv(ctx: Contexto): number {
     if (!ctx.vfs.exists(absOrigen)) {
       ctx.err(`mv: cannot stat '${origen}': No such file or directory\n`);
       glosaError(ctx, origen, new VfsError("ENOENT", absOrigen));
+      codigo = 1;
+      continue;
+    }
+    if (diagonalSinCarpeta(ctx, origen, destino)) {
+      ctx.err(`mv: cannot move '${origen}' to '${destino}': Not a directory\n`);
+      glosaDiagonal(ctx, destino);
       codigo = 1;
       continue;
     }

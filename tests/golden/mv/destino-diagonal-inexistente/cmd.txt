@@ -1,0 +1,1 @@
+mv LEEME.txt nuevo/; ls

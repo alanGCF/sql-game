@@ -84,6 +84,8 @@ describe("glosas para errores de novato", () => {
     ["en", "Revisa cómo lo escribiste"],
     ["sl", "¿Quisiste decir `ls`?"],
     ["PWD", "¿Quisiste decir `pwd`?"],
+    ["cp LEEME.txt nuevo/", "La carpeta nuevo/ no existe. Créala primero con `mkdir nuevo`."],
+    ["mv LEEME.txt nuevo/", "La carpeta nuevo/ no existe. Créala primero con `mkdir nuevo`."],
   ])("comando inexistente %s → glosa útil", async (linea, esperado) => {
     expect(await glosaDe(linea)).toContain(esperado);
   });
