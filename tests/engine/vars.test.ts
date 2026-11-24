@@ -28,7 +28,8 @@ describe("variables de partida", () => {
       const octeto = Number(v.ip_delta?.split(".")[3]);
       expect(octeto).toBeGreaterThanOrEqual(20);
       expect(octeto).toBeLessThanOrEqual(250);
-      expect(v.hora_acceso! >= "23:50:00" && v.hora_acceso! <= "23:58:59").toBe(true);
+      const hora = v.hora_acceso ?? "";
+      expect(hora >= "23:50:00" && hora <= "23:58:59").toBe(true);
       expect(["8080", "8081", "8443", "9000"]).toContain(v.puerto_api);
       expect(v.contrasena).toMatch(/^(duna|ocotillo|nopal)\d{2}$/);
     }

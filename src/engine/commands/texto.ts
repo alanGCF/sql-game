@@ -1,6 +1,6 @@
 import { type Contexto, errorVfs, resolver } from "../shell/executor";
 import { compararC } from "../shell/expand";
-import { bytes, puedeEjecutar, puedeLeer, VfsError, type VNode } from "../vfs";
+import { bytes, puedeEjecutar, puedeLeer, type VNode } from "../vfs";
 import { glosaError } from "./comun";
 
 /** Comandos de texto del Turno 3 (GNU grep 3.11 y coreutils 9, LC_ALL=C). */
