@@ -67,7 +67,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ### F1-07 · Comandos T2 · `hecha (2026-11-24)` *(head tail mkdir touch cp mv rm; 36 goldens; `less` pasa a F3 por ser visor)*
 - `echo head tail less mkdir touch cp mv rm` (+ `ls -l -h`).
 
-### F1-08 · Comandos T3 · `pendiente` · depende: F1-06
+### F1-08 · Comandos T3 · `hecha (2026-11-24)` *(grep wc sort uniq cut; 53 goldens; grep -r recorre en orden alfabético: desviación documentada)*
 - `grep wc sort uniq cut`.
 
 ### F1-09 · Glosas, "quisiste decir", Windows y obsoletos · `hecha (2026-11-24)` *(Windows → globo con el equivalente; net-tools → command not found + herramienta moderna; dedazos con transposición)*

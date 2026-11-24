@@ -157,7 +157,7 @@ Dominio interno `ocotillo.local`. Dominios externos con `.example` (reservado, n
 | `/home/becario/.r/` | Notas ocultas de R. (`notas.txt`, `hola`, `.llaves/`) | 1–3 |
 | `/srv/lineas/linea{1,2,3}/estado.txt` | Estado de líneas | 1 |
 | `/var/log/lineas/linea3.log` | Log de estaciones (alarmas FUGA, generado por semilla) | 3 |
-| `/var/log/auth.log` | Accesos (aparece `delta_svc`, generado por semilla) | 3 |
+| `/var/log/auth.log` | Accesos (aparece `delta_svc`, generado por semilla). Formato moderno de rsyslog: marca de tiempo ISO 8601 de alta precisión (`2026-10-27T23:58:01.003190-06:00 srv-sistemas sshd[1203]: Accepted publickey for delta_svc …`). El servidor de la planta tiene rsyslog; la libreta aclara que Debian 12+ usa `journalctl` por omisión | 3 |
 | `/srv/mes/mes.db` | Base SQLite del MES (generada por semilla) | 4+ |
 | `/etc/hosts` | Resolución local | 5 |
 | `/var/spool/cron/crontabs/delta_svc` | Cron del script | 11 |
