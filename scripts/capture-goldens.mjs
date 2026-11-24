@@ -50,6 +50,12 @@ for (const cmd of readdirSync(RAIZ)) {
 }
 
 const ver = version();
+if (!ver.startsWith("Debian")) {
+  console.warn(
+    "AVISO: la referencia es debian:stable (job de CI). Capturar en otra distribución puede dar diferencias reales\n" +
+      "(p. ej. `wc -w` en Ubuntu 24.04). Revisa el diff antes de hacer commit.",
+  );
+}
 for (const dir of casos) {
   const fx = JSON.parse(readFileSync(join(dir, "fixture.json"), "utf8"));
   const usuarios = fx.usuarios ?? { [fx.usuario]: [] };

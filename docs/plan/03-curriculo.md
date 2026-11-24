@@ -218,6 +218,7 @@ Lo que se enseña debe ser **lo que funciona hoy** en una distribución actual. 
 4. **Goldens capturados en un contenedor `debian:stable`** (job de CI `goldens`), no en la máquina del desarrollador. El golden guarda la versión de la herramienta con la que se capturó.
 5. **Revisión de vigencia** antes de cada release y al menos cada 6 meses: el subagente `verificador-fidelidad` revisa notas de versión de las herramientas de la tabla, recaptura goldens en `debian:stable` y lista diferencias; los cambios entran al backlog.
 6. **Formatos de archivos del sistema también vigentes:** los logs usan el formato actual de rsyslog (marca de tiempo ISO 8601 de alta precisión, como Ubuntu 24.04) y la libreta explica `journalctl` como la forma por omisión en Debian 12+.
-7. **Desviaciones documentadas del motor:** `grep -r` recorre carpetas en orden alfabético (en Linux real el orden depende del sistema de archivos); `--help` muestra la página en español.
-8. **Librerías del proyecto** (sql.js, three.js, etc.) se consultan en su documentación actual antes de usarlas.
+7. **Si Debian stable y Ubuntu LTS difieren, manda Debian stable** (lo verifica el job de CI). Ejemplo: `wc -w` en Debian stable cuenta como palabra un carácter no ASCII suelto ("—"); coreutils 9.4 de Ubuntu 24.04 no.
+8. **Desviaciones documentadas del motor:** `grep -r` recorre carpetas en orden alfabético (en Linux real el orden depende del sistema de archivos); `--help` muestra la página en español.
+9. **Librerías del proyecto** (sql.js, three.js, etc.) se consultan en su documentación actual antes de usarlas.
 

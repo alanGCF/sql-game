@@ -235,8 +235,9 @@ export function wc(ctx: Contexto): number {
     else tamanoRegular += bytes(texto);
     const cuentas = {
       l: (texto.match(/\n/g) ?? []).length,
-      // En locale C una "palabra" debe contener al menos un carácter ASCII imprimible (una "—" suelta no cuenta).
-      w: texto.split(/[ \t\n\v\f\r]+/).filter((p) => /[\x21-\x7e]/.test(p)).length,
+      // Como coreutils de Debian stable: palabra = cualquier secuencia sin espacios (una "—" suelta cuenta).
+      // Ubuntu 24.04 (coreutils 9.4) no la contaba; la referencia es Debian stable (CI de goldens).
+      w: texto.split(/[ \t\n\v\f\r]+/).filter(Boolean).length,
       c: bytes(texto),
     };
     filas.push({ nombre: a === "-" ? "" : a, cuentas: columnas.map((c) => cuentas[c]) });
