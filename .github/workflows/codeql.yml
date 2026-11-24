@@ -13,15 +13,15 @@ permissions:
 
 jobs:
   analizar:
-    # CodeQL solo es gratuito para repositorios públicos; en uno privado requiere licencia de GitHub
-    # Code Security. Mientras el repo sea privado, este job se omite.
+    # CodeQL es gratuito en repositorios públicos; si el repo volviera a ser privado, este job se omite
+    # (ahí requiere licencia de GitHub Code Security).
     if: github.event.repository.private == false
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
       actions: read
       contents: read
-      security-events: read
+      security-events: write
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -30,10 +30,10 @@ jobs:
         with:
           languages: javascript-typescript
           queries: security-extended
-      # El repositorio no tiene code scanning habilitado: se analiza sin subir y el job falla si hay hallazgos.
+      # Sube los resultados a la pestaña Security y además falla el job si hay hallazgos.
       - uses: github/codeql-action/analyze@915412ff23e8b7659517e607487dbeae018f2934 # v4
         with:
-          upload: never
+          upload: always
           output: sarif-results
       - name: Fallar si CodeQL encontró problemas
         run: |

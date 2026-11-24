@@ -25,6 +25,7 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | — | Código de partida | Se genera al empezar; continuar desde el menú |
 | — | Fuera de alcance | Globo de pensamiento "no sé qué haga esto, mejor no le doy Enter" |
 | — | Ramas | Solo `main` y `develop` |
+| D-05 | Nombre del juego | **Rastro en el Log** (la planta de la historia sigue siendo Industrias Ocotillo, Planta 7) |
 | D-08 | Estilo visual 3D | **C · Estilizado limpio** (ver `docs/diseno/direccion-arte.md`) |
 | D-13 | Compañero que da pistas | **Eduardo Téllez**, Sistemas Sr., ext. 214 |
 | D-14 | Paciencia del compañero | Recomendación aceptada: pedir pista **nunca** gasta paciencia; platicar sí |
@@ -37,6 +38,4 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-| ID | Decisión | Opciones | Recomendación | Bloquea |
-|---|---|---|---|---|
-| **D-05** | Nombre del juego | Propuestos por el usuario: Código Sombra · Archivo Cero · Operación Medianoche · Huellas en el Sistema · Rastro en el Log · Desde el Cubículo · Consulta Nocturna | **Rastro en el Log** (alternativa: Huellas en el Sistema). Pendiente de confirmar; nombre clave mientras tanto: Planta 7 | menú, créditos |
+Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.

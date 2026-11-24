@@ -41,6 +41,10 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Pendiente fuera de esta tarea:** fijar imágenes por digest y comprobar `TRUST_PROXY_HOPS` en el primer despliegue (F0-06); escaneo de secretos de GitHub (lo activa el usuario si su plan lo permite); IPv6 agrupadas por /64 y no reenviar mensajes de Zod (F4).
 - **Verificar:** `tests/server/app.test.ts`; job `imagen` en verde.
 
+### F0-09 · Nombre, licencias y repositorio público · `hecha (2026-11-24)`
+- **Hacer:** título "Rastro en el Log" (D-05) en README, `CLAUDE.md`, `index.html`, `package.json` y agentes (la planta de la historia sigue siendo Industrias Ocotillo, Planta 7); `LICENSE` (MIT, código) y `content/LICENSE.md` (CC BY-NC 4.0, contenido y docs) según D-06; CodeQL sube resultados a Security ahora que el repo es público.
+- **Pendiente del usuario:** borrar la rama remota `claude/sql-linux-game-planning-e1w7ge` (el proxy de la sesión no permite borrar ramas) y confirmar en Settings que el escaneo de secretos y la protección de push están activos.
+
 ---
 
 ## F1 — Motor: shell, VFS, clasificador, comandos T1–T3

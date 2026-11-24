@@ -1,4 +1,4 @@
-# CLAUDE.md — Planta 7 *(nombre clave; título del juego por definir, D-05)*
+# CLAUDE.md — Rastro en el Log *(D-05; la planta de la historia es Industrias Ocotillo, Planta 7)*
 
 Juego web **de escritorio** que enseña Linux, SQL y redes desde cero mediante una historia de misterio en una planta de manufactura ficticia. Se juega en primera persona, sentado en tu cubículo en 3D: la computadora, el teléfono, la libreta, el pizarrón y el calendario son la interfaz. El plan completo vive en `docs/` (índice: `docs/README.md`). Este archivo es la **constitución**: si algo aquí choca con otro documento, gana este archivo y se corrige el otro.
 

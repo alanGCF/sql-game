@@ -81,13 +81,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - run: docker build -t planta7 .
+      - run: docker build -t rastro .
       - name: Arranca como usuario sin privilegios y responde /healthz
         run: |
-          docker run -d --name planta7 -p 3000:3000 planta7
+          docker run -d --name rastro -p 3000:3000 rastro
           for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/healthz && break; sleep 1; done
           curl -fsS http://127.0.0.1:3000/healthz | grep -q '"ok":true'
           curl -fsSI http://127.0.0.1:3000/ | grep -qi "content-security-policy"
-          test "$(docker exec planta7 id -un)" = node
+          test "$(docker exec rastro id -un)" = node
           # El código es de root: el proceso solo puede leerlo.
-          ! docker exec planta7 touch /app/dist/escritura
+          ! docker exec rastro touch /app/dist/escritura

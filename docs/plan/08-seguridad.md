@@ -52,7 +52,7 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 
 ## Proceso
 
-1. **En cada PR/push a `develop`:** CI con `npm audit --audit-level=high`, `npm ci --ignore-scripts`, Actions fijadas por SHA, imagen Docker construida y probada, pruebas de seguridad del servidor (límites, validación, cabeceras, respuestas uniformes) y escaneo de secretos de GitHub. **CodeQL** solo corre si el repositorio es público: en uno privado requiere licencia de GitHub Code Security.
+1. **En cada PR/push a `develop`:** CI con `npm audit --audit-level=high`, `npm ci --ignore-scripts`, Actions fijadas por SHA, imagen Docker construida y probada, pruebas de seguridad del servidor (límites, validación, cabeceras, respuestas uniformes) y escaneo de secretos de GitHub. **CodeQL** (el repositorio es público desde 2026-11-24; en uno privado requeriría licencia de GitHub Code Security): sube resultados a la pestaña Security y falla el job si hay hallazgos. Con el repo público también aplican el escaneo de secretos y la protección de push de GitHub.
 2. **Antes de llevar `develop` a `main`:** subagente `auditor-seguridad` sobre el diff + `/security-review`; ningún hallazgo alto o crítico abierto.
 3. **Antes del primer release público:** escaneo OWASP ZAP baseline contra el despliegue de prueba y revisión manual con la lista OWASP ASVS nivel 1.
 4. **Mensual:** revisar alertas de Dependabot y actualizar dependencias.
