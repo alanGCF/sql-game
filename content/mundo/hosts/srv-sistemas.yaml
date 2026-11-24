@@ -33,13 +33,10 @@ fs:
             *) return;;
       esac
 
-      HISTCONTROL=ignoreboth
-      HISTSIZE=1000
-
       # enable color support of ls
       if [ -x /usr/bin/dircolors ]; then
           alias ls='ls --color=auto'
-          alias grep='grep --color=auto'
+          #alias grep='grep --color=auto'
       fi
   - ruta: /home/becario/.profile
     dueno: becario

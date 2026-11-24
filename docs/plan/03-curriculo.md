@@ -212,7 +212,7 @@ Reglas (las valida el harness, regla C16):
 
 Lo que se enseña debe ser **lo que funciona hoy** en una distribución actual. Es uno de los requisitos más importantes del proyecto.
 
-1. **Plataforma de referencia:** Debian stable (13 "trixie") y Ubuntu LTS (24.04). La columna "Referencia vigente" de la superficie de comandos indica la herramienta y versión mínima.
+1. **Plataforma de referencia:** Debian stable (13 "trixie": coreutils 9.7, grep 3.11, bash 5.2.37, man-db 2.13) y Ubuntu LTS (26.04, abril de 2026). Ubuntu 26.04 trae por omisión coreutils reescritos en Rust (uutils) para la mayoría de los comandos, así que puede diferir en detalles de GNU: por eso manda Debian stable (punto 7) y la libreta dice "Igual (GNU …)" pensando en Debian. La columna "Referencia vigente" de la superficie de comandos indica la herramienta y versión mínima.
 2. **Herramientas modernas primero:** `ip` (no `ifconfig`), `ss` (no `netstat`), `grep -E` (no `egrep`), `dig`/`host` (no `nslookup` como principal), llaves `ssh-keygen -t ed25519` (no RSA de 2048), `scp` sabiendo que usa SFTP por debajo, `curl` 8, SQLite 3.4x+. `cron` se enseña por ser universal, y la libreta explica los timers de systemd como alternativa moderna.
 3. **Lo obsoleto se comporta como en un sistema moderno:** `ifconfig` y `netstat` no vienen instalados en Debian/Ubuntu recientes → `command not found` + glosa con el equivalente moderno. La libreta incluye "Si lo ves en un tutorial viejo…".
 4. **Goldens capturados en un contenedor `debian:stable`** (job de CI `goldens`), no en la máquina del desarrollador. El golden guarda la versión de la herramienta con la que se capturó.
