@@ -46,6 +46,7 @@ npm run dev              # cliente (Vite) + servidor en modo desarrollo
 npm run typecheck        # tsc --noEmit (cliente, servidor, scripts)
 npm run lint             # biome check
 npm run test             # vitest: motor, servidor, harness de contenido
+npm run build:content    # content/*.yaml → .generated/contenido/*.json (va dentro de build y dev)
 npm run validate:content # solo el harness de contenido (acepta rutas)
 npm run play -- --mision <id> [--semilla N] [--solucion]   # jugar headless
 npm run e2e              # playwright: flujos + capturas visuales

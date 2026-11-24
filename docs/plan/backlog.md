@@ -84,7 +84,10 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ### F2-01 · Esquemas (misión, favor, personajes, contactos, currículo, partida) · `hecha (2026-11-24)` *(misión/favor, `content/curriculo.yaml` con 65 conceptos y la superficie, `content/personajes.yaml` con contactos y paciencia, partida en `shared/`)*
 - **Listo cuando:** `docs/ejemplos/mision-ejemplo.yaml` valida; errores legibles con ruta del campo.
 
-### F2-02 · Pipeline de contenido (YAML → JSON por turno) · `pendiente` · depende: F2-01
+### F2-02 · Pipeline de contenido (YAML → JSON por turno) · `hecha (2026-11-24)` *(el cargador del cliente con `import.meta.glob` llega en F2-07 junto con su primer consumidor)*
+- **Hacer:** `npm run build:content` (parte de `build` y `dev`): lee `content/misiones/turno-NN/*.yaml`, valida con Zod, revisa ids únicos y que carpeta, `turno`, `orden` e id coincidan, y escribe `.generated/contenido/turno-NN.json` (misiones y favores ordenados) y `comun.json` (personajes). El tiempo extra va en `turno-te`, entre T8 y T9.
+- **Listo cuando:** con cualquier error no genera nada y sale con 1; la salida no depende del orden de los archivos.
+- **Verificar:** `tests/content/compilar.test.ts`.
 
 ### F2-03 · Predicados, `esperado_de`, eventos, pistas, estrellas · `hecha (2026-11-24)` *(runtime `MisionEnCurso`: parches con variables y generadores, eventos al_iniciar/al_cumplir/al_completar, pistas por nivel, estrellas D-09)*
 

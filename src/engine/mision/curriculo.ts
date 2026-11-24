@@ -5,11 +5,11 @@ import { z } from "zod";
 const Concepto = z.string().regex(/^[a-z]+\.[a-z_]+\.[a-z_]+$/);
 const CodigoMision = z.string().regex(/^T\d{1,2}-M\d{1,2}$/);
 
-/** "T3-M2" → [3, 2] para ordenar misiones. */
+/** "T3-M2" → [3, 2] para ordenar misiones. El tiempo extra (TE, sábado 7) va entre T8 y T9. */
 export function ordenMision(codigo: string): [number, number] {
-  const m = /^T(\d+)-[MF](\d+)$/.exec(codigo);
+  const m = /^T(\d+|E)-[MF](\d+)$/.exec(codigo);
   if (!m) throw new Error(`código de misión inválido: ${codigo}`);
-  return [Number(m[1]), Number(m[2])];
+  return [m[1] === "E" ? 8.5 : Number(m[1]), Number(m[2])];
 }
 
 export function compararMisiones(a: string, b: string): number {

@@ -5,6 +5,7 @@ test-results/
 playwright-report/
 blob-report/
 .vite/
+.generated/
 *.log
 .env
 .env.*
