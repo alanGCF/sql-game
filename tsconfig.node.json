@@ -3,15 +3,8 @@
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "noEmit": true
   },
-  "include": [
-    "server/src",
-    "shared",
-    "tests/server",
-    "vite.config.ts"
-  ]
+  "include": ["server/src", "shared", "tests/server", "vite.config.ts"]
 }

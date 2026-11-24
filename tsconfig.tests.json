@@ -3,16 +3,8 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "noEmit": true
   },
-  "include": [
-    "tests/engine",
-    "tests/content",
-    "src/engine",
-    "scripts/play.ts",
-    "src/game/mundoDemo.ts"
-  ]
+  "include": ["tests/engine", "tests/content", "src/engine", "scripts/play.ts", "src/game/mundoDemo.ts"]
 }
