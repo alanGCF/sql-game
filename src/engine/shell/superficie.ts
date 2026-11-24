@@ -20,6 +20,13 @@ export const SUPERFICIE: Record<string, Especificacion> = {
   clear: { cortas: "", reales: "TVx" },
   history: { cortas: "", reales: "acdnprsw" },
   exit: { cortas: "", reales: "" },
+  head: { cortas: "n", reales: "cnqvz" },
+  tail: { cortas: "n", reales: "cfFnqsvz" },
+  mkdir: { cortas: "p", reales: "mpvZ" },
+  touch: { cortas: "", reales: "acdfhmrt" },
+  cp: { cortas: "r", reales: "abdfHilLnPpRrsStTuvxZ" },
+  mv: { cortas: "", reales: "bfintTuvZ" },
+  rm: { cortas: "rf", reales: "dfiIrRv" },
 };
 
 export function estaEnSuperficie(comando: string): boolean {

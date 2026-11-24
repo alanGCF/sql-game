@@ -173,6 +173,45 @@ export class Vfs {
     p.mtime = mtime;
   }
 
+  /** Borra un archivo o (con `recursivo`) un directorio. Requiere escritura y paso en el padre. */
+  remove(abs: string, user: User, recursivo: boolean): void {
+    const p = this.dirPadre(abs, user);
+    const nombre = nombreBase(abs);
+    const nodo = p.children.get(nombre);
+    if (!nodo) throw new VfsError("ENOENT", abs);
+    if (nodo.type === "dir" && !recursivo) throw new VfsError("EISDIR", abs);
+    if (!puedeEscribir(p, user) || !puedeEjecutar(p, user)) throw new VfsError("EACCES", abs);
+    if (nodo.type === "dir") {
+      for (const hijo of [...nodo.children.keys()])
+        this.remove(`${abs === "/" ? "" : abs}/${hijo}`, user, true);
+    }
+    p.children.delete(nombre);
+  }
+
+  /** Mueve o renombra. Requiere escritura y paso en ambos padres. */
+  rename(origen: string, destino: string, user: User, mtime: number): void {
+    const po = this.dirPadre(origen, user);
+    const nodo = po.children.get(nombreBase(origen));
+    if (!nodo) throw new VfsError("ENOENT", origen);
+    const pd = this.dirPadre(destino, user);
+    for (const p of [po, pd]) {
+      if (!puedeEscribir(p, user) || !puedeEjecutar(p, user)) throw new VfsError("EACCES", destino);
+    }
+    const existente = pd.children.get(nombreBase(destino));
+    if (existente?.type === "dir") throw new VfsError("EISDIR", destino);
+    po.children.delete(nombreBase(origen));
+    pd.children.set(nombreBase(destino), nodo);
+    po.mtime = mtime;
+    pd.mtime = mtime;
+  }
+
+  /** Actualiza la fecha de modificación (touch) de un nodo existente. */
+  tocar(abs: string, user: User, mtime: number): void {
+    const n = this.lookup(abs, user);
+    if (n.owner !== user.name && !puedeEscribir(n, user)) throw new VfsError("EACCES", abs);
+    n.mtime = mtime;
+  }
+
   /** Copia profunda (para restaurar misiones y para calcular respuestas en un mundo oculto). */
   clone(): Vfs {
     const copiar = (n: VNode): VNode =>

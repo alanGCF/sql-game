@@ -1,0 +1,1 @@
+head -n 1 tickets/T-1042.txt tickets/T-1043.txt

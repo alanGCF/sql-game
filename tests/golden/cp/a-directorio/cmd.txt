@@ -1,0 +1,1 @@
+cp LEEME.txt tickets && ls tickets

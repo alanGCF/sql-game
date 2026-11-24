@@ -1,0 +1,10 @@
+linea,estado
+1,OK
+2,OK
+3,PARO
+linea,estado
+1,OK
+2,OK
+3,PARO
+linea,estado
+1,OK

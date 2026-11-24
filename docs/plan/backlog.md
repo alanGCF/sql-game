@@ -64,7 +64,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** `pwd ls cd cat man clear history exit` (+ `echo`) con la superficie; goldens; entradas de libreta.
 - **Listo cuando:** goldens verdes; `verificador-fidelidad` sin desviaciones no documentadas.
 
-### F1-07 · Comandos T2 · `pendiente` · depende: F1-06
+### F1-07 · Comandos T2 · `hecha (2026-11-24)` *(head tail mkdir touch cp mv rm; 36 goldens; `less` pasa a F3 por ser visor)*
 - `echo head tail less mkdir touch cp mv rm` (+ `ls -l -h`).
 
 ### F1-08 · Comandos T3 · `pendiente` · depende: F1-06

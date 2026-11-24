@@ -1,0 +1,113 @@
+{
+ "cwd": "/home/becario",
+ "home": "/home/becario",
+ "usuario": "becario",
+ "usuarios": {
+  "becario": [
+   "sistemas"
+  ],
+  "rsalcido": [
+   "sistemas"
+  ]
+ },
+ "ahora": "2026-11-24T08:00:00Z",
+ "entradas": [
+  {
+   "ruta": "/home/",
+   "dueno": "root",
+   "modo": "755",
+   "mtime": "2026-10-01T09:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-27T15:30:00Z"
+  },
+  {
+   "ruta": "/home/becario/.bashrc",
+   "dueno": "becario",
+   "contenido": "# ~/.bashrc\nalias ls='ls --color=auto'\n",
+   "mtime": "2026-10-26T12:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/.profile",
+   "dueno": "becario",
+   "contenido": "# ~/.profile\n",
+   "mtime": "2026-10-26T12:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/LEEME.txt",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "contenido": "Para quien me reemplace:\n\n1. El usuario es \"becario\". La contraseña está en el post-it.\n2. Los tickets llegan a ~/tickets/. Uno por archivo.\n3. Si la impresora de la Línea 2 falla, casi siempre es el cable.\n\nY una cosa más: no confíes en los números del turno nocturno.\nRevisa todo dos veces.\n— R.\n",
+   "mtime": "2026-10-23T23:41:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-28T15:35:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/T-1042.txt",
+   "dueno": "becario",
+   "contenido": "Ticket T-1042\nSolicita: Ing. Karla Ibáñez (Calidad)\n",
+   "mtime": "2026-10-28T15:32:00Z"
+  },
+  {
+   "ruta": "/home/becario/tickets/T-1043.txt",
+   "dueno": "becario",
+   "contenido": "Ticket T-1043\nSolicita: Don Chuy\nAsunto: la impresora otra vez\n",
+   "mtime": "2026-10-28T15:35:00Z"
+  },
+  {
+   "ruta": "/home/becario/.r/",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "modo": "755",
+   "mtime": "2026-10-23T23:50:00Z"
+  },
+  {
+   "ruta": "/home/becario/.r/hola",
+   "dueno": "rsalcido",
+   "grupo": "sistemas",
+   "contenido": "Si encontraste esto, vas bien.\n",
+   "mtime": "2026-10-23T23:49:00Z"
+  },
+  {
+   "ruta": "/home/becario/.r/privado/",
+   "dueno": "rsalcido",
+   "grupo": "rsalcido",
+   "modo": "700",
+   "mtime": "2026-10-23T23:48:00Z"
+  },
+  {
+   "ruta": "/home/becario/respaldo.sh",
+   "dueno": "becario",
+   "modo": "755",
+   "contenido": "#!/bin/bash\necho respaldo\n",
+   "mtime": "2026-10-27T16:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/secreto.txt",
+   "dueno": "rsalcido",
+   "grupo": "rsalcido",
+   "modo": "600",
+   "contenido": "no deberías leer esto\n",
+   "mtime": "2026-10-22T10:00:00Z"
+  },
+  {
+   "ruta": "/home/becario/datos/",
+   "dueno": "becario",
+   "modo": "755",
+   "mtime": "2026-10-27T15:40:00Z"
+  },
+  {
+   "ruta": "/home/becario/datos/lineas.csv",
+   "dueno": "becario",
+   "contenido": "linea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\nlinea,estado\n1,OK\n2,OK\n3,PARO\n",
+   "mtime": "2026-10-27T15:40:00Z"
+  }
+ ]
+}

@@ -1,0 +1,5 @@
+==> tickets/T-1042.txt <==
+Solicita: Ing. Karla Ibáñez (Calidad)
+
+==> tickets/T-1043.txt <==
+Asunto: la impresora otra vez

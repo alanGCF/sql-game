@@ -1,0 +1,1 @@
+cp LEEME.txt copia.txt && cat copia.txt

@@ -1,0 +1,9 @@
+Para quien me reemplace:
+
+1. El usuario es "becario". La contraseña está en el post-it.
+2. Los tickets llegan a ~/tickets/. Uno por archivo.
+3. Si la impresora de la Línea 2 falla, casi siempre es el cable.
+
+Y una cosa más: no confíes en los números del turno nocturno.
+Revisa todo dos veces.
+— R.

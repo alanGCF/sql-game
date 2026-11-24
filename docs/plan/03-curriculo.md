@@ -143,12 +143,12 @@ Solo se implementa lo listado. Lo demás responde como en Linux real (`bash: X: 
 | `clear`, `history`, `exit` | `exit` en el servidor propio no cierra la terminal: globo "todavía no acaba mi turno" | 1 | bash 5.2 / ncurses 6 |
 | `echo` | `-n`, `-e` (solo `\n`, `\t`) | 2 | coreutils 9 / bash builtin |
 | `head`, `tail` | `-n N`, `-N` | 2 | coreutils 9 |
-| `less` | visor paginado propio (buscar con `/` opcional) | 2 | less 6xx |
+| `less` | visor paginado propio (pendiente: F3, junto con la UI del monitor) | 2 | less 6xx |
 | `mkdir` | `-p` | 2 | coreutils 9 |
 | `touch` | — | 2 | coreutils 9 |
 | `cp` | `-r` | 2 | coreutils 9 |
 | `mv` | — | 2 | coreutils 9 |
-| `rm` | `-r -f -i` | 2 | coreutils 9 |
+| `rm` | `-r -f` (`-i` no: pide confirmación interactiva) | 2 | coreutils 9 |
 | `grep` | `-i -n -v -c -r -w -E` (ERE básico) | 3 | GNU grep 3.11 |
 | `wc` | `-l -w -c` | 3 | coreutils 9 |
 | `sort` | `-r -n -u -k N -t C` | 3 | coreutils 9 |
