@@ -75,7 +75,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F1-10 · Autocompletado · `hecha (2026-11-24)` *(comandos y rutas, `~`, ocultos con prefijo `.`, doble Tab lista opciones)*
 
-### F1-11 · `npm run play --exec` · `pendiente` · depende: F1-05
+### F1-11 · `npm run play --exec` · `hecha (2026-11-24)` *(también shell interactivo y por stdin sobre el mundo de demostración; `--mision` en F2-06)*
 
 ---
 
