@@ -22,7 +22,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Listo cuando:** `npm run typecheck && npm run lint && npm run test && npm run build` pasan; `npm start` sirve el build y `/healthz`; un e2e de humo abre la página con WebGL.
 - **Verificar:** `/verificar`.
 
-### F0-05 · CI · `pendiente` · depende: F0-04
+### F0-05 · CI · `hecha (2026-11-24)` *(verde confirmado en el primer push)*
 - **Hacer:** GitHub Actions según `07-calidad-harness.md` §CI (sin el job `goldens`, que llega en F1-05); `npm audit`; CodeQL; Dependabot.
 - **Listo cuando:** el push a `develop` muestra todos los checks en verde.
 
