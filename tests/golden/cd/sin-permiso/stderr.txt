@@ -1,0 +1,1 @@
+bash: cd: .r/privado: Permission denied

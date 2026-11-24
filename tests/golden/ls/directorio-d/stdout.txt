@@ -1,0 +1,2 @@
+drwxr-xr-x 2 becario becario 4096 Oct 27 15:40 [0m[01;34mdatos[0m
+drwxr-xr-x 2 becario becario 4096 Oct 28 15:35 [01;34mtickets[0m

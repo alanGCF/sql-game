@@ -1,0 +1,1 @@
+LEEME.txt  [0m[01;34mdatos[0m  [01;32mrespaldo.sh[0m  secreto.txt  [01;34mtickets[0m

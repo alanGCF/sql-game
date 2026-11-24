@@ -40,28 +40,28 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ## F1 — Motor: shell, VFS, clasificador, comandos T1–T3
 
-### F1-01 · VFS · `pendiente` · depende: F0-04
+### F1-01 · VFS · `hecha (2026-11-24)` *(clon profundo para restaurar; la capa de diferencias para guardar pasa a F2-04)*
 - **Hacer:** árbol en memoria, rutas absolutas/relativas, `..`, `~`, metadatos, permisos por usuario, capa de diferencias.
 - **Listo cuando:** tests de rutas, permisos (r/w/x), diferencias y restauración.
 
-### F1-02 · Reloj de juego, RNG y variables de partida · `pendiente` · depende: F0-04
+### F1-02 · Reloj de juego, RNG y variables de partida · `en-progreso` (reloj y RNG hechos; generadores de variables y plantillas `{{var}}` pendientes)
 - **Hacer:** `clock.ts`; PRNG con semilla y sub-semillas; generadores de variables (`entero`, `ip`, `hora`, `elegir`); plantillas `{{var}}`.
 - **Listo cuando:** misma semilla → mismas variables; semillas distintas → distribución dentro de rangos (test de 10 000 semillas).
 
-### F1-03 · Lexer y parser · `pendiente` · depende: F0-04
+### F1-03 · Lexer y parser · `hecha (2026-11-24)`
 - **Hacer:** tokens, comillas, escapes, operadores `| > >> < 2> 2>&1 && || ;` → AST; detección de sintaxis avanzada (`$(`, backticks, heredoc, `&`).
 - **Listo cuando:** tabla de ≥ 40 casos, incluidos errores de sintaxis con el mensaje real de bash.
 
-### F1-04 · Clasificador de entrada (globo de pensamiento) · `pendiente` · depende: F1-03
+### F1-04 · Clasificador de entrada (globo de pensamiento) · `hecha (2026-11-24)` *(67 casos; crece con cada comando)*
 - **Hacer:** `classify()` con superficie, lista de comandos reales de Linux, patrones peligrosos, límites; frases variadas por caso.
 - **Listo cuando:** tabla de ≥ 100 entradas clasificadas correctamente.
 
-### F1-05 · Expansión, ejecutor y job de goldens · `pendiente` · depende: F1-01, F1-03
+### F1-05 · Expansión, ejecutor y job de goldens · `hecha (2026-11-24)`
 - **Hacer:** `~`, `$VAR`, `$?`, globs; tuberías; redirecciones; códigos de salida; historial. Script `scripts/capture-goldens.sh` + job de CI en `debian:stable`.
 - **Listo cuando:** `echo hola > a && cat a | wc -c` produce `5`; el job de goldens corre en CI.
 
-### F1-06 · Comandos T1 · `pendiente` · depende: F1-05
-- **Hacer:** `pwd ls cd cat man help clear history exit` con la superficie; goldens; entradas de libreta.
+### F1-06 · Comandos T1 · `hecha (2026-11-24)` *(pwd ls cd cat echo man clear history exit; 38 goldens idénticos al sistema real)*
+- **Hacer:** `pwd ls cd cat man clear history exit` (+ `echo`) con la superficie; goldens; entradas de libreta.
 - **Listo cuando:** goldens verdes; `verificador-fidelidad` sin desviaciones no documentadas.
 
 ### F1-07 · Comandos T2 · `pendiente` · depende: F1-06

@@ -1,0 +1,1 @@
+cat tickets/T-1042.txt noexiste tickets/T-1043.txt

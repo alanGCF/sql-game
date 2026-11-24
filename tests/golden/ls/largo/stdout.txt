@@ -1,0 +1,6 @@
+total 20
+-rw-r--r-- 1 rsalcido sistemas  306 Oct 23 23:41 LEEME.txt
+drwxr-xr-x 2 becario  becario  4096 Oct 27 15:40 [0m[01;34mdatos[0m
+-rwxr-xr-x 1 becario  becario    26 Oct 27 16:00 [01;32mrespaldo.sh[0m
+-rw------- 1 rsalcido rsalcido   23 Oct 22 10:00 secreto.txt
+drwxr-xr-x 2 becario  becario  4096 Oct 28 15:35 [01;34mtickets[0m

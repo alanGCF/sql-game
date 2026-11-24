@@ -139,8 +139,8 @@ Solo se implementa lo listado. Lo demás responde como en Linux real (`bash: X: 
 | `cd` | `cd`, `cd -`, `..`, `~`, absolutas/relativas | 1 | bash 5.2 (builtin) |
 | `cat` | múltiples archivos, `-n` | 1 | coreutils 9 |
 | `man` | `man <cmd>` (visor paginado propio) | 1 | man-db 2.12 |
-| `help`, `--help` | resumen corto por comando | 1 | bash 5.2 |
-| `clear`, `history`, `exit` | — | 1 | ncurses 6 |
+| `--help` | en `ls` y `cat`: muestra la página en español (desviación documentada: en Linux real es la ayuda completa en inglés) | 1 | — |
+| `clear`, `history`, `exit` | `exit` en el servidor propio no cierra la terminal: globo "todavía no acaba mi turno" | 1 | bash 5.2 / ncurses 6 |
 | `echo` | `-n`, `-e` (solo `\n`, `\t`) | 2 | coreutils 9 / bash builtin |
 | `head`, `tail` | `-n N`, `-N` | 2 | coreutils 9 |
 | `less` | visor paginado propio (buscar con `/` opcional) | 2 | less 6xx |

@@ -1,0 +1,11 @@
+total 40K
+drwxr-xr-x 5 becario  becario  4.0K Oct 27 15:30 [0m[01;34m.[0m
+drwxr-xr-x 3 root     root     4.0K Oct  1 09:00 [01;34m..[0m
+-rw-r--r-- 1 becario  becario    39 Oct 26 12:00 .bashrc
+-rw-r--r-- 1 becario  becario    13 Oct 26 12:00 .profile
+drwxr-xr-x 3 rsalcido sistemas 4.0K Oct 23 23:50 [01;34m.r[0m
+-rw-r--r-- 1 rsalcido sistemas  306 Oct 23 23:41 LEEME.txt
+drwxr-xr-x 2 becario  becario  4.0K Oct 27 15:40 [01;34mdatos[0m
+-rwxr-xr-x 1 becario  becario    26 Oct 27 16:00 [01;32mrespaldo.sh[0m
+-rw------- 1 rsalcido rsalcido   23 Oct 22 10:00 secreto.txt
+drwxr-xr-x 2 becario  becario  4.0K Oct 28 15:35 [01;34mtickets[0m

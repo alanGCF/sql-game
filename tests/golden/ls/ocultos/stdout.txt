@@ -1,0 +1,2 @@
+[0m[01;34m.[0m   .bashrc   [01;34m.r[0m         [01;34mdatos[0m        secreto.txt
+[01;34m..[0m  .profile  LEEME.txt  [01;32mrespaldo.sh[0m  [01;34mtickets[0m

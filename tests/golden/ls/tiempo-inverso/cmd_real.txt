@@ -1,0 +1,1 @@
+ls -tr -C --color=always -w 80

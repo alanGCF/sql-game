@@ -1,0 +1,1 @@
+cat: secreto.txt: Permission denied

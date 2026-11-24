@@ -45,6 +45,21 @@ jobs:
             test-results
           retention-days: 7
 
+  goldens:
+    name: Goldens contra debian:stable (vigencia)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container: debian:stable
+    steps:
+      - run: apt-get update && apt-get install -y --no-install-recommends git nodejs ca-certificates
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: node scripts/capture-goldens.mjs
+      # Si el sistema real cambió (nueva versión de coreutils/bash), las salidas difieren y hay que revisar.
+      - run: git diff --exit-code -- tests/golden ':(exclude)tests/golden/**/version.txt'
+
   dependencias:
     name: Auditoría de dependencias
     runs-on: ubuntu-latest

@@ -1,0 +1,10 @@
+.
+..
+.bashrc
+.profile
+.r
+LEEME.txt
+datos
+respaldo.sh
+secreto.txt
+tickets
