@@ -1,0 +1,730 @@
+# Grafo de conceptos y superficie de comandos (fuente de verdad desde F2-01, 2026-11-24).
+# Migrado de docs/plan/03-curriculo.md; ese documento queda como explicación. Lo valida el esquema
+# src/engine/mision/curriculo.ts y lo usa el harness (reglas C6, C7, C8, C9, C16).
+conceptos:
+  linux.nav.pwd:
+    dominio: linux
+    nombre: Dónde estoy; directorio de trabajo
+    sintaxis: '`pwd`'
+    requiere: []
+    mision: T1-M1
+    repaso: T1-M3, T2-M1
+  linux.nav.ls:
+    dominio: linux
+    nombre: Listar contenido
+    sintaxis: '`ls`, `ls <ruta>`'
+    requiere: []
+    mision: T1-M1
+    repaso: casi todas
+  linux.files.cat:
+    dominio: linux
+    nombre: Ver contenido de un archivo
+    sintaxis: '`cat <archivo>`'
+    requiere:
+    - linux.nav.ls
+    mision: T1-M2
+    repaso: T1-M3, T2+
+  linux.nav.cd:
+    dominio: linux
+    nombre: Moverse; rutas absolutas/relativas, `..`, `~`
+    sintaxis: '`cd`, `cd ..`, `cd ~`, `cd /srv/lineas`'
+    requiere:
+    - linux.nav.pwd
+    mision: T1-M3
+    repaso: T2+
+  linux.help.man:
+    dominio: linux
+    nombre: Pedir ayuda; qué es una bandera
+    sintaxis: '`man ls`, `ls --help`'
+    requiere:
+    - linux.nav.ls
+    mision: T1-M4
+    repaso: T2-M1, T7
+  linux.shell.atajos:
+    dominio: linux
+    nombre: Historial y autocompletado
+    sintaxis: '`history`, ↑, Tab'
+    requiere: []
+    mision: T1-M3
+    repaso: — (uso continuo)
+  linux.nav.ocultos:
+    dominio: linux
+    nombre: Archivos ocultos (empiezan con `.`)
+    sintaxis: '`ls -a`'
+    requiere:
+    - linux.help.man
+    mision: T1-M4
+    repaso: T2-M1, T2-M4
+  linux.nav.ls_largo:
+    dominio: linux
+    nombre: 'Formato largo: dueño, tamaño, fecha'
+    sintaxis: '`ls -l`, `ls -lh`, `ls -la`'
+    requiere:
+    - linux.nav.ocultos
+    mision: T2-M1
+    repaso: T2-M2, T7-M2
+  linux.files.ver_partes:
+    dominio: linux
+    nombre: Ver partes de un archivo
+    sintaxis: '`head`, `tail`, `-n`, `less`'
+    requiere:
+    - linux.files.cat
+    mision: T2-M2
+    repaso: T3-M1
+  linux.files.crear:
+    dominio: linux
+    nombre: Crear carpetas y archivos
+    sintaxis: '`mkdir`, `mkdir -p`, `touch`'
+    requiere:
+    - linux.nav.cd
+    mision: T2-M3
+    repaso: T10-M4
+  linux.shell.redireccion:
+    dominio: linux
+    nombre: Escribir salida a archivo
+    sintaxis: '`echo`, `>`, `>>`'
+    requiere:
+    - linux.files.crear
+    mision: T2-M3
+    repaso: T3-M3, T11
+  linux.files.copiar_mover:
+    dominio: linux
+    nombre: Copiar, mover, renombrar, borrar
+    sintaxis: '`cp`, `cp -r`, `mv`, `rm`, `rm -r`'
+    requiere:
+    - linux.files.crear
+    mision: T2-M4
+    repaso: T10-M4, T13
+  linux.shell.globs:
+    dominio: linux
+    nombre: Comodines
+    sintaxis: '`*`, `?`'
+    requiere:
+    - linux.nav.ls
+    mision: T2-M4
+    repaso: T3-M1, T7-M4
+  linux.text.grep:
+    dominio: linux
+    nombre: Buscar texto
+    sintaxis: '`grep`, `-i`, `-n`, `-v`, `-c`, `-r`'
+    requiere:
+    - linux.files.cat
+    mision: T3-M1
+    repaso: T3-M4, T6+, T11
+  linux.shell.pipes:
+    dominio: linux
+    nombre: Encadenar comandos
+    sintaxis: '`cmd1 | cmd2`'
+    requiere:
+    - linux.text.grep
+    mision: T3-M2
+    repaso: T3-M3+ (constante)
+  linux.text.contar:
+    dominio: linux
+    nombre: Contar líneas/palabras
+    sintaxis: '`wc -l`, `wc -w`'
+    requiere:
+    - linux.shell.pipes
+    mision: T3-M2
+    repaso: T3-M3, T7
+  linux.text.ordenar:
+    dominio: linux
+    nombre: Ordenar y agrupar repetidos
+    sintaxis: '`sort`, `sort -r`, `sort -n`, `uniq`, `uniq -c`'
+    requiere:
+    - linux.shell.pipes
+    mision: T3-M3
+    repaso: T8-M2
+  linux.text.cut:
+    dominio: linux
+    nombre: Extraer columnas
+    sintaxis: '`cut -d'' '' -f5`'
+    requiere:
+    - linux.shell.pipes
+    mision: T3-M3
+    repaso: T8-M2
+  linux.users.identidad:
+    dominio: linux
+    nombre: Usuarios y grupos
+    sintaxis: '`whoami`, `id`, `/etc/passwd`'
+    requiere:
+    - linux.files.cat
+    mision: T7-M1
+    repaso: T7-M3
+  linux.perms.leer:
+    dominio: linux
+    nombre: Leer permisos `rwx`
+    sintaxis: '`ls -l` (columna 1)'
+    requiere:
+    - linux.nav.ls_largo
+    - linux.users.identidad
+    mision: T7-M2
+    repaso: T10, T11
+  linux.perms.chmod:
+    dominio: linux
+    nombre: Cambiar permisos
+    sintaxis: '`chmod 640`, `chmod u+x`'
+    requiere:
+    - linux.perms.leer
+    mision: T7-M2
+    repaso: T11-M2
+  linux.users.sudo:
+    dominio: linux
+    nombre: Privilegios
+    sintaxis: '`sudo <cmd>`, `sudo -l`'
+    requiere:
+    - linux.perms.leer
+    mision: T7-M3
+    repaso: T11, T13
+  linux.proc.ps_kill:
+    dominio: linux
+    nombre: Procesos
+    sintaxis: '`ps aux`, `ps -u`, `kill <pid>`'
+    requiere:
+    - linux.users.sudo
+    mision: T7-M3
+    repaso: T13-M2
+  linux.files.find:
+    dominio: linux
+    nombre: Buscar archivos
+    sintaxis: '`find <ruta> -name`, `-user`, `-mmin`, `-type f`'
+    requiere:
+    - linux.shell.globs
+    mision: T7-M4
+    repaso: T10
+  linux.files.tar:
+    dominio: linux
+    nombre: Empaquetar/comprimir
+    sintaxis: '`tar czf`, `tar tzf`, `tar xzf`'
+    requiere:
+    - linux.files.copiar_mover
+    mision: T10-M4
+    repaso: T13-M1
+  linux.shell.variables:
+    dominio: linux
+    nombre: Variables y entorno
+    sintaxis: '`VAR=x`, `$VAR`, `echo $HOME`, `export`'
+    requiere:
+    - linux.shell.redireccion
+    mision: T11-M1
+    repaso: T11-M2
+  linux.shell.control:
+    dominio: linux
+    nombre: Encadenar con condición
+    sintaxis: '`&&`, `||`, `;`, `$?`'
+    requiere:
+    - linux.shell.variables
+    mision: T11-M1
+    repaso: T11-M3
+  linux.script.basico:
+    dominio: linux
+    nombre: Scripts bash
+    sintaxis: '`#!/bin/bash`, `chmod +x`, `./script.sh`, `if`, `for`'
+    requiere:
+    - linux.perms.chmod
+    - linux.shell.control
+    mision: T11-M2
+    repaso: T11-M3
+  linux.sched.cron:
+    dominio: linux
+    nombre: Tareas programadas
+    sintaxis: '`crontab -l`, `crontab -e` (editor propio), sintaxis `m h dom mon dow`'
+    requiere:
+    - linux.script.basico
+    mision: T11-M3
+    repaso: T13
+  linux.files.checksum:
+    dominio: linux
+    nombre: Integridad
+    sintaxis: '`sha256sum`, `sha256sum -c`'
+    requiere:
+    - linux.files.tar
+    mision: T13-M1
+    repaso: —
+  sql.intro.tablas:
+    dominio: sql
+    nombre: Tabla, fila, columna; explorar
+    sintaxis: '`sqlite3 mes.db`, `.tables`, `.schema`, `SELECT * FROM t`'
+    requiere:
+    - linux.nav.cd
+    mision: T4-M1
+    repaso: T6-M1
+  sql.select.columnas:
+    dominio: sql
+    nombre: Elegir columnas
+    sintaxis: '`SELECT a, b FROM t`'
+    requiere:
+    - sql.intro.tablas
+    mision: T4-M2
+    repaso: todas
+  sql.select.where:
+    dominio: sql
+    nombre: Filtrar
+    sintaxis: '`WHERE`, `=`, `<>`, `<`, `>`, texto entre comillas'
+    requiere:
+    - sql.select.columnas
+    mision: T4-M2
+    repaso: todas
+  sql.select.logica:
+    dominio: sql
+    nombre: Combinar condiciones
+    sintaxis: '`AND`, `OR`, `NOT`, paréntesis'
+    requiere:
+    - sql.select.where
+    mision: T4-M3
+    repaso: T6, T9
+  sql.select.orden:
+    dominio: sql
+    nombre: Ordenar y limitar
+    sintaxis: '`ORDER BY … DESC`, `LIMIT`'
+    requiere:
+    - sql.select.where
+    mision: T4-M4
+    repaso: T6, T9
+  sql.select.distinct:
+    dominio: sql
+    nombre: Valores únicos
+    sintaxis: '`SELECT DISTINCT`'
+    requiere:
+    - sql.select.columnas
+    mision: T6-M1
+    repaso: T9
+  sql.select.patrones:
+    dominio: sql
+    nombre: Patrones y rangos
+    sintaxis: '`LIKE ''%x%''`, `IN (…)`, `BETWEEN`'
+    requiere:
+    - sql.select.logica
+    mision: T6-M1
+    repaso: T9
+  sql.select.null:
+    dominio: sql
+    nombre: Valores vacíos
+    sintaxis: '`IS NULL`, `IS NOT NULL`'
+    requiere:
+    - sql.select.where
+    mision: T6-M2
+    repaso: T9-M2
+  sql.agg.funciones:
+    dominio: sql
+    nombre: Agregaciones
+    sintaxis: '`COUNT(*)`, `SUM`, `AVG`, `MIN`, `MAX`, `AS`'
+    requiere:
+    - sql.select.where
+    mision: T6-M2
+    repaso: T6-M3, T12
+  sql.agg.group_by:
+    dominio: sql
+    nombre: Agrupar
+    sintaxis: '`GROUP BY`'
+    requiere:
+    - sql.agg.funciones
+    mision: T6-M3
+    repaso: T9, T12
+  sql.agg.having:
+    dominio: sql
+    nombre: Filtrar grupos
+    sintaxis: '`HAVING`'
+    requiere:
+    - sql.agg.group_by
+    mision: T6-M4
+    repaso: T9-M3
+  sql.join.inner:
+    dominio: sql
+    nombre: Unir tablas
+    sintaxis: '`INNER JOIN … ON`, alias `t AS i`'
+    requiere:
+    - sql.select.logica
+    mision: T9-M1
+    repaso: T9-M3, T12
+  sql.join.left:
+    dominio: sql
+    nombre: Unir conservando filas
+    sintaxis: '`LEFT JOIN`, encontrar faltantes con `IS NULL`'
+    requiere:
+    - sql.join.inner
+    - sql.select.null
+    mision: T9-M2
+    repaso: T12-M1
+  sql.sub.subconsultas:
+    dominio: sql
+    nombre: Consulta dentro de consulta
+    sintaxis: '`WHERE x IN (SELECT …)`'
+    requiere:
+    - sql.join.inner
+    mision: T9-M3
+    repaso: T12
+  sql.shell.cli:
+    dominio: sql
+    nombre: SQL desde bash
+    sintaxis: '`sqlite3 mes.db "SELECT …"`'
+    requiere:
+    - sql.select.where
+    - linux.shell.pipes
+    mision: T11-M2
+    repaso: T12
+  sql.ddl.create:
+    dominio: sql
+    nombre: Crear tablas y vistas
+    sintaxis: '`CREATE TABLE`, tipos, `CREATE VIEW`'
+    requiere:
+    - sql.join.inner
+    mision: T12-M1
+    repaso: T12-M4
+  sql.dml.insert:
+    dominio: sql
+    nombre: Insertar
+    sintaxis: '`INSERT INTO … VALUES`, `INSERT INTO … SELECT`'
+    requiere:
+    - sql.ddl.create
+    mision: T12-M1
+    repaso: T12-M4
+  sql.dml.update_delete:
+    dominio: sql
+    nombre: Modificar/borrar
+    sintaxis: '`UPDATE … SET … WHERE`, `DELETE … WHERE`'
+    requiere:
+    - sql.select.where
+    mision: T12-M2
+    repaso: T12-M3
+  sql.tx.transacciones:
+    dominio: sql
+    nombre: Deshacer con seguridad
+    sintaxis: '`BEGIN`, `COMMIT`, `ROLLBACK`'
+    requiere:
+    - sql.dml.update_delete
+    mision: T12-M3
+    repaso: T13
+  net.basico.ip:
+    dominio: redes
+    nombre: Qué es una IP; mi IP
+    sintaxis: '`ip a`, `hostname`, `hostname -I`'
+    requiere:
+    - linux.nav.ls
+    mision: T5-M1
+    repaso: T5-M2, T8
+  net.basico.subred:
+    dominio: redes
+    nombre: Subred /24, puerta de enlace
+    sintaxis: '`ip route`, lectura de CIDR'
+    requiere:
+    - net.basico.ip
+    mision: T5-M2
+    repaso: T5-M4, T8-M3
+  net.diag.ping:
+    dominio: redes
+    nombre: ¿Responde?
+    sintaxis: '`ping -c 4 <host>`'
+    requiere:
+    - net.basico.ip
+    mision: T5-M2
+    repaso: T5-M4, T8
+  net.dns.hosts:
+    dominio: redes
+    nombre: Nombres locales
+    sintaxis: '`/etc/hosts`'
+    requiere:
+    - net.diag.ping
+    - linux.files.cat
+    mision: T5-M3
+    repaso: T10
+  net.dns.resolucion:
+    dominio: redes
+    nombre: DNS
+    sintaxis: '`host <nombre>`, `dig <nombre>`, `dig -x <ip>`'
+    requiere:
+    - net.dns.hosts
+    mision: T5-M3
+    repaso: T5-M4, T8
+  net.diag.traceroute:
+    dominio: redes
+    nombre: Ruta de los paquetes
+    sintaxis: '`traceroute <host>`'
+    requiere:
+    - net.basico.subred
+    mision: T5-M4
+    repaso: T8-M3
+  net.puertos.concepto:
+    dominio: redes
+    nombre: Puerto, servicio, TCP vs UDP
+    sintaxis: lectura de `ss`
+    requiere:
+    - net.diag.ping
+    mision: T8-M1
+    repaso: T8+
+  net.puertos.ss:
+    dominio: redes
+    nombre: Qué escucha / quién se conecta
+    sintaxis: '`ss -tulpn`, `ss -tn`'
+    requiere:
+    - net.puertos.concepto
+    - linux.proc.ps_kill
+    mision: T8-M1
+    repaso: T8-M2, T13
+  net.puertos.escaneo:
+    dominio: redes
+    nombre: Descubrir servicios (red propia)
+    sintaxis: '`nmap <host>`, `nmap -p 1-1024 <host>`'
+    requiere:
+    - net.puertos.concepto
+    mision: T8-M3
+    repaso: —
+  net.http.curl:
+    dominio: redes
+    nombre: 'HTTP: método, código, cabeceras, JSON'
+    sintaxis: '`curl <url>`, `curl -i`, `curl -s`'
+    requiere:
+    - net.puertos.concepto
+    mision: T8-M4
+    repaso: T13-M3
+  net.ssh.conexion:
+    dominio: redes
+    nombre: Sesión remota
+    sintaxis: '`ssh usuario@host`, `exit`'
+    requiere:
+    - net.dns.resolucion
+    mision: T10-M1
+    repaso: T10-M2+
+  net.ssh.llaves:
+    dominio: redes
+    nombre: Llaves y huellas
+    sintaxis: '`ssh -i <llave>`, `~/.ssh/authorized_keys`, `known_hosts`'
+    requiere:
+    - net.ssh.conexion
+    - linux.perms.chmod
+    mision: T10-M2
+    repaso: T13-M2
+  net.ssh.scp:
+    dominio: redes
+    nombre: Copiar entre equipos
+    sintaxis: '`scp origen destino`'
+    requiere:
+    - net.ssh.llaves
+    mision: T10-M3
+    repaso: T13
+  net.seg.firewall:
+    dominio: redes
+    nombre: Bloquear tráfico
+    sintaxis: '`sudo ufw deny from <ip>`, `ufw status`'
+    requiere:
+    - net.puertos.ss
+    - linux.users.sudo
+    mision: T13-M2
+    repaso: —
+  net.seg.revocar:
+    dominio: redes
+    nombre: Revocar acceso
+    sintaxis: editar `authorized_keys`, `kill` de sesión
+    requiere:
+    - net.ssh.llaves
+    mision: T13-M2
+    repaso: —
+  net.http.post:
+    dominio: redes
+    nombre: Enviar datos
+    sintaxis: '`curl -X POST -H … -d …`, `curl -F`'
+    requiere:
+    - net.http.curl
+    mision: T13-M3
+    repaso: —
+superficie:
+  pwd:
+    forma: —
+    turno: '1'
+    referencia: coreutils 9
+  ls:
+    forma: '`-a -l -h -1 -R -t -r -d`, combinadas (`-la`, `-lh`)'
+    turno: 1–2
+    referencia: coreutils 9
+  cd:
+    forma: '`cd`, `cd -`, `..`, `~`, absolutas/relativas'
+    turno: '1'
+    referencia: bash 5.2 (builtin)
+  cat:
+    forma: múltiples archivos, `-n`
+    turno: '1'
+    referencia: coreutils 9
+  man:
+    forma: '`man <cmd>` (visor paginado propio)'
+    turno: '1'
+    referencia: man-db 2.12
+  --help:
+    forma: 'en `ls` y `cat`: muestra la página en español (desviación documentada: en Linux real es la ayuda completa en inglés)'
+    turno: '1'
+    referencia: —
+  clear:
+    forma: '`exit` en el servidor propio no cierra la terminal: globo "todavía no acaba mi turno"'
+    turno: '1'
+    referencia: bash 5.2 / ncurses 6
+  history:
+    forma: '`exit` en el servidor propio no cierra la terminal: globo "todavía no acaba mi turno"'
+    turno: '1'
+    referencia: bash 5.2 / ncurses 6
+  exit:
+    forma: '`exit` en el servidor propio no cierra la terminal: globo "todavía no acaba mi turno"'
+    turno: '1'
+    referencia: bash 5.2 / ncurses 6
+  echo:
+    forma: '`-n`, `-e` (solo `\n`, `\t`)'
+    turno: '2'
+    referencia: coreutils 9 / bash builtin
+  head:
+    forma: '`-n N`, `-N`'
+    turno: '2'
+    referencia: coreutils 9
+  tail:
+    forma: '`-n N`, `-N`'
+    turno: '2'
+    referencia: coreutils 9
+  less:
+    forma: 'visor paginado propio (pendiente: F3, junto con la UI del monitor)'
+    turno: '2'
+    referencia: less 6xx
+  mkdir:
+    forma: '`-p`'
+    turno: '2'
+    referencia: coreutils 9
+  touch:
+    forma: —
+    turno: '2'
+    referencia: coreutils 9
+  cp:
+    forma: '`-r`'
+    turno: '2'
+    referencia: coreutils 9
+  mv:
+    forma: —
+    turno: '2'
+    referencia: coreutils 9
+  rm:
+    forma: '`-r -f` (`-i` no: pide confirmación interactiva)'
+    turno: '2'
+    referencia: coreutils 9
+  grep:
+    forma: '`-i -n -v -c -r -w -E` (ERE básico)'
+    turno: '3'
+    referencia: GNU grep 3.11
+  wc:
+    forma: '`-l -w -c`'
+    turno: '3'
+    referencia: coreutils 9
+  sort:
+    forma: '`-r -n -u -k N -t C`'
+    turno: '3'
+    referencia: coreutils 9
+  uniq:
+    forma: '`-c -d`'
+    turno: '3'
+    referencia: coreutils 9
+  cut:
+    forma: '`-d -f`'
+    turno: '3'
+    referencia: coreutils 9
+  sqlite3:
+    forma: modo interactivo (`sqlite>`), `.tables .schema .headers on .mode column .quit`, modo `sqlite3 db "SQL"`
+    turno: 4, 11
+    referencia: SQLite 3.4x+ (la de sql.js)
+  ip:
+    forma: '`a`/`addr`, `route`/`r`'
+    turno: '5'
+    referencia: iproute2 6.x
+  hostname:
+    forma: '`-I`'
+    turno: '5'
+    referencia: hostname 3.x
+  ping:
+    forma: '`-c N`'
+    turno: '5'
+    referencia: iputils 2024+
+  host:
+    forma: '`host <nombre>`, `host <ip>`'
+    turno: '5'
+    referencia: bind9-host 9.18+
+  dig:
+    forma: '`dig <nombre>`, `+short`, `-x <ip>`'
+    turno: '5'
+    referencia: bind9-dnsutils 9.18+
+  traceroute:
+    forma: '`traceroute <host>`'
+    turno: '5'
+    referencia: traceroute 2.1
+  whoami:
+    forma: —
+    turno: '7'
+    referencia: coreutils 9
+  id:
+    forma: —
+    turno: '7'
+    referencia: coreutils 9
+  chmod:
+    forma: octal y simbólico (`u+x`, `g-w`, `o=r`)
+    turno: '7'
+    referencia: coreutils 9
+  sudo:
+    forma: '`sudo <cmd>`, `-l`'
+    turno: '7'
+    referencia: sudo 1.9
+  ps:
+    forma: '`aux`, `-u <usuario>`, `-ef`'
+    turno: '7'
+    referencia: procps-ng 4
+  kill:
+    forma: '`<pid>`, `-9`'
+    turno: '7'
+    referencia: procps-ng 4 / bash builtin
+  find:
+    forma: '`-name -type -user -mmin -newer`'
+    turno: '7'
+    referencia: findutils 4.9+
+  ss:
+    forma: '`-t -u -l -n -p` y combinaciones'
+    turno: '8'
+    referencia: iproute2 6.x
+  nmap:
+    forma: '`<host>`, `-p <rango>` (solo red ficticia)'
+    turno: '8'
+    referencia: nmap 7.9x
+  curl:
+    forma: '`-s -i -X -H -d -o -F`'
+    turno: 8, 13
+    referencia: curl 8.x
+  wall:
+    forma: solo recibir
+    turno: '5'
+    referencia: util-linux 2.39+
+  ssh:
+    forma: '`usuario@host`, `-i <llave>`'
+    turno: '10'
+    referencia: OpenSSH 9.6+
+  scp:
+    forma: origen/destino local↔remoto
+    turno: '10'
+    referencia: OpenSSH 9.6+ (protocolo SFTP por defecto)
+  tar:
+    forma: '`c x t z f v`'
+    turno: '10'
+    referencia: GNU tar 1.35
+  export:
+    forma: —
+    turno: '11'
+    referencia: bash 5.2
+  env:
+    forma: —
+    turno: '11'
+    referencia: bash 5.2
+  bash:
+    forma: ejecutar scripts con `#!/bin/bash`, `if`, `for`, variables, `$?`
+    turno: '11'
+    referencia: bash 5.2
+  crontab:
+    forma: '`-l -e` (editor de una línea propio)'
+    turno: '11'
+    referencia: cron (Debian) 3.0pl1
+  sha256sum:
+    forma: '`<archivo>`, `-c`'
+    turno: '13'
+    referencia: coreutils 9
+  ufw:
+    forma: '`status`, `deny from <ip>`, `allow`'
+    turno: '13'
+    referencia: ufw 0.36 (frontend de nftables)

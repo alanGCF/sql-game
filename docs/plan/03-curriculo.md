@@ -1,6 +1,6 @@
 # 03 — Currículo
 
-Fuente de verdad de **qué se enseña, en qué orden y en qué misión**. El harness de contenido (`07-calidad-harness.md`) valida las misiones contra este documento; cuando se implemente F2-01 este contenido se migra a `content/curriculo.yaml` y este archivo queda como explicación.
+Explica **qué se enseña, en qué orden y en qué misión**. Desde F2-01 la fuente de verdad del grafo de conceptos y de la superficie de comandos es `content/curriculo.yaml` (validado por `src/engine/mision/curriculo.ts`); si cambias algo aquí, cámbialo también allá. El harness de contenido (`07-calidad-harness.md`) valida las misiones contra ese archivo.
 
 Convención de IDs: `<dominio>.<área>.<concepto>`. Misión principal: `T<turno>-M<orden>`. Favor: `T<turno>-F<n>`; tiempo extra: `TE-F<n>`. El Turno 0 es el tutorial de controles y no enseña conceptos técnicos.
 
