@@ -2,6 +2,9 @@
 export interface TestHooks {
   webgl: boolean;
   ready: boolean;
+  info?: () => { calls: number; triangles: number };
+  setVista?: (vista: string) => void;
+  mirar?: (x: number, y: number) => void;
 }
 
 declare global {

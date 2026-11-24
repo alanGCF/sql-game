@@ -31,7 +31,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Listo cuando:** el usuario despliega `main` y `/healthz` responde 200 en la URL de Railway.
 - **Verificar:** usuario + `curl -I` a la URL (cabeceras de seguridad presentes).
 
-### F0-07 · Spike: escena 3D del cubículo + 3 estilos visuales · `pendiente` · depende: F0-04
+### F0-07 · Spike: escena 3D del cubículo + 3 estilos visuales · `en-progreso` (escena y capturas listas; falta que el usuario elija estilo, D-08) · depende: F0-04
 - **Hacer:** cubículo en graybox (escritorio, monitor, teclado, teléfono, libreta, pizarrón, calendario, post-its, lonchera, taza, adornos, mamparas, algo de oficina al fondo); cámara que sigue al cursor; resaltado al pasar el cursor; acercarse/alejarse del monitor con una terminal DOM de prueba; tres estilos (A/B/C de `direccion-arte.md`) conmutables con `?estilo=`; modo `?test=1`.
 - **Listo cuando:** capturas de Playwright de los 3 estilos (vista general, mirando a los lados, monitor acercado) enviadas al usuario.
 - **Verificar:** `/revision-visual`; el usuario elige estilo (D-08).
