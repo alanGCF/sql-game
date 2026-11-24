@@ -18,7 +18,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-      security-events: write
+      security-events: read
     steps:
       - uses: actions/checkout@v6
         with:
@@ -27,4 +27,22 @@ jobs:
         with:
           languages: javascript-typescript
           queries: security-extended
+      # El repositorio no tiene code scanning habilitado: se analiza sin subir y el job falla si hay hallazgos.
       - uses: github/codeql-action/analyze@v4
+        with:
+          upload: never
+          output: sarif-results
+      - name: Fallar si CodeQL encontró problemas
+        run: |
+          n=$(jq '[.runs[].results[]] | length' sarif-results/*.sarif)
+          echo "Hallazgos de CodeQL: $n"
+          if [ "$n" -gt 0 ]; then
+            jq -r '.runs[].results[] | "\(.ruleId): \(.message.text) (\(.locations[0].physicalLocation.artifactLocation.uri):\(.locations[0].physicalLocation.region.startLine))"' sarif-results/*.sarif
+            exit 1
+          fi
+      - if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: codeql-sarif
+          path: sarif-results
+          retention-days: 14
