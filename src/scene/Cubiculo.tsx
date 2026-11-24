@@ -1,3 +1,5 @@
+import { usePartida } from "../game/partidaStore";
+import { favoresPizarron, renglonesPizarron } from "../game/pizarron";
 import { useEscena } from "../game/store";
 import { Mat, useEstilo, useTexturaCanvas } from "./contexto";
 import { Interactivo } from "./Interactivo";
@@ -167,9 +169,30 @@ function Libreta() {
   );
 }
 
+/** Post-it de un favor activo: el título partido en renglones cortos. */
+function PostItFavor({ titulo, pos }: { titulo: string; pos: [number, number, number] }) {
+  const palabras = titulo.split(" ");
+  const renglones = ["Favor:"];
+  for (const p of palabras) {
+    const ultimo = renglones[renglones.length - 1] ?? "";
+    if (renglones.length > 1 && `${ultimo} ${p}`.length <= 11)
+      renglones[renglones.length - 1] = `${ultimo} ${p}`;
+    else renglones.push(p);
+  }
+  const tex = useTexturaCanvas(160, 160, dibujarPostIt(renglones.slice(0, 5)));
+  return (
+    <mesh position={pos} rotation={[0, 0, 0.1]}>
+      <planeGeometry args={[0.09, 0.09]} />
+      <Mat color="#ffffff" mapa={tex} />
+    </mesh>
+  );
+}
+
 function Pizarron() {
-  const tex = useTexturaCanvas(640, 480, dibujarPizarron);
-  const favor = useTexturaCanvas(160, 160, dibujarPostIt(["Favor:", "menús", "—Comedor"]));
+  const pendientes = usePartida((s) => s.pendientes);
+  const renglones = renglonesPizarron(pendientes);
+  const favores = favoresPizarron(pendientes).slice(0, 3);
+  const tex = useTexturaCanvas(640, 480, dibujarPizarron(renglones), JSON.stringify(renglones));
   return (
     <Interactivo nombre="Pizarrón de pendientes" vista="pizarron">
       <group position={[0.87, 1.05, -0.3]} rotation={[0, -Math.PI / 2, 0]}>
@@ -178,10 +201,9 @@ function Pizarron() {
           <planeGeometry args={[0.6, 0.45]} />
           <Mat color="#ffffff" mapa={tex} rugosidad={0.3} />
         </mesh>
-        <mesh position={[0.22, 0.14, 0.004]} rotation={[0, 0, 0.1]}>
-          <planeGeometry args={[0.09, 0.09]} />
-          <Mat color="#ffffff" mapa={favor} />
-        </mesh>
+        {favores.map((t, i) => (
+          <PostItFavor key={t} titulo={t} pos={[0.24 - i * 0.1, 0.17, 0.004]} />
+        ))}
       </group>
     </Interactivo>
   );

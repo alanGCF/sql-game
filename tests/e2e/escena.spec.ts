@@ -125,3 +125,19 @@ test("T1-M1 se cumple desde la terminal y la partida avanza a T1-M2", async ({ p
   expect(final?.eventos).toContain("mision_completada");
   expect(final?.pendientes.some((p) => p.includes("t1-m02-el-leeme/leer-leeme"))).toBe(true);
 });
+
+test("el pizarrón muestra los pendientes de la misión y tacha los cumplidos", async ({ page }) => {
+  await abrir(page);
+  const pizarron = () => page.evaluate(() => window.__planta7?.pizarron?.());
+  expect((await pizarron())?.renglones).toEqual([
+    "[ ] Ticket de Eduardo: ¿en qué carpeta estás? (ruta completa)",
+    "[ ] Ticket de Eduardo: ¿cuántos tickets hay en tu carpeta de tickets?",
+  ]);
+  expect((await pizarron())?.favores).toEqual([]);
+  await page.evaluate(() =>
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+  );
+  expect((await pizarron())?.renglones[0]).toBe(
+    "[x] Ticket de Eduardo: ¿en qué carpeta estás? (ruta completa)",
+  );
+});

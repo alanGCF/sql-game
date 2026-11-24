@@ -8,6 +8,8 @@ export interface TestHooks {
   /** Responde un objetivo (mientras llega la app Tickets, F3-03). */
   responder?: (mision: string, objetivo: string, valor: string) => Promise<{ correcta: boolean }>;
   partida?: () => { mision: string | null; pendientes: string[]; eventos: string[] };
+  /** Lo que muestra el pizarrón: "[x] texto" por renglón y los favores en post-it. */
+  pizarron?: () => { renglones: string[]; favores: string[] };
 }
 
 declare global {

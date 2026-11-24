@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useState } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import type { Estilo } from "./estilos";
 
@@ -55,11 +55,15 @@ export function Mat({
   );
 }
 
-/** Textura dibujada con canvas 2D (sin descargas: compatible con la CSP). Se crea una sola vez. */
+/**
+ * Textura dibujada con canvas 2D (sin descargas: compatible con la CSP). Se crea una sola vez y se
+ * vuelve a dibujar cuando cambia `clave` (p. ej. los pendientes del pizarrón).
+ */
 export function useTexturaCanvas(
   ancho: number,
   alto: number,
   dibujar: (ctx: CanvasRenderingContext2D, w: number, h: number) => void,
+  clave?: string,
 ): THREE.CanvasTexture {
   const [textura] = useState(() => {
     const canvas = document.createElement("canvas");
@@ -72,5 +76,19 @@ export function useTexturaCanvas(
     tex.anisotropy = 4;
     return tex;
   });
+  const primera = useRef(true);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: solo se redibuja cuando cambia la clave.
+  useEffect(() => {
+    if (primera.current) {
+      primera.current = false;
+      return;
+    }
+    const canvas = textura.image as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, ancho, alto);
+    dibujar(ctx, ancho, alto);
+    textura.needsUpdate = true;
+  }, [clave]);
   return textura;
 }

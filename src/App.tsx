@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { usePartida } from "./game/partidaStore";
+import { favoresPizarron, renglonesPizarron } from "./game/pizarron";
 import { useEscena, type Vista } from "./game/store";
 import { Escena } from "./scene/Escena";
 import { estiloDesdeUrl } from "./scene/estilos";
@@ -9,6 +10,13 @@ import { Capas } from "./ui/Capas";
 setTestHook("setVista", (v) => useEscena.getState().setVista(v as Vista));
 setTestHook("mirar", (x, y) => useEscena.getState().setMirarForzado({ x, y }));
 setTestHook("responder", (m, o, v) => usePartida.getState().responder(m, o, v));
+setTestHook("pizarron", () => {
+  const { pendientes } = usePartida.getState();
+  return {
+    renglones: renglonesPizarron(pendientes).map((r) => `[${r.hecho ? "x" : " "}] ${r.texto}`),
+    favores: favoresPizarron(pendientes),
+  };
+});
 setTestHook("partida", () => {
   const s = usePartida.getState();
   return {

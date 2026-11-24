@@ -77,32 +77,55 @@ export function dibujarCalendario(ctx: CanvasRenderingContext2D, w: number, h: n
   });
 }
 
-export function dibujarPizarron(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  ctx.fillStyle = "#f4f5f1";
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "#1f3b73";
-  ctx.font = `bold 40px ${MANO}`;
-  ctx.fillText("PENDIENTES", 30, 60);
-  const items = [
-    ["✓ Leer LEEME.txt", true],
-    ["✓ Ticket de Karla", true],
-    ["□ ¿Qué dice la Línea 3?", false],
-    ["□ Pregúntale al manual", false],
-  ] as const;
-  ctx.font = `30px ${MANO}`;
-  items.forEach(([t, hecho], i) => {
-    const y = 120 + i * 56;
-    ctx.fillStyle = hecho ? "#2e7d32" : "#1f3b73";
-    ctx.fillText(t, 36, y);
-    if (hecho) {
-      ctx.strokeStyle = "#c62828";
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(70, y - 10);
-      ctx.lineTo(70 + ctx.measureText(t).width - 30, y - 10);
-      ctx.stroke();
+/** Parte un texto en renglones que caben en `ancho` píxeles con la fuente actual del contexto. */
+function envolver(ctx: CanvasRenderingContext2D, texto: string, ancho: number): string[] {
+  const renglones: string[] = [];
+  let actual = "";
+  for (const palabra of texto.split(/\s+/)) {
+    const prueba = actual ? `${actual} ${palabra}` : palabra;
+    if (actual && ctx.measureText(prueba).width > ancho) {
+      renglones.push(actual);
+      actual = palabra;
+    } else actual = prueba;
+  }
+  if (actual) renglones.push(actual);
+  return renglones;
+}
+
+/** Pizarrón con los pendientes de la misión: los cumplidos se tachan con plumón rojo. */
+export function dibujarPizarron(renglones: readonly { texto: string; hecho: boolean }[]) {
+  return (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    ctx.fillStyle = "#f4f5f1";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#1f3b73";
+    ctx.font = `bold 40px ${MANO}`;
+    ctx.fillText("PENDIENTES", 30, 60);
+    ctx.font = `26px ${MANO}`;
+    if (!renglones.length) {
+      ctx.fillText("Nada por ahora.", 36, 120);
+      return;
     }
-  });
+    let y = 115;
+    for (const r of renglones) {
+      const lineas = envolver(ctx, r.texto, w - 110);
+      if (y + (lineas.length - 1) * 32 > h - 16) break;
+      ctx.fillStyle = r.hecho ? "#2e7d32" : "#1f3b73";
+      ctx.fillText(r.hecho ? "✓" : "□", 30, y);
+      lineas.forEach((l, i) => {
+        const yl = y + i * 32;
+        ctx.fillText(l, 66, yl);
+        if (r.hecho) {
+          ctx.strokeStyle = "#c62828";
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(64, yl - 9);
+          ctx.lineTo(68 + ctx.measureText(l).width, yl - 9);
+          ctx.stroke();
+        }
+      });
+      y += lineas.length * 32 + 16;
+    }
+  };
 }
 
 export function dibujarPostIt(texto: string[]) {

@@ -144,7 +144,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** lista de tickets de la misión y campo para teclear la respuesta (sin pegar, D-17); retroalimentación de correcto/incorrecto con el `comentario` de la respuesta cuando lo hay. La app **no** lista los archivos de `~/tickets` ni muestra el folio o quién pide el ticket de Karla (T1-M1 y T1-M2 se resuelven con la terminal).
 - **Listo cuando:** e2e responde los tickets de T1; capturas aprobadas por el usuario.
 
-### F3-04 · Pizarrón con los pendientes del turno · `pendiente` · depende: F3-01
+### F3-04 · Pizarrón con los pendientes del turno · `hecha (2026-11-24)` *(la luz de la lámpara aclara el centro del pizarrón: revisar en F3-06)* · depende: F3-01
 - **Hacer:** textura del pizarrón generada con los pendientes de la misión y del turno; tachado al cumplirse.
 - **Listo cuando:** captura del pizarrón antes y después de cumplir un objetivo.
 

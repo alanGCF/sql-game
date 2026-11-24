@@ -7,6 +7,7 @@ import { type EventoJornada, Jornada } from "./jornada";
 /** Un renglón del pizarrón: objetivo de la misión en curso o de un favor activo. */
 export interface Pendiente {
   mision: string;
+  titulo: string;
   favor: boolean;
   id: string;
   pendiente: string;
@@ -22,7 +23,12 @@ function semillaNueva(): number {
 function pendientesDe(j: Jornada): Pendiente[] {
   const actual = j.actual();
   return [...(actual ? [actual] : []), ...j.favoresActivos()].flatMap((mc) =>
-    mc.pendientes().map((p) => ({ mision: mc.mision.id, favor: mc.mision.tipo === "favor", ...p })),
+    mc.pendientes().map((p) => ({
+      mision: mc.mision.id,
+      titulo: mc.mision.titulo,
+      favor: mc.mision.tipo === "favor",
+      ...p,
+    })),
   );
 }
 
