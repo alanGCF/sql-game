@@ -73,7 +73,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ### F1-09 · Glosas, "quisiste decir", Windows y obsoletos · `hecha (2026-11-24)` *(Windows → globo con el equivalente; net-tools → command not found + herramienta moderna; dedazos con transposición)*
 - **Listo cuando:** tests de 30 errores típicos de novato con su glosa (incluye `ifconfig`, `netstat`, `dir`, `cls`).
 
-### F1-10 · Autocompletado · `pendiente` · depende: F1-06
+### F1-10 · Autocompletado · `hecha (2026-11-24)` *(comandos y rutas, `~`, ocultos con prefijo `.`, doble Tab lista opciones)*
 
 ### F1-11 · `npm run play --exec` · `pendiente` · depende: F1-05
 

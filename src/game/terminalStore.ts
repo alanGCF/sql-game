@@ -18,6 +18,8 @@ interface EstadoTerminal {
   /** Ejecuta una línea; devuelve el pensamiento si no se ejecutó (la UI conserva el input). */
   enviar: (linea: string) => Promise<{ ejecutada: boolean; pensamiento?: string }>;
   interrumpir: (linea: string) => void;
+  /** Segundo Tab con varias opciones: bash repite la línea y lista los candidatos. */
+  listarCandidatos: (linea: string, candidatos: string[]) => void;
 }
 
 let siguienteId = 1;
@@ -54,6 +56,16 @@ export const useTerminal = create<EstadoTerminal>()((set, get) => ({
     }
     set({ lineas: lineas.slice(-MAX_LINEAS), ocupada: false });
     return { ejecutada: true, ...(r.pensamiento ? { pensamiento: r.pensamiento } : {}) };
+  },
+  listarCandidatos(linea, candidatos) {
+    const { shell, lineas } = get();
+    set({
+      lineas: [
+        ...lineas,
+        { id: siguienteId++, tipo: "prompt", texto: linea, prompt: shell.prompt() },
+        { id: siguienteId++, tipo: "stdout", texto: candidatos.join("  ") },
+      ],
+    });
   },
   interrumpir(linea) {
     const { shell, lineas } = get();

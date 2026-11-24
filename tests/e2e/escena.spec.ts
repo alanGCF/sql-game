@@ -75,3 +75,18 @@ for (const estilo of ["a", "b", "c"]) {
     expect(errores).toEqual([]);
   });
 }
+
+test("Tab autocompleta y un segundo Tab lista las opciones", async ({ page }) => {
+  await abrir(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  await input.pressSequentially("cat LE");
+  await input.press("Tab");
+  await expect(input).toHaveValue("cat LEEME.txt ");
+  await expect(input).toBeFocused();
+  await input.fill("cd /srv/lineas/linea");
+  await input.press("Tab");
+  await input.press("Tab");
+  await expect(page.getByTestId("terminal")).toContainText("linea1/  linea2/  linea3/");
+  await expect(input).toHaveValue("cd /srv/lineas/linea");
+});

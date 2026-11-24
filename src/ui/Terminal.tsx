@@ -28,7 +28,8 @@ function Linea({ linea }: { linea: LineaTerminal }) {
 export function Terminal() {
   const rect = useEscena((s) => s.rectMonitor);
   const pensar = useEscena((s) => s.pensar);
-  const { shell, lineas, ocupada, enviar, interrumpir } = useTerminal();
+  const { shell, lineas, ocupada, enviar, interrumpir, listarCandidatos } = useTerminal();
+  const tabPrevio = useRef(false);
   const [entrada, setEntrada] = useState("");
   const [indiceHistorial, setIndiceHistorial] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -52,9 +53,20 @@ export function Terminal() {
   const tecla = async (e: KeyboardEvent<HTMLInputElement>) => {
     const historial = shell.sesion.historial;
     if (e.key === "Tab") {
-      e.preventDefault(); // shortcut: autocompletado en F1-10; por ahora solo evita perder el foco.
+      e.preventDefault();
+      const cursor = inputRef.current?.selectionStart ?? entrada.length;
+      const r = shell.completar(entrada, cursor);
+      if (r.candidatos.length) {
+        if (tabPrevio.current) listarCandidatos(entrada, r.candidatos);
+        tabPrevio.current = true;
+        return;
+      }
+      setEntrada(r.linea);
+      requestAnimationFrame(() => inputRef.current?.setSelectionRange(r.cursor, r.cursor));
+      tabPrevio.current = false;
       return;
     }
+    tabPrevio.current = false;
     if (e.key === "c" && e.ctrlKey) {
       e.preventDefault();
       interrumpir(entrada);

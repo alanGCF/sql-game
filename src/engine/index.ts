@@ -1,9 +1,11 @@
 import { GameClock } from "./clock";
 import { COMANDOS } from "./commands";
+import { completar, type ResultadoCompletar } from "./completar";
 import { clasificar, frasePensamiento } from "./shell/classify";
 import { ejecutar, type Fragmento, type Mundo, type Registro, type Sesion } from "./shell/executor";
 import type { User, Vfs } from "./vfs";
 
+export type { ResultadoCompletar } from "./completar";
 export type { Fragmento, Mundo, Registro, Sesion } from "./shell/executor";
 
 export interface ResultadoLinea {
@@ -46,6 +48,10 @@ export class Shell {
       contadorPensamientos: 0,
     };
     return new Shell({ vfs, reloj, comandos: COMANDOS }, sesion);
+  }
+
+  completar(linea: string, cursor: number): ResultadoCompletar {
+    return completar(linea, cursor, this.sesion, this.mundo.vfs, [...this.mundo.comandos.keys()]);
   }
 
   prompt(): string {
