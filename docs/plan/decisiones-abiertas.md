@@ -38,4 +38,7 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.
+| ID | Decisión | Opciones (maquetas sobre la escena en estilo C) | Recomendación | Bloquea |
+|---|---|---|---|---|
+| **D-21** | Look de la app Tickets en el monitor | A · mesa de ayuda corporativa (clara, lista + detalle) · B · sistema viejo de la planta (oscuro, monoespaciado, se usa con teclado, igual que la terminal) · C · tarjetas (cálida, una tarjeta abierta para responder) | **B**: se siente parte del servidor de la planta, combina con la terminal y se maneja con teclado | F3-03 |
+| **D-22** | Cómo se muestran diálogos, llamadas y visitas | A · subtítulo abajo (barra oscura, nombre en color) · B · globo de cómic junto a quien habla · C · tarjeta a un lado con iniciales, nombre y tipo (llamada ext. 214 / visita) | **C**: deja ver quién habla y por dónde (teléfono o visita) sin tapar el monitor; se puede mover al lado izquierdo si tapa el pizarrón | F3-05 |
