@@ -4,7 +4,17 @@
 // Cada caso: tests/golden/<cmd>/<caso>/{fixture.json, cmd.txt, [cmd_real.txt]} → stdout.txt, stderr.txt, code.txt, version.txt
 // Requiere root (crea usuarios del mundo y corre el comando como `fixture.usuario` para respetar permisos).
 import { execFileSync, spawnSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  utimesSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
@@ -80,10 +90,32 @@ for (const dir of casos) {
       utimesSync(real, t, t);
     }
   }
-  const comando = readFileSync(join(dir, existsSync(join(dir, "cmd_real.txt")) ? "cmd_real.txt" : "cmd.txt"), "utf8").trim();
+  const comando = readFileSync(
+    join(dir, existsSync(join(dir, "cmd_real.txt")) ? "cmd_real.txt" : "cmd.txt"),
+    "utf8",
+  ).trim();
   const r = spawnSync(
     "runuser",
-    ["-u", fx.usuario, "--", "env", "-i", `HOME=${join(raiz, fx.home ?? fx.cwd)}`, `USER=${fx.usuario}`, `LOGNAME=${fx.usuario}`, "TERM=xterm-256color", "LC_ALL=C", "TZ=UTC", "PATH=/usr/bin:/bin", "bash", "--norc", "--noprofile", "-i", "-c", comando],
+    [
+      "-u",
+      fx.usuario,
+      "--",
+      "env",
+      "-i",
+      `HOME=${join(raiz, fx.home ?? fx.cwd)}`,
+      `USER=${fx.usuario}`,
+      `LOGNAME=${fx.usuario}`,
+      "TERM=xterm-256color",
+      "LC_ALL=C",
+      "TZ=UTC",
+      "PATH=/usr/bin:/bin",
+      "bash",
+      "--norc",
+      "--noprofile",
+      "-i",
+      "-c",
+      comando,
+    ],
     { cwd: join(raiz, fx.cwd), encoding: "utf8" },
   );
   const limpiar = (t) => t.split(raiz).join("");

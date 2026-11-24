@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useEscena } from "../game/store";
-import { TerminalPrototipo } from "./TerminalPrototipo";
+import { Terminal } from "./Terminal";
 
 function EtiquetaHover() {
   const hover = useEscena((s) => s.hover);
@@ -58,7 +58,7 @@ export function Capas() {
   return (
     <>
       <EtiquetaHover />
-      {vista === "monitor" && <TerminalPrototipo />}
+      {vista === "monitor" && <Terminal />}
       {vista !== "general" && vista !== "monitor" && !transicionando && NOMBRES[vista] && (
         <div className="aviso-vista">{NOMBRES[vista]}</div>
       )}

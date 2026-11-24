@@ -154,3 +154,19 @@ body,
   font-size: 15px;
   z-index: 15;
 }
+
+.ansi-negrita {
+  font-weight: 700;
+}
+.ansi-fg34 {
+  color: #6fa8ff;
+}
+.ansi-fg32 {
+  color: #7fd1a8;
+}
+.ansi-fg36 {
+  color: #5fd7d7;
+}
+.terminal-linea.glosa {
+  margin: 2px 0 4px;
+}

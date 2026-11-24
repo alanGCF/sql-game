@@ -20,16 +20,30 @@ test("clic en la computadora acerca la vista y muestra la terminal alineada", as
   await expect(page.getByRole("button", { name: /Levantar la vista/ })).toBeVisible();
 });
 
-test("la terminal ejecuta, bloquea lo fuera de alcance y no deja pegar", async ({ page }) => {
+test("la terminal usa el motor real, bloquea lo fuera de alcance y no deja pegar", async ({ page }) => {
   await abrir(page);
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const terminal = page.getByTestId("terminal");
   const input = page.getByLabel("Comando");
   await expect(input).toBeFocused();
 
   await input.pressSequentially("pwd");
   await input.press("Enter");
   await expect(input).toHaveValue("");
-  await expect(page.getByTestId("terminal")).toContainText("pwd");
+  await expect(terminal).toContainText("/home/becario");
+
+  await input.pressSequentially("ls");
+  await input.press("Enter");
+  await expect(terminal.locator(".ansi-fg34", { hasText: "tickets" })).toBeVisible();
+
+  await input.pressSequentially("cat leeme.txt");
+  await input.press("Enter");
+  await expect(terminal).toContainText("cat: leeme.txt: No such file or directory");
+  await expect(terminal.locator(".glosa").last()).toContainText("¿será LEEME.txt?");
+
+  await input.press("ArrowUp");
+  await expect(input).toHaveValue("cat leeme.txt");
+  await input.fill("");
 
   await input.pressSequentially("awk '{print $1}' datos.txt");
   await input.press("Enter");
