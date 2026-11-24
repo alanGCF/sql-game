@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { GeneradorEsquema } from "./mision/esquema";
+import { GENERADORES } from "./mision/generadores";
 
 /**
  * Mundo base de la partida (content/mundo/): variables de partida y, por host, usuarios y archivos.
@@ -27,6 +28,17 @@ const HostEsquema = z.strictObject({
       mtime: z.iso.datetime().optional(),
     }),
   ),
+  /** Archivos generados con la semilla (p. ej. la bandeja de tickets); `cantidad` acepta {{variable}}. */
+  generadores: z
+    .array(
+      z.strictObject({
+        generador: z.string().refine((g) => g in GENERADORES, "generador desconocido"),
+        destino: Ruta,
+        cantidad: z.union([z.number().int().min(0), z.string()]),
+        dueno: z.string().optional(),
+      }),
+    )
+    .optional(),
 });
 
 export const MundoEsquema = z.strictObject({

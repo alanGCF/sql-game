@@ -1,0 +1,104 @@
+# T1-M2 · Enseña cat. Karla dejó un ticket en la carpeta tickets (generador bandeja_t1: su folio es la
+# variable de partida {{folio_karla}} y su posición cambia con la semilla). Para encontrarlo hay que
+# abrir los tickets con cat, uno por uno (los comodines llegan en T2).
+# Interfaz (F3-03): la app Tickets no muestra el folio ni quién pide el ticket de Karla.
+id: t1-m02-el-leeme
+turno: 1
+orden: 2
+tipo: ticket
+titulo: El LEEME
+duracion_estimada_min: 5
+ensena: [linux.files.cat]
+requiere: [linux.nav.pwd, linux.nav.ls]
+entrega: ticket
+host_inicial: srv-sistemas
+usuario_inicial: becario
+cwd_inicial: /home/becario
+apps: [terminal, tickets]
+
+briefing:
+  - quien: karla
+    texto: Soy Karla Ibáñez, de Calidad. Te dejé un ticket desde la tablet de piso y no me guardó el folio; lo necesito para mi reporte. Búscalo entre los tuyos.
+  - quien: karla
+    texto: Es sobre una nota que me dijeron que dejó la ingeniera anterior en tu carpeta. Dime con qué inicial la firmó. Y rápido, que tengo junta en diez minutos.
+
+objetivos:
+  - id: responder-folio
+    pendiente: "Ticket de Karla: ¿qué folio le tocó a su ticket?"
+    cuando:
+      respuesta:
+        donde: ticket
+        esperado: "{{folio_karla}}"
+        acepta_tambien: ["t-{{esperado}}", "t-{{esperado}}.txt", "t{{esperado}}"]
+    pistas:
+      - Con ls ves los nombres de los tickets, pero no quién los pidió. Hay que ver qué dice cada uno por dentro.
+      - Hay un comando cortito que te muestra todo lo que tiene un archivo. Viene de "concatenate". Ábrelos uno por uno.
+      - "Teclea `cat tickets/T-{{folio_karla}}.txt`: ese es el de Karla. El número después de la T es el folio."
+  - id: leer-leeme
+    pendiente: Leer LEEME.txt
+    cuando:
+      archivo_leido: { host: srv-sistemas, ruta: /home/becario/LEEME.txt }
+    pistas:
+      - La nota está en tu carpeta. Ya sabes ver qué hay ahí.
+      - El comando que te muestra lo que tiene un archivo sirve para cualquier archivo de texto.
+      - Teclea `cat LEEME.txt`, con mayúsculas; Linux sí las distingue.
+  - id: responder-firma
+    pendiente: "Ticket de Karla: ¿con qué inicial firmó la nota?"
+    cuando:
+      respuesta:
+        donde: ticket
+        esperado: "r"
+        acepta_tambien: ["r.", "— r.", "-r"]
+        comentarios:
+          - si: ["rebeca", "rebeca salcido", "salcido"]
+            texto: Karla pide solo la inicial con la que está firmada la nota.
+    pistas:
+      - Las firmas casi siempre van hasta abajo.
+      - Vuelve a abrir LEEME.txt y fíjate en la última línea.
+      - La última línea de `cat LEEME.txt` dice "— R.". Contéstale R.
+
+solucion:
+  - ls tickets
+  - cat tickets/T-{{folio_karla}}.txt
+  - responder: { objetivo: responder-folio, valor: "{{respuesta.responder-folio}}" }
+  - cat LEEME.txt
+  - responder: { objetivo: responder-firma, valor: R }
+
+soluciones_alternativas:
+  - - cat /home/becario/LEEME.txt
+    - responder: { objetivo: responder-firma, valor: r. }
+    - cat /home/becario/tickets/T-{{folio_karla}}.txt
+    - responder: { objetivo: responder-folio, valor: "T-{{respuesta.responder-folio}}" }
+  - - cat ~/LEEME.txt
+    - responder: { objetivo: responder-firma, valor: R }
+    - responder: { objetivo: responder-folio, valor: "T-{{respuesta.responder-folio}}.txt" }
+
+contraejemplos:
+  - objetivo: leer-leeme
+    pasos: [ls]
+  - objetivo: leer-leeme
+    pasos: [ls -l LEEME.txt]
+  - objetivo: responder-firma
+    pasos:
+      - responder: { objetivo: responder-firma, valor: Rebeca }
+  - objetivo: responder-folio
+    pasos:
+      - responder: { objetivo: responder-folio, valor: "{{n_tickets}}" }
+
+libreta:
+  - pestana: comandos
+    concepto: linux.files.cat
+  - pestana: historia
+    texto: R. dejó una nota para quien la reemplazara. Dice que no confíe en los números del turno nocturno.
+
+recompensas:
+  xp: 50
+  logros: []
+
+eventos:
+  al_completar:
+    - tipo: visita
+      de: don_chuy
+      texto: ¿Qué tanto lees, joven? «No confíes en los números del turno nocturno»... Esa muchacha siempre fue rara, pero nunca se equivocaba. Al rato vengo, que traigo un pendiente con la Línea 3.
+    - tipo: flag
+      nombre: leyo_leeme

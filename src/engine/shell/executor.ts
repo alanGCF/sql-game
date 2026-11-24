@@ -13,6 +13,8 @@ export interface Sesion {
   historial: string[];
   ultimoCodigo: number;
   contadorPensamientos: number;
+  /** Avisos de una sola vez ya mostrados (p. ej. "fíjate en el prompt" al primer cd). */
+  avisos: Set<string>;
 }
 
 export interface Registro {
@@ -82,7 +84,8 @@ function distancia(a: string, b: string): number {
 
 export function sugerirComando(nombre: string): string | undefined {
   let mejor: string | undefined;
-  let d = 3;
+  // En nombres cortos solo un dedazo (sl → ls); en largos, hasta dos. Así "en" no sugiere "cd".
+  let d = nombre.length <= 3 ? 2 : 3;
   for (const c of Object.keys(SUPERFICIE)) {
     const dc = distancia(nombre.toLowerCase(), c);
     if (dc < d) {
@@ -91,6 +94,28 @@ export function sugerirComando(nombre: string): string | undefined {
     }
   }
   return mejor;
+}
+
+/** Explicación en español para un comando que no existe, según el error típico de un novato. */
+function glosaInexistente(nombre: string, args: string[], sesion: Sesion, vfs: Vfs): string {
+  const moderno = OBSOLETOS[nombre];
+  if (moderno)
+    return `${nombre} es una herramienta vieja que ya no viene instalada en Linux moderno. Hoy se usa \`${moderno}\`.`;
+  const pegado = /^cd([.~/].*)$/.exec(nombre);
+  if (pegado) return `Te faltó un espacio: \`cd ${pegado[1]}\`.`;
+  try {
+    const n = vfs.lookup(normalizar(sesion.cwd, nombre), sesion.usuario);
+    return n.type === "dir"
+      ? `\`${nombre}\` es una carpeta, no un comando. Para ver qué tiene: \`ls ${nombre}\`.`
+      : `\`${nombre}\` es un archivo, no un comando. Para verlo: \`cat ${nombre}\`.`;
+  } catch {
+    // no es una ruta: sigue
+  }
+  const sug = sugerirComando(nombre);
+  if (sug) return `Ese comando no existe. ¿Quisiste decir \`${sug}\`?`;
+  if (args.length > 0 && [nombre, ...args].every((p) => /^[a-záéíóúüñ¿?¡!,.]+$/i.test(p)))
+    return "La terminal no entiende frases, solo comandos. Las respuestas de los tickets se escriben en la app de Tickets.";
+  return "Ese comando no existe. Revisa cómo lo escribiste.";
 }
 
 async function ejecutarSimple(
@@ -156,16 +181,7 @@ async function ejecutarSimple(
   let codigo: number;
   if (!comando) {
     propios.push({ tipo: "stderr", texto: `bash: ${nombre}: command not found\n` });
-    const moderno = OBSOLETOS[nombre];
-    const sug = sugerirComando(nombre);
-    propios.push({
-      tipo: "glosa",
-      texto: moderno
-        ? `${nombre} es una herramienta vieja que ya no viene instalada en Linux moderno. Hoy se usa \`${moderno}\`.`
-        : sug
-          ? `Ese comando no existe. ¿Quisiste decir \`${sug}\`?`
-          : "Ese comando no existe. Revisa cómo lo escribiste.",
-    });
+    propios.push({ tipo: "glosa", texto: glosaInexistente(nombre, args, sesion, mundo.vfs) });
     codigo = 127;
   } else {
     const ctx: Contexto = {

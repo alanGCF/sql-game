@@ -45,6 +45,7 @@ export type Predicado =
         esperado?: string | undefined;
         esperado_de?: { comando: string } | { sql: string } | undefined;
         acepta_tambien?: string[] | undefined;
+        comentarios?: { si: string[]; texto: string }[] | undefined;
       };
     }
   | { flag: { nombre: string } }
@@ -93,6 +94,10 @@ export const PredicadoEsquema: z.ZodType<Predicado> = z.lazy(() =>
           esperado: z.string().optional(),
           esperado_de: Referencia.optional(),
           acepta_tambien: z.array(z.string()).optional(),
+          /** Respuestas equivocadas comunes y qué decirle al jugador (sin regañar ni dar la respuesta). */
+          comentarios: z
+            .array(z.strictObject({ si: z.array(z.string()).min(1), texto: Texto280 }))
+            .optional(),
         })
         .refine((r) => (r.esperado === undefined) !== (r.esperado_de === undefined), {
           message: "respuesta necesita exactamente uno: esperado o esperado_de",

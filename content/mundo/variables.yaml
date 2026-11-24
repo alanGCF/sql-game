@@ -9,3 +9,12 @@ contrasena_becario: { tipo: clave, palabras: [duna, ocotillo, mezquite, biznaga,
 n_alarmas_fuga:     { tipo: entero, min: 9, max: 23 }
 insp_por_hora:      { tipo: entero, min: 240, max: 420 }
 pid_sync_mes:       { tipo: entero, min: 1200, max: 9800 }
+
+# Turno 1
+n_tickets:          { tipo: entero, min: 3, max: 6 }      # tickets en tu bandeja al llegar (T1-M1, T1-M2)
+folio_karla:        { tipo: entero, min: 1043, max: 1080 } # folio del ticket de Karla en la bandeja (T1-M2)
+piezas_l1:          { tipo: entero, min: 300, max: 900 }  # piezas del turno matutino (T1-F1)
+piezas_l2:          { tipo: entero, min: 300, max: 900 }
+piezas_l3:          { tipo: entero, min: 300, max: 900 }
+paros_l3:           { tipo: entero, min: 3, max: 8 }      # paros sin causa de la Línea 3 en octubre (T1-M3);
+                                                          # siempre menos que n_alarmas_fuga: no toda alarma para la línea

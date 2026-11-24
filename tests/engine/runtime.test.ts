@@ -140,4 +140,28 @@ describe("misión en curso (ejemplo T1-M02)", () => {
     const r = await b.ejecutar("cat notas.txt");
     expect(r.completada).toBe(true);
   });
+
+  it("una respuesta equivocada común recibe su comentario; una correcta no", async () => {
+    const m = mision();
+    const firma = m.objetivos.find((o) => o.id === "responder-firma");
+    if (!firma || !("respuesta" in firma.cuando)) throw new Error("ejemplo sin responder-firma");
+    firma.cuando.respuesta.comentarios = [
+      { si: ["Rebeca", "rebeca salcido"], texto: "Te pido la inicial, no el nombre." },
+      { si: ["{{n_tickets}}"], texto: "Eso es el conteo, no la firma." },
+    ];
+    const reloj = GameClock.desde("2026-10-28T15:40:00Z");
+    const vfs = vfsDesde([{ ruta: "/home/becario/", dueno: "becario" }], reloj.now());
+    const usuario = { name: "becario", groups: ["becario"], home: "/home/becario" };
+    const mc = new MisionEnCurso(m, Shell.crear(vfs, reloj, usuario, "srv-sistemas"), 1, {}, new Set());
+    expect((await mc.responder("responder-firma", "  REBECA ")).comentario).toBe(
+      "Te pido la inicial, no el nombre.",
+    );
+    expect((await mc.responder("responder-firma", "x")).comentario).toBeUndefined();
+    expect((await mc.responder("responder-firma", mc.vars.n_tickets ?? "")).comentario).toBe(
+      "Eso es el conteo, no la firma.",
+    );
+    const bien = await mc.responder("responder-firma", "R");
+    expect(bien.correcta).toBe(true);
+    expect(bien.comentario).toBeUndefined();
+  });
 });

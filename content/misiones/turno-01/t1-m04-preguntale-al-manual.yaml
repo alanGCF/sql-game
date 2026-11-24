@@ -1,0 +1,94 @@
+# T1-M4 · Enseña man y los archivos ocultos (ls -a). Al leer .r/hola aparece la carpeta oculta de R.
+# Empieza donde terminó T1-M3 (Línea 3) para repasar cd ~.
+# Respuestas fijas a propósito: -a es un dato de Linux y la nota de R. es parte de la historia (C17 avisa).
+id: t1-m04-preguntale-al-manual
+turno: 1
+orden: 4
+tipo: ticket
+titulo: Pregúntale al manual
+duracion_estimada_min: 5
+ensena: [linux.help.man, linux.nav.ocultos]
+requiere: [linux.nav.ls, linux.nav.cd, linux.files.cat]
+entrega: llamada
+host_inicial: srv-sistemas
+usuario_inicial: becario
+cwd_inicial: /srv/lineas/linea3
+apps: [terminal, tickets]
+
+briefing:
+  - quien: companero
+    texto: Te marco rapidito, que ando en piso. Algo que nadie te enseña, cada comando trae su propio manual y viene en el mismo servidor. Nomás hay que pedírselo.
+  - quien: companero
+    texto: Rebeca era bien maniática con sus cosas; lo importante nunca lo dejaba a la vista. Pregúntale al manual de ls cómo ver lo oculto, a ver si te dejó algo más.
+
+objetivos:
+  - id: responder-opcion
+    pendiente: "¿Qué opción de ls muestra los archivos ocultos?"
+    cuando:
+      respuesta:
+        donde: libreta
+        esperado: "-a"
+        acepta_tambien: ["a", "--all", "ls -a"]
+        comentarios:
+          - si: ["-l", "l"]
+            texto: Esa muestra los detalles de cada archivo, no los ocultos. Sigue buscando en el manual.
+    pistas:
+      - Yo tampoco me sé todas las opciones de memoria, eh. Para eso está el manual; pídeselo a la terminal.
+      - Las opciones son letras con guion que van después del comando, como -l. man y el nombre del comando te abre su manual; busca la que habla de lo que empieza con punto.
+      - Teclea `man ls` y fíjate en la primera opción de la lista.
+  - id: leer-hola
+    pendiente: Revisar si R. dejó algo oculto en tu carpeta
+    cuando:
+      archivo_leido: { host: srv-sistemas, ruta: /home/becario/.r/hola }
+    pistas:
+      - Ya que sepas cómo, fíjate qué hay escondido en tu carpeta personal.
+      - Con ls y la opción que viste en el manual salen los ocultos. Si ves una carpeta rara, asómate y abre lo que tenga.
+      - Teclea `cd ~`, luego `ls -a` y `cat .r/hola`.
+
+solucion:
+  - man ls
+  - responder: { objetivo: responder-opcion, valor: "-a" }
+  - cd ~
+  - ls -a
+  - ls .r
+  - cat .r/hola
+
+soluciones_alternativas:
+  - - ls -a /home/becario
+    - cd /home/becario/.r
+    - ls
+    - cat hola
+    - responder: { objetivo: responder-opcion, valor: "--all" }
+  - - ls --help
+    - cd
+    - ls --all
+    - cat .r/hola
+    - responder: { objetivo: responder-opcion, valor: "ls -a" }
+
+contraejemplos:
+  - objetivo: leer-hola
+    pasos: [cd ~, ls -a, ls .r]
+  - objetivo: responder-opcion
+    pasos:
+      - responder: { objetivo: responder-opcion, valor: "-l" }
+
+libreta:
+  - pestana: comandos
+    concepto: linux.help.man
+  - pestana: comandos
+    concepto: linux.nav.ocultos
+  - pestana: historia
+    texto: R. dejó una carpeta oculta, .r/, dentro de mi carpeta. Adentro hay una nota suya, «Si encontraste esto, leíste el manual».
+
+recompensas:
+  xp: 60
+  logros: [lei-el-manual]
+
+eventos:
+  al_cumplir:leer-hola:
+    - tipo: flag
+      nombre: vio_carpeta_r
+  al_completar:
+    - tipo: llamada_entrante
+      de: companero
+      texto: ¿Encontraste algo de Rebeca? Ahorita no me cuentes, ando en piso con la pantalla de la Línea 1. Mañana me platicas con calma. Ya vete a cenar, que hoy hay pozole en el comedor.

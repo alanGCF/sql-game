@@ -1,0 +1,105 @@
+# T1-M3 · Enseña cd y los atajos de la terminal (Tab, flecha arriba, history).
+# El estado de cada línea vive en /srv/lineas/lineaN/estado.txt (mundo base); los paros sin causa de
+# la Línea 3 son la variable de partida {{paros_l3}} y todos fueron a las 23:59 (pista de la trama).
+id: t1-m03-moverse-por-la-planta
+turno: 1
+orden: 3
+tipo: ticket
+titulo: Moverse por la planta
+duracion_estimada_min: 6
+ensena: [linux.nav.cd, linux.shell.atajos]
+requiere: [linux.nav.pwd, linux.nav.ls, linux.files.cat]
+entrega: ticket
+host_inicial: srv-sistemas
+usuario_inicial: becario
+cwd_inicial: /home/becario
+apps: [terminal, tickets]
+
+briefing:
+  - quien: don_chuy
+    texto: Quiubo, joven, otra vez Don Chuy. La Línea 3 se me para sola en las noches y nadie me sabe decir por qué. Las máquinas no se cansan; si se paran, es por algo.
+  - quien: don_chuy
+    texto: Eduardo dice que en esa computadora, en «diagonal ese-erre-ve, diagonal líneas», hay una carpeta por cada línea. Yo a las máquinas no les creo nada, pero a ver, ¿cuántos paros sin causa lleva la Línea 3 este mes?
+
+objetivos:
+  - id: ir-linea3
+    pendiente: Ir a la carpeta de la Línea 3
+    cuando:
+      sesion_en: { host: srv-sistemas, cwd: /srv/lineas/linea3 }
+    pistas:
+      - Lo que dice Don Chuy es una ruta, /srv/lineas. Hay que irse para allá en vez de quedarte en tu carpeta.
+      - cd viene de "change directory". cd y la ruta, y la terminal se cambia de carpeta. Escribe las primeras letras y dale Tab, que ella completa el resto.
+      - Teclea `cd /srv/lineas/linea3` y luego `pwd` para confirmar dónde quedaste.
+  - id: responder-paros
+    pendiente: "Ticket de Don Chuy: ¿cuántos paros sin causa lleva la Línea 3 en octubre?"
+    cuando:
+      respuesta:
+        donde: ticket
+        esperado_de: { comando: "grep Paros /srv/lineas/linea3/estado.txt | cut -d: -f2" }
+        comentarios:
+          - si: ["{{piezas_l3}}"]
+            texto: Ese número es de piezas. Busca el renglón de los paros.
+    pistas:
+      - En la carpeta de cada línea hay un archivo con su estado. ¿Ya viste cómo se llama?
+      - Ya que estés en la carpeta, ls te dice el nombre del archivo y cat te lo muestra.
+      - Teclea `cat /srv/lineas/linea3/estado.txt` y busca el renglón de los paros.
+  - id: ver-historial
+    pendiente: Revisar todo lo que llevas tecleado
+    cuando:
+      comando_ejecutado: { comando: history }
+    pistas:
+      - La terminal se acuerda de todo lo que le escribes. Nomás hay que pedírselo.
+      - Hay un comando que te enseña tu historial, todo lo que has tecleado. Se llama como "historia" en inglés.
+      - Teclea `history`.
+
+solucion:
+  - cd /srv/lineas/linea3
+  - ls
+  - cat estado.txt
+  - responder: { objetivo: responder-paros, valor: "{{respuesta.responder-paros}}" }
+  - history
+
+soluciones_alternativas:
+  - - cd /srv
+    - cd lineas
+    - cd linea3
+    - cat estado.txt
+    - responder: { objetivo: responder-paros, valor: "{{respuesta.responder-paros}}" }
+    - history
+  - - history
+    - cat /srv/lineas/linea3/estado.txt
+    - responder: { objetivo: responder-paros, valor: "{{respuesta.responder-paros}}" }
+    - cd /srv/lineas/linea2
+    - cd ../linea3
+
+contraejemplos:
+  - objetivo: ir-linea3
+    pasos: [cd /srv/lineas]
+  - objetivo: ir-linea3
+    pasos: [cat /srv/lineas/linea3/estado.txt]
+  - objetivo: responder-paros
+    pasos:
+      - responder: { objetivo: responder-paros, valor: "0" }
+  - objetivo: responder-paros
+    pasos:
+      - responder: { objetivo: responder-paros, valor: "{{piezas_l3}}" }
+  - objetivo: ver-historial
+    pasos: [ls]
+
+libreta:
+  - pestana: comandos
+    concepto: linux.nav.cd
+  - pestana: comandos
+    concepto: linux.shell.atajos
+  - pestana: historia
+    texto: La Línea 3 lleva {{paros_l3}} paros sin causa en octubre. Según su estado, todos fueron a las 23:59.
+
+recompensas:
+  xp: 50
+  logros: []
+
+eventos:
+  al_cumplir:ir-linea3:
+    - tipo: llamada_entrante
+      de: companero
+      texto: Te marco rapidito, que ando en piso. La flecha para arriba te repite tus comandos anteriores, Tab te completa nombres y history te enseña todo lo que has tecleado. Tus dedos te lo van a agradecer.

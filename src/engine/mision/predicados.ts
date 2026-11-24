@@ -1,6 +1,7 @@
 import { GameClock } from "../clock";
 import { Shell } from "../index";
 import type { Sesion } from "../shell/executor";
+import { plantilla, type Variables } from "../vars";
 import type { VNode } from "../vfs";
 import type { Predicado } from "./esquema";
 
@@ -13,6 +14,8 @@ export interface EstadoMision {
   /** Respuestas tecleadas por el jugador, por id de objetivo. */
   respuestas: ReadonlyMap<string, string>;
   flags: ReadonlySet<string>;
+  /** Variables de partida y de la misión, para `esperado: "{{variable}}"`. */
+  vars?: Variables;
 }
 
 /** Minúsculas, sin acentos, sin espacios sobrantes. */
@@ -49,6 +52,7 @@ export function shellOculto(s: Shell): Shell {
     ...s.sesion,
     env: new Map(s.sesion.env),
     historial: [...s.sesion.historial],
+    avisos: new Set(s.sesion.avisos),
   };
   return new Shell(
     { vfs: s.mundo.vfs.clone(), reloj: new GameClock(s.mundo.reloj.now()), comandos: s.mundo.comandos },
@@ -105,8 +109,15 @@ export async function evaluar(p: Predicado, e: EstadoMision, objetivo: string): 
     const dada = e.respuestas.get(objetivo);
     if (dada === undefined) return false;
     const r = p.respuesta;
-    const esperado = r.esperado ?? (r.esperado_de ? await calcularEsperado(e.shell, r.esperado_de) : "");
-    const validas = [esperado, ...(r.acepta_tambien ?? [])].map(normalizarRespuesta);
+    const esperado =
+      r.esperado !== undefined
+        ? plantilla(r.esperado, e.vars ?? {})
+        : r.esperado_de
+          ? await calcularEsperado(e.shell, r.esperado_de)
+          : "";
+    // {{esperado}} en acepta_tambien permite variantes del valor calculado ("T-{{esperado}}").
+    const otras = (r.acepta_tambien ?? []).map((a) => a.replaceAll("{{esperado}}", esperado));
+    const validas = [esperado, ...otras].map(normalizarRespuesta);
     return validas.includes(normalizarRespuesta(dada));
   }
   if ("flag" in p) return e.flags.has(p.flag.nombre);

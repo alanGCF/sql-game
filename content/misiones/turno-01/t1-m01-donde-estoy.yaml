@@ -1,0 +1,107 @@
+# T1-M1 · miércoles 28 de octubre, primera misión del primer turno.
+# Enseña pwd y ls. Los tickets de la carpeta vienen del mundo base (generador bandeja_t1, {{n_tickets}}).
+id: t1-m01-donde-estoy
+turno: 1
+orden: 1
+tipo: ticket
+titulo: ¿Dónde estoy?
+duracion_estimada_min: 4
+ensena: [linux.nav.pwd, linux.nav.ls]
+requiere: []
+entrega: ticket
+host_inicial: srv-sistemas
+usuario_inicial: becario
+cwd_inicial: /home/becario
+apps: [terminal, tickets]
+
+briefing:
+  - quien: companero
+    texto: ¡Ya llegaste! Ya sin globos hasta pareces de aquí. Te dejé tu primer ticket en la app de Tickets; es facilito, nomás para que te ubiques en el servidor.
+  - quien: companero
+    texto: La terminal siempre está parada en alguna carpeta. Contéstame en cuál estás y cuántos tickets hay en tu carpeta de tickets, no en la app. Ando en piso; si te atoras, márcame al 214.
+
+objetivos:
+  - id: responder-carpeta
+    pendiente: "Ticket de Eduardo: ¿en qué carpeta estás? (ruta completa)"
+    cuando:
+      respuesta:
+        donde: ticket
+        esperado_de: { comando: pwd }
+        acepta_tambien: ["{{esperado}}/", "/home/becario", "/home/becario/"]
+        comentarios:
+          - si: ["~"]
+            texto: Casi. ~ es el atajo de tu carpeta personal. Eduardo quiere la ruta completa, la que empieza con /.
+          - si: ["becario", "home/becario", "home"]
+            texto: Te falta parte de la ruta. La ruta completa empieza desde la raíz, con /.
+    pistas:
+      - La terminal te puede decir dónde estás parado. Hay un comando para eso.
+      - Hay un comando de tres letras, viene de "print working directory". Te dice la carpeta en la que estás.
+      - Teclea `pwd` y contéstame lo que te salga, completito, con todo y las diagonales.
+  - id: responder-tickets
+    pendiente: "Ticket de Eduardo: ¿cuántos tickets hay en tu carpeta de tickets?"
+    cuando:
+      respuesta:
+        donde: ticket
+        esperado_de: { comando: "ls /home/becario/tickets | wc -l" }
+        acepta_tambien: ["{{esperado}} tickets"]
+        comentarios:
+          - si: ["1"]
+            texto: Ese es el de la app. Eduardo pregunta por los archivos de tu carpeta tickets, en el servidor.
+          - si: ["2"]
+            texto: Esos son los elementos de tu carpeta. Eduardo pregunta qué hay dentro de la carpeta tickets.
+    pistas:
+      - Tus tickets viven en una carpeta que se llama tickets. ¿Ya viste qué hay en tu carpeta?
+      - ls te lista lo que hay en una carpeta. Si después de ls escribes el nombre de otra carpeta, te lista esa.
+      - Teclea `ls tickets` y cuenta cuántos archivos salen.
+
+solucion:
+  - pwd
+  - responder: { objetivo: responder-carpeta, valor: /home/becario }
+  - ls
+  - ls tickets
+  - responder: { objetivo: responder-tickets, valor: "{{respuesta.responder-tickets}}" }
+
+soluciones_alternativas:
+  - - ls /home/becario/tickets
+    - responder: { objetivo: responder-tickets, valor: "{{respuesta.responder-tickets}}" }
+    - pwd
+    - responder: { objetivo: responder-carpeta, valor: /home/becario/ }
+  - - ls ~/tickets
+    - pwd
+    - responder: { objetivo: responder-carpeta, valor: "  /home/becario " }
+    - responder: { objetivo: responder-tickets, valor: "{{respuesta.responder-tickets}} tickets" }
+
+contraejemplos:
+  - objetivo: responder-carpeta
+    pasos:
+      - responder: { objetivo: responder-carpeta, valor: becario }
+  - objetivo: responder-carpeta
+    pasos:
+      - responder: { objetivo: responder-carpeta, valor: "~" }
+  - objetivo: responder-carpeta
+    pasos:
+      - responder: { objetivo: responder-carpeta, valor: /home }
+  - objetivo: responder-tickets
+    pasos:
+      - responder: { objetivo: responder-tickets, valor: "1" }
+  - objetivo: responder-tickets
+    pasos:
+      - responder: { objetivo: responder-tickets, valor: "2" }
+
+libreta:
+  - pestana: comandos
+    concepto: linux.nav.pwd
+  - pestana: comandos
+    concepto: linux.nav.ls
+  - pestana: historia
+    texto: Mi carpeta en el servidor es /home/becario. Ahí hay un LEEME.txt que dejó la ingeniera anterior.
+
+recompensas:
+  xp: 40
+  logros: []
+
+eventos:
+  al_completar:
+    - tipo: llamada_entrante
+      de: companero
+      texto: ¡Eso! Ya te ubicas. Oye, ese LEEME.txt lo dejó la ingeniera que estaba antes. Karla, de Calidad, ya te dejó un ticket sobre él; ahorita te busca.

@@ -46,6 +46,7 @@ export class Shell {
       historial: [],
       ultimoCodigo: 0,
       contadorPensamientos: 0,
+      avisos: new Set(),
     };
     return new Shell({ vfs, reloj, comandos: COMANDOS }, sesion);
   }

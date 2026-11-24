@@ -7,7 +7,7 @@ import { agregarEntradas, type Entrada, normalizar, type Vfs } from "../vfs";
 import { aplicarDiferencias, type DiffVfs, diferencias } from "../vfs-diff";
 import type { Mision } from "./esquema";
 import { GENERADORES } from "./generadores";
-import { evaluar, NoImplementado } from "./predicados";
+import { evaluar, NoImplementado, normalizarRespuesta } from "./predicados";
 
 export type Efecto = NonNullable<Mision["eventos"]>[string][number];
 
@@ -68,11 +68,13 @@ export class MisionEnCurso {
     semilla: number,
     varsPartida: Variables,
     readonly flags: Set<string>,
+    /** `colocarSesion: false` para un favor que empieza a mitad de otra misión (no mueve al jugador). */
+    opciones: { colocarSesion?: boolean } = {},
   ) {
     this.vars = { ...varsPartida, ...resolverVariables(semilla, mision.variables ?? {}) };
     this.aplicarParches(semilla);
     this.base = shell.mundo.vfs.clone();
-    this.colocarSesion();
+    if (opciones.colocarSesion !== false) this.colocarSesion();
   }
 
   private texto(t: string): string {
@@ -98,7 +100,7 @@ export class MisionEnCurso {
         if (!gen) throw new NoImplementado(`generador desconocido: ${p.generador}`);
         const cantidad = Number(this.texto(String(p.cantidad)));
         const rng = crearRng(subSemilla(semilla, `${this.mision.id}:${p.generador}`));
-        agregarEntradas(vfs, gen(rng, p.destino, cantidad, this.mision.usuario_inicial), ahora);
+        agregarEntradas(vfs, gen(rng, p.destino, cantidad, this.mision.usuario_inicial, this.vars), ahora);
       } else {
         throw new NoImplementado("parches SQL llegan con el motor SQL (F5)");
       }
@@ -128,10 +130,11 @@ export class MisionEnCurso {
     return this.mision.eventos?.al_iniciar ?? [];
   }
 
-  private async revisar(): Promise<Avance> {
+  /** Evalúa los objetivos contra el estado actual (después de un comando ejecutado por fuera). */
+  async revisar(): Promise<Avance> {
     const nuevos: string[] = [];
     const efectos: Efecto[] = [];
-    const estado = { shell: this.shell, respuestas: this.respuestas, flags: this.flags };
+    const estado = { shell: this.shell, respuestas: this.respuestas, flags: this.flags, vars: this.vars };
     for (const o of this.mision.objetivos) {
       if (this.cumplidos.has(o.id)) continue;
       if (await evaluar(o.cuando, estado, o.id)) {
@@ -163,12 +166,27 @@ export class MisionEnCurso {
     return { ...r, ...(await this.revisar()) };
   }
 
-  async responder(objetivo: string, valor: string): Promise<Avance & { correcta: boolean }> {
+  async responder(
+    objetivo: string,
+    valor: string,
+  ): Promise<Avance & { correcta: boolean; comentario?: string }> {
     if (!this.mision.objetivos.some((o) => o.id === objetivo))
       throw new Error(`objetivo inexistente: ${objetivo}`);
     this.respuestas.set(objetivo, valor.slice(0, 200));
     const avance = await this.revisar();
-    return { ...avance, correcta: this.cumplidos.has(objetivo) };
+    const correcta = this.cumplidos.has(objetivo);
+    const comentario = correcta ? undefined : this.comentarioPara(objetivo, valor);
+    return { ...avance, correcta, ...(comentario ? { comentario } : {}) };
+  }
+
+  private comentarioPara(objetivo: string, valor: string): string | undefined {
+    const o = this.mision.objetivos.find((x) => x.id === objetivo);
+    if (!o || !("respuesta" in o.cuando)) return undefined;
+    const dado = normalizarRespuesta(valor);
+    const c = o.cuando.respuesta.comentarios?.find((x) =>
+      x.si.some((s) => normalizarRespuesta(this.texto(s)) === dado),
+    );
+    return c ? this.texto(c.texto) : undefined;
   }
 
   /** Siguiente nivel de pista del objetivo (Eduardo por teléfono); null si ya dio las tres. */

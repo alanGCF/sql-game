@@ -72,6 +72,16 @@ function avance(mc: MisionEnCurso, a: Avance): string {
   return lineas.length ? `${lineas.join("\n")}\n` : "";
 }
 
+/** Id exacto o parte única de un id ("firma" → "responder-firma"). */
+function objetivo(mc: MisionEnCurso, dado: string): string {
+  const ids = mc.mision.objetivos.map((o) => o.id);
+  if (ids.includes(dado)) return dado;
+  const parecidos = ids.filter((id) => id.includes(dado));
+  if (parecidos.length === 1 && parecidos[0]) return parecidos[0];
+  if (parecidos.length > 1) throw new Error(`«${dado}» coincide con varios: ${parecidos.join(", ")}`);
+  throw new Error(`no hay un objetivo «${dado}». Objetivos: ${ids.join(", ")}`);
+}
+
 /** Procesa una línea del jugador y devuelve el texto que vería. */
 export async function procesar(mc: MisionEnCurso, linea: string): Promise<string> {
   const t = linea.trim();
@@ -79,16 +89,17 @@ export async function procesar(mc: MisionEnCurso, linea: string): Promise<string
     const [orden = "", ...resto] = t.slice(1).split(/\s+/);
     try {
       if (orden === "pista") {
-        const id = resto[0] ?? mc.pendientes().find((p) => !p.cumplido)?.id;
+        const id = resto[0] ? objetivo(mc, resto[0]) : mc.pendientes().find((p) => !p.cumplido)?.id;
         if (!id) return `${companero}: Ya terminaste todo, ¿qué más quieres?\n`;
         const p = mc.pista(id);
         if (!p) return `${companero}: Ya te dije todo lo que sé de eso.\n`;
         return `${companero} (pista ${p.nivel}/3, ${id}): ${p.texto}\n`;
       }
       if (orden === "responder") {
-        const [id = "", ...valor] = resto;
-        const r = await mc.responder(id, valor.join(" "));
-        return r.correcta ? avance(mc, r) || "✓ Ya estaba respondido.\n" : "No es correcto.\n";
+        const [dado = "", ...valor] = resto;
+        const r = await mc.responder(objetivo(mc, dado), valor.join(" "));
+        if (r.correcta) return avance(mc, r) || "✓ Ya estaba respondido.\n";
+        return r.comentario ? `No es correcto. ${r.comentario}\n` : "No es correcto.\n";
       }
       if (orden === "pendientes") return `${pendientes(mc)}\n`;
     } catch (e) {

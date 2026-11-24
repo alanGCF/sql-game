@@ -73,4 +73,27 @@ describe("glosas para errores de novato", () => {
     const r = await shell().ejecutar("cd..");
     expect(r.fragmentos.find((f) => f.tipo === "stderr")?.texto).toBe("bash: cd..: command not found\n");
   });
+
+  it.each([
+    ["cd..", "Te faltó un espacio: `cd ..`"],
+    ["cd~", "Te faltó un espacio: `cd ~`"],
+    ["tickets", "`tickets` es una carpeta, no un comando. Para ver qué tiene: `ls tickets`"],
+    ["LEEME.txt", "`LEEME.txt` es un archivo, no un comando. Para verlo: `cat LEEME.txt`"],
+    ["en que carpeta estoy", "La terminal no entiende frases"],
+    ["donde estoy?", "La terminal no entiende frases"],
+    ["en", "Revisa cómo lo escribiste"],
+    ["sl", "¿Quisiste decir `ls`?"],
+    ["PWD", "¿Quisiste decir `pwd`?"],
+  ])("comando inexistente %s → glosa útil", async (linea, esperado) => {
+    expect(await glosaDe(linea)).toContain(esperado);
+  });
+
+  it("la primera vez que cambias de carpeta, una glosa señala el prompt; después ya no", async () => {
+    const s = shell();
+    const glosas = async (l: string) =>
+      (await s.ejecutar(l)).fragmentos.filter((f) => f.tipo === "glosa").map((f) => f.texto);
+    expect((await glosas("cd tickets")).join()).toContain("Fíjate en el prompt");
+    expect(await glosas("cd ..")).toEqual([]);
+    expect(await glosas("cd tickets")).toEqual([]);
+  });
 });

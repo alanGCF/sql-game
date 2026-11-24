@@ -92,10 +92,10 @@ Convención de IDs: `<dominio>.<área>.<concepto>`. Misión principal: `T<turno>
 
 | Misión | Tipo | Título | Nuevos conceptos | Objetivo verificable (resultado) | Avance de trama |
 |---|---|---|---|---|---|
-| T1-M1 | Ticket | ¿Dónde estoy? | `linux.nav.pwd`, `linux.nav.ls` | Responder "¿en qué carpeta estás?" y "¿cuántos elementos hay?" | Eduardo te deja el primer ticket; ves `LEEME.txt` y `tickets/` |
-| T1-M2 | Ticket | El LEEME | `linux.files.cat` | Archivo leído + responder con qué inicial firmó | "No confíes en los números del turno nocturno — R." |
-| T1-M3 | Ticket | Moverse por la planta | `linux.nav.cd`, `linux.shell.atajos` | Responder el estado de la Línea 3 leído en `/srv/lineas/linea3/estado.txt` | La Línea 3 tiene "paros sin causa a las 23:59" |
-| T1-M4 | Ticket | Pregúntale al manual | `linux.help.man`, `linux.nav.ocultos` | Descubrir en `man ls` la bandera que muestra ocultos y usarla (evento `.r/` visible) | Aparece `.r/` |
+| T1-M1 | Ticket | ¿Dónde estoy? | `linux.nav.pwd`, `linux.nav.ls` | Responder la ruta completa de la carpeta actual y cuántos tickets hay en `~/tickets` (`{{n_tickets}}`) | Eduardo te deja el primer ticket; ves `LEEME.txt` y `tickets/` |
+| T1-M2 | Ticket | El LEEME | `linux.files.cat` | Encontrar con `cat` el ticket de Karla y dar su folio (`{{folio_karla}}`) + `LEEME.txt` leído + inicial con la que firmó | "No confíes en los números del turno nocturno — R." |
+| T1-M3 | Ticket | Moverse por la planta | `linux.nav.cd`, `linux.shell.atajos` | Estar en `/srv/lineas/linea3` + responder los paros sin causa de octubre (`{{paros_l3}}`) + usar `history` | La Línea 3 tiene "paros sin causa a las 23:59" |
+| T1-M4 | Ticket | Pregúntale al manual | `linux.help.man`, `linux.nav.ocultos` | Responder la opción de `ls` que muestra ocultos (del manual) + leer `.r/hola` (evento `.r/` visible); empieza en la Línea 3 para repasar `cd ~` | Aparece `.r/` |
 | T2-M1 | Investigación | La carpeta oculta | `linux.nav.ls_largo` | Responder fecha de modificación y tamaño de `.r/notas.txt` (de `ls -lh`) | R. dejó notas la noche que se fue |
 | T2-M2 | Ticket | Leer sin abrir todo | `linux.files.ver_partes` | Responder la última línea del log de la impresora (`tail`) y el título de la parte 1 de las notas (`head`) | Notas: "alguien entra de noche" |
 | T2-M3 | Ticket | Tu propia bitácora | `linux.files.crear`, `linux.shell.redireccion` | Existe `~/bitacora/hallazgos.txt` con ≥2 líneas, la segunda agregada con `>>` (verificado por contenido) | Empiezas tu registro de hallazgos |

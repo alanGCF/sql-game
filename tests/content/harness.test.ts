@@ -84,6 +84,21 @@ async function reglasCurriculo(mutar: (m: Yaml) => void): Promise<string[]> {
 }
 
 describe("harness de contenido: reglas del currículo", () => {
+  it("la solución puede usar variables de la misión en los comandos (C8 no truena)", async () => {
+    const h = await reglas((m) => {
+      m.variables.archivo = { tipo: "elegir", de: ["LEEME.txt"] };
+      m.solucion[0] = "cat {{archivo}}";
+    });
+    expect(h).toEqual([]);
+  });
+
+  it("C10 avisa una variable inexistente en la solución", async () => {
+    const h = await reglas((m) => {
+      m.solucion[0] = "cat {{no_existe}}";
+    });
+    expect(h.join("\n")).toMatch(/C10: .*no_existe/);
+  });
+
   it("el ejemplo canónico pasa con currículo y personajes", async () => {
     expect((await reglasCurriculo(() => undefined)).filter((x) => !x.startsWith("C17"))).toEqual([]);
   });

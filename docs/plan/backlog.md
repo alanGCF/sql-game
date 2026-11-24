@@ -105,6 +105,10 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ### F2-05 · Harness de contenido C1–C18 con semillas · `hecha (2026-11-24)` *(C1–C11, C13, C15–C18; C12 y C14 pasan a F2-09)*
 - **Listo cuando:** un fixture por regla la dispara; el ejemplo pasa con 25 semillas.
 
+### F2-10 · Páginas de libreta de los comandos implementados · `pendiente` · depende: F1-06
+- **Hacer:** `content/libreta/comandos/<comando>.md` para cada comando simulado (CLAUDE.md §Reglas de código): explicación corta, ejemplo y "En tu Linux real…"; prueba que falla si un comando de `src/engine/commands/` no tiene página.
+- **Listo cuando:** la prueba pasa con todos los comandos actuales; `revisor-curricular` sin bloqueantes.
+
 ### F2-09 · Reglas C12 (finales alcanzables) y C14 (ortografía) · `pendiente` · depende: F2-05
 - **Hacer:** C12 cuando exista contenido del Turno 13 (hoy no hay finales que revisar); C14 con `cspell` y diccionario es-MX del proyecto (dependencia nueva con ADR) al empezar a escribir contenido real (F2-08).
 - **Listo cuando:** un fixture con un final inalcanzable y otro con una falta de ortografía disparan su regla.
@@ -118,14 +122,56 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Listo cuando:** el ejemplo pasa el harness sobre el mundo real; las variables se resuelven con 25 semillas; la terminal del juego muestra el mundo del contenido.
 - **Verificar:** `tests/engine/mundo-base.test.ts`, `tests/content/mundo.test.ts`, e2e de la terminal.
 
-### F2-08 · Misiones T1-M1 a T1-M4 + favor T1-F1 · `pendiente` · depende: F2-05, F2-07, F1-06
+### F2-08 · Misiones T1-M1 a T1-M4 + favor T1-F1 · `hecha (2026-11-24)` · depende: F2-05, F2-07, F1-06
+- **Hecho:** cinco misiones en `content/misiones/turno-01/`, en verde con 25 semillas (aviso C17 en T1-M4, justificado). Revisadas por `revisor-curricular`, `disenador-narrativo` y `playtester-novato`; se aplicaron sus hallazgos. Motor: generadores en el mundo base (`bandeja_t1`), `esperado` con variables, `{{esperado}}` en `acepta_tambien`, `comentarios` para respuestas equivocadas comunes, glosas para errores de novato (`cd..`, una carpeta o un archivo como comando, frases en español) y aviso del prompt en el primer `cd`.
 - **Listo cuando:** harness verde; revisores sin bloqueantes; `playtester-novato` completa T1.
 
 ---
 
-## F3 en adelante (resumen)
+## F3 — Escena del cubículo con T1 jugable
 
-- **F3** Escena del cubículo (estilo D-08): modelado, cámara, interactivos, transiciones, monitor + terminal real, menú, ajustes, `?test=1`, capturas de referencia.
+Salida de la fase: se puede jugar T1 completo en el navegador desde el escritorio 3D (estilo C); revisión visual aprobada por el usuario. Las pistas por teléfono, la libreta y el código de partida llegan en F4. Las tareas marcadas **(consultar)** llevan decisiones de estética: se proponen 2–3 opciones con capturas antes de cerrarlas.
+
+### F3-01 · Orquestador del turno (`src/game`, sin DOM) · `pendiente` · depende: F2-02, F2-06, F2-08
+- **Hacer:** cargar `turno-NN.json` y `comun.json`; un solo mundo por partida (semilla) que persiste entre misiones; avanzar misiones en orden; favores disponibles según `disponible_desde`; cola de efectos (diálogos, llamadas, visitas, flags) para la interfaz; respuestas por objetivo.
+- **Listo cuando:** pruebas unitarias juegan T1 completo con la solución de cada misión, encadenadas sobre el mismo mundo, con 25 semillas.
+
+### F3-02 · Terminal conectada a la misión en curso · `pendiente` · depende: F3-01
+- **Hacer:** la terminal del monitor ejecuta a través de la misión en curso; al cumplirse un objetivo se notifica a la interfaz.
+- **Listo cuando:** e2e: en T1-M1, `pwd` + respuesta cumplen el objetivo y avanza a T1-M2.
+
+### F3-03 · App Tickets en el monitor (consultar) · `pendiente` · depende: F3-01
+- **Hacer:** lista de tickets de la misión y campo para teclear la respuesta (sin pegar, D-17); retroalimentación de correcto/incorrecto con el `comentario` de la respuesta cuando lo hay. La app **no** lista los archivos de `~/tickets` ni muestra el folio o quién pide el ticket de Karla (T1-M1 y T1-M2 se resuelven con la terminal).
+- **Listo cuando:** e2e responde los tickets de T1; capturas aprobadas por el usuario.
+
+### F3-04 · Pizarrón con los pendientes del turno · `pendiente` · depende: F3-01
+- **Hacer:** textura del pizarrón generada con los pendientes de la misión y del turno; tachado al cumplirse.
+- **Listo cuando:** captura del pizarrón antes y después de cumplir un objetivo.
+
+### F3-05 · Diálogos: briefing, llamadas y visitas en globos (consultar) · `pendiente` · depende: F3-01
+- **Hacer:** capa DOM de diálogo con nombre del personaje, avance con clic o Enter, accesible por teclado; muestra el briefing y los efectos de la cola. Ampliar el esquema de efectos con varios globos por evento y un efecto `pensamiento` del protagonista (pedido de la revisión narrativa de T1).
+- **Listo cuando:** e2e recorre el briefing de T1-M1; capturas aprobadas.
+
+### F3-06 · Escena en estilo C definitiva · `pendiente` · depende: F0-07
+- **Hacer:** materiales, luces y formas del estilo C según `direccion-arte.md`; ventana que cambia de tarde a noche con el reloj de juego; se retiran los estilos A y B; presupuesto de 150 draw calls.
+- **Listo cuando:** capturas de referencia nuevas sin regresiones de encuadre; presupuesto cumplido.
+
+### F3-07 · Menú sobre la escena (consultar) · `pendiente` · depende: F3-06
+- **Hacer:** Nueva partida, Continuar (el código llega en F4), Ajustes, Créditos; sobre la escena desenfocada.
+- **Listo cuando:** e2e de nueva partida hasta T1-M1; capturas aprobadas.
+
+### F3-08 · Ajustes básicos · `pendiente` · depende: F3-07
+- **Hacer:** reducir movimiento, tamaño de letra de la terminal, contraste alto; se guardan en el navegador.
+- **Listo cuando:** e2e cambia cada ajuste y se conserva al recargar.
+
+### F3-09 · Capturas de referencia (`toHaveScreenshot`) · `pendiente` · depende: F3-06
+- **Hacer:** vistas de `07-calidad-harness.md` §5 con tolerancias; CI las compara.
+- **Listo cuando:** CI en verde con las referencias aprobadas.
+
+---
+
+## F4 en adelante (resumen)
+
 - **F4** Teléfono · pistas de Eduardo · paciencia · libreta · pizarrón · post-its · calendario · gafete · visitas · audio y subtítulos · API de partidas y código · sincronización · Turno 0 · release v0.1.
 - **F5** `sql.js` · generador `mes.db` · `sqlite3` · app Datos · T2–T4 · favores T1–T3.
 - **F6** Red · app Red · `wall` · T5 · favores T4–T5 · auditoría de seguridad · **v0.2**.

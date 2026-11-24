@@ -103,8 +103,9 @@ Objetivo: aprender los controles del juego dentro de la historia. Sin conceptos 
    - **Jugador (elige):** "El lunes fue mi inducción a la planta." / "El lunes me dieron la inducción, pero no me acuerdo de nada." *(ambas dicen lo mismo con distinto tono)*
    - Eduardo: "Uy, la de seguridad industrial. A todos nos dormían. Bueno, aquí lo que importa es esto…"
 3. Eduardo te enseña, uno por uno, con un pendiente en el pizarrón para cada cosa: mirar alrededor con el mouse → leer el post-it del monitor (tu contraseña) → abrir la libreta → revisar el calendario → marcarle desde el teléfono (ext. 214: "así me pides ayuda cuando me necesites; casi siempre ando en piso") → acercarte a la computadora, iniciar sesión tecleando la contraseña y alejarte.
-4. Ves tu **gafete** con tu número de empleado = tu código de partida *(D-15)*.
-5. Cierre: Eduardo: "Mañana empieza lo bueno. Ah, y no le hagas caso a lo que dicen de la ingeniera Salcido."
+4. **Don Chuy pasa a saludar** de camino al taller: "Bienvenido, joven. Aquí la planta habla; nomás hay que saberla oír." (Así ya lo conoces cuando aparece en el T1.)
+5. Ves tu **gafete** con tu número de empleado = tu código de partida *(D-15)*.
+6. Cierre: Eduardo: "Mañana empieza lo bueno. Ah, y no le hagas caso a lo que dicen de la ingeniera Salcido."
 
 ## Línea por turno
 
@@ -203,6 +204,12 @@ Las filas se generan en el navegador con la semilla de la partida (`content/mund
 | `n_alarmas_fuga` | 9–23 | T3 |
 | `insp_por_hora` | 240–420 | T6 |
 | `pid_sync_mes` | 1200–9800 | T7 |
+| `n_tickets` | 3–6 | T1 (tickets en `~/tickets`) |
+| `folio_karla` | 1043–1080 | T1-M2 (folio del ticket de Karla) |
+| `piezas_l1`, `piezas_l2`, `piezas_l3` | 300–900 | T1 (piezas del turno matutino en `estado.txt`) |
+| `paros_l3` | 3–8 | T1-M3 (paros sin causa de la Línea 3 en octubre); siempre menor que `n_alarmas_fuga`: no toda alarma de fuga para la línea |
+
+Tratamiento al jugador: neutro ("joven"), nunca "mi'jo"/"mi'ja" (el nombre lo elige el jugador; el letrero del T0 dice "Bienvenid@").
 
 ## Reglas de escritura
 

@@ -1,7 +1,9 @@
 import { GameClock, Shell } from "./index";
+import { GENERADORES } from "./mision/generadores";
 import type { MundoBase } from "./mundo-esquema";
+import { crearRng, subSemilla } from "./rng";
 import { plantilla, resolverVariables, type Variables } from "./vars";
-import { type Entrada, vfsDesde } from "./vfs";
+import { agregarEntradas, type Entrada, vfsDesde } from "./vfs";
 
 // El esquema vive en mundo-esquema.ts: el cliente recibe el mundo ya validado en build y no carga Zod.
 export type { MundoBase } from "./mundo-esquema";
@@ -35,8 +37,16 @@ export function crearShellBase(
     return r;
   });
   const reloj = GameClock.desde(o.ahora);
+  const vfs = vfsDesde(entradas, reloj.now());
+  for (const g of host.generadores ?? []) {
+    const generar = GENERADORES[g.generador];
+    if (!generar) throw new Error(`generador desconocido: ${g.generador}`);
+    const rng = crearRng(subSemilla(semilla, `mundo:${host.host}:${g.generador}:${g.destino}`));
+    const cantidad = Number(plantilla(String(g.cantidad), vars));
+    agregarEntradas(vfs, generar(rng, g.destino, cantidad, g.dueno ?? "root", vars), reloj.now());
+  }
   const shell = Shell.crear(
-    vfsDesde(entradas, reloj.now()),
+    vfs,
     reloj,
     { name: o.usuario, groups: u.grupos, home: u.home },
     host.host,

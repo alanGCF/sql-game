@@ -41,10 +41,17 @@ export function cd(ctx: Contexto): number {
     glosaError(ctx, destino, e);
     return 1;
   }
+  const cambio = abs !== ctx.sesion.cwd;
   ctx.sesion.env.set("OLDPWD", ctx.sesion.cwd);
   ctx.sesion.cwd = abs;
   ctx.sesion.env.set("PWD", abs);
   if (imprimir) ctx.out(`${abs}\n`);
+  if (cambio && !ctx.sesion.avisos.has("prompt")) {
+    ctx.sesion.avisos.add("prompt");
+    const home = ctx.sesion.usuario.home;
+    const corto = abs === home ? "~" : abs.startsWith(`${home}/`) ? `~${abs.slice(home.length)}` : abs;
+    ctx.glosa(`Fíjate en el prompt: ahora dice ${corto}. Ahí siempre ves en qué carpeta estás.`);
+  }
   return 0;
 }
 

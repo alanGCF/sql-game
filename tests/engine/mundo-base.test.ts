@@ -63,4 +63,52 @@ describe("mundo base", () => {
     expect(malo([{ ruta: "home/x" }])).toBe(false);
     expect(malo([{ ruta: "/x", modo: "999" }])).toBe(false);
   });
+
+  it("los generadores del host crean archivos con la semilla y las variables de partida", async () => {
+    const conGeneradores = MundoEsquema.parse({
+      variables: { n_tickets: { tipo: "entero", min: 3, max: 6 } },
+      hosts: [
+        {
+          host: "srv-prueba",
+          usuarios: { becario: { grupos: ["becario"], home: "/home/becario" } },
+          fs: [{ ruta: "/home/becario/", dueno: "becario" }],
+          generadores: [
+            {
+              generador: "bandeja_t1",
+              destino: "/home/becario/tickets/",
+              cantidad: "{{n_tickets}}",
+              dueno: "becario",
+            },
+          ],
+        },
+      ],
+    });
+    const listar = async (semilla: number) => {
+      const { shell, vars } = crearShellBase(conGeneradores, semilla, opciones);
+      const r = await shell.ejecutar("ls tickets", { sinTerminal: true });
+      const nombres = r.fragmentos
+        .filter((f) => f.tipo === "stdout")
+        .map((f) => f.texto)
+        .join("");
+      return { nombres, n: vars.n_tickets };
+    };
+    const a = await listar(4);
+    expect(a.nombres.trim().split("\n")).toHaveLength(Number(a.n));
+    expect(await listar(4)).toEqual(a);
+  });
+
+  it("el esquema rechaza generadores que no existen", () => {
+    const r = MundoEsquema.safeParse({
+      variables: {},
+      hosts: [
+        {
+          host: "h",
+          usuarios: {},
+          fs: [],
+          generadores: [{ generador: "nada", destino: "/x/", cantidad: 1 }],
+        },
+      ],
+    });
+    expect(r.success).toBe(false);
+  });
 });

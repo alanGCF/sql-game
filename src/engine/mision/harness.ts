@@ -3,7 +3,7 @@ import { GameClock, Shell } from "../index";
 import type { MundoBase } from "../mundo-base";
 import { clasificar } from "../shell/classify";
 import { textoPlano } from "../shell/lexer";
-import { plantilla } from "../vars";
+import { plantilla, VariableDesconocida } from "../vars";
 import { vfsDesde } from "../vfs";
 import { diferencias } from "../vfs-diff";
 import type { Curriculo, Personajes } from "./curriculo";
@@ -46,7 +46,8 @@ export async function respuestaEsperada(mc: MisionEnCurso, objetivo: string): Pr
   const o = mc.mision.objetivos.find((x) => x.id === objetivo);
   if (!o || !("respuesta" in o.cuando)) return "";
   const r = o.cuando.respuesta;
-  return r.esperado ?? (r.esperado_de ? await calcularEsperado(mc.shell, r.esperado_de) : "");
+  if (r.esperado !== undefined) return plantilla(r.esperado, mc.vars);
+  return r.esperado_de ? await calcularEsperado(mc.shell, r.esperado_de) : "";
 }
 
 async function correr(mc: MisionEnCurso, pasos: readonly Paso[]): Promise<string[]> {
@@ -95,20 +96,30 @@ export async function revisarMision(datos: unknown, o: OpcionesHarness): Promise
   }
 
   // C8 (parcial): cada comando de la solución se ejecuta en el motor y existe en la superficie.
+  const mc0 = iniciar(m, 0, o);
   for (const p of m.solucion) {
     if (typeof p !== "string") continue;
-    const c = clasificar(plantilla(p, {}).replace(/\{\{[^}]+\}\}/g, "x"));
+    let linea: string;
+    try {
+      linea = plantilla(p, mc0.vars);
+    } catch (e) {
+      if (!(e instanceof VariableDesconocida)) throw e;
+      error("C10", `${e.message} en la solución: "${p}"`);
+      continue;
+    }
+    const c = clasificar(linea);
     if (c.tipo !== "ejecutar") error("C8", `"${p}" no es un comando soportado (${c.tipo})`);
     else {
       for (const cadena of c.programa)
         for (const { tuberia } of cadena)
           for (const cmd of tuberia) {
             const nombre = cmd.palabras[0] ? textoPlano(cmd.palabras[0]) : "";
-            if (nombre && !iniciar(m, 0, o).shell.mundo.comandos.has(nombre))
+            if (nombre && !mc0.shell.mundo.comandos.has(nombre))
               error("C8", `comando no implementado: ${nombre}`);
           }
     }
   }
+  if (h.some((x) => x.regla === "C10" && x.severidad === "error")) return h;
 
   // C2/C3: solución y alternativas completan la misión con cada semilla.
   const respuestasPorSemilla: string[] = [];

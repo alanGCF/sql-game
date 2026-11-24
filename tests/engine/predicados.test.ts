@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { GameClock, Shell } from "../../src/engine";
 import type { Predicado } from "../../src/engine/mision/esquema";
-import { evaluar, NoImplementado, normalizarRespuesta } from "../../src/engine/mision/predicados";
+import {
+  type EstadoMision,
+  evaluar,
+  NoImplementado,
+  normalizarRespuesta,
+} from "../../src/engine/mision/predicados";
 import { vfsDesde } from "../../src/engine/vfs";
 
 const H = "srv-sistemas";
@@ -23,7 +28,7 @@ function estado(respuestas: Record<string, string> = {}, flags: string[] = []) {
   return { shell, respuestas: new Map(Object.entries(respuestas)), flags: new Set(flags) };
 }
 
-const ok = (p: Predicado, e = estado(), objetivo = "obj") => evaluar(p, e, objetivo);
+const ok = (p: Predicado, e: EstadoMision = estado(), objetivo = "obj") => evaluar(p, e, objetivo);
 
 describe("predicados (validación por resultado)", () => {
   it("archivo_leido: cat cuenta, ls no", async () => {
@@ -86,6 +91,27 @@ describe("predicados (validación por resultado)", () => {
     expect(await ok(p, e)).toBe(true);
     expect(e.shell.sesion.historial).toEqual([]);
     expect(await ok(p, estado({ obj: "3" }))).toBe(false);
+  });
+
+  it("acepta_tambien puede usar {{esperado}} para variantes del valor calculado", async () => {
+    const p: Predicado = {
+      respuesta: {
+        donde: "ticket",
+        esperado_de: { comando: "ls /home/becario/tickets | wc -l" },
+        acepta_tambien: ["{{esperado}} tickets"],
+      },
+    };
+    expect(await ok(p, estado({ obj: "2" }))).toBe(true);
+    expect(await ok(p, estado({ obj: "2 tickets" }))).toBe(true);
+    expect(await ok(p, estado({ obj: "{{esperado}} tickets" }))).toBe(false);
+    expect(await ok(p, estado({ obj: "3 tickets" }))).toBe(false);
+  });
+
+  it("esperado acepta variables de partida o de la misión", async () => {
+    const p: Predicado = { respuesta: { donde: "ticket", esperado: "T-{{folio}}" } };
+    const e = { ...estado({ obj: "t-1050" }), vars: { folio: "1050" } };
+    expect(await ok(p, e)).toBe(true);
+    expect(await ok(p, { ...estado({ obj: "t-1051" }), vars: { folio: "1050" } })).toBe(false);
   });
 
   it("flag, sesión y combinadores", async () => {

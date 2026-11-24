@@ -1,0 +1,63 @@
+# T1-F1 · Favor de repaso (cd y cat). Don Chuy no trae lentes; las piezas de la Línea 1 son la
+# variable de partida {{piezas_l1}}. No afecta la historia. Recompensa: adorno para el escritorio (D-16).
+id: t1-f01-lentes-de-don-chuy
+turno: 1
+orden: 1
+tipo: favor
+titulo: Los lentes de Don Chuy
+duracion_estimada_min: 3
+ensena: []
+refuerza: [linux.nav.cd, linux.files.cat]
+disponible_desde: t1-m04-preguntale-al-manual
+requiere: [linux.nav.cd, linux.files.cat]
+entrega: visita
+host_inicial: srv-sistemas
+usuario_inicial: becario
+cwd_inicial: /home/becario
+apps: [terminal]
+
+briefing:
+  - quien: don_chuy
+    texto: Joven, ya ni la amuelo, otra vez yo. Dejé los lentes en el taller y en la pantallita de la línea no veo nada. A la vejez, viruelas.
+  - quien: don_chuy
+    texto: En el piso me están pidiendo cuántas piezas sacó la Línea 1 en el turno de la mañana. Viene en el estado de la línea, ¿verdad? ¿Me lo buscas?
+
+objetivos:
+  - id: responder-piezas
+    pendiente: "Favor de Don Chuy: piezas de la Línea 1 en el turno matutino"
+    cuando:
+      respuesta:
+        donde: libreta
+        esperado_de: { comando: "grep Piezas /srv/lineas/linea1/estado.txt | cut -d: -f2" }
+        comentarios:
+          - si: ["{{piezas_l3}}", "{{piezas_l2}}"]
+            texto: Esas son las piezas de otra línea. Don Chuy pregunta por la Línea 1.
+    pistas:
+      - Es como lo de la Línea 3, pero en la carpeta de la Línea 1.
+      - Muévete con cd a la carpeta de la Línea 1 y abre su estado con cat.
+      - Teclea `cd /srv/lineas/linea1` y luego `cat estado.txt`. Dime el número de las piezas.
+
+solucion:
+  - cd /srv/lineas/linea1
+  - cat estado.txt
+  - responder: { objetivo: responder-piezas, valor: "{{respuesta.responder-piezas}}" }
+
+soluciones_alternativas:
+  - - cat /srv/lineas/linea1/estado.txt
+    - responder: { objetivo: responder-piezas, valor: "{{respuesta.responder-piezas}}" }
+
+contraejemplos:
+  - objetivo: responder-piezas
+    pasos:
+      - responder: { objetivo: responder-piezas, valor: "0" }
+
+recompensas:
+  xp: 20
+  logros: []
+  adorno: tuerca_pisapapeles
+
+eventos:
+  al_completar:
+    - tipo: visita
+      de: don_chuy
+      texto: ¡Ándale, gracias! Toma, pa' tu escritorio, una tuerca de scrap de la Línea 1. Pa' un freno ya no sirve, pero de pisapapeles cumple.

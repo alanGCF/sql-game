@@ -14,15 +14,16 @@ fs:
   - { ruta: /etc/, dueno: root }
   - { ruta: /etc/hostname, dueno: root, contenido: "srv-sistemas\n", mtime: "2024-03-11T10:02:00Z" }
   - { ruta: /root/, dueno: root, modo: "700", mtime: "2026-09-30T18:20:00Z" }
-  - { ruta: /home/, dueno: root, mtime: "2026-10-26T16:05:00Z" }
+  - { ruta: /home/, dueno: root, mtime: "2026-10-23T23:30:00Z" }
   - { ruta: /home/etellez/, dueno: etellez, modo: "700", mtime: "2026-10-27T22:48:00Z" }
   - { ruta: /home/rsalcido/, dueno: rsalcido, modo: "700", mtime: "2026-10-23T23:52:00Z" }
 
-  # Tu cuenta. R. la usó para dejarte notas antes de irse.
-  - { ruta: /home/becario/, dueno: becario, modo: "700", mtime: "2026-10-27T15:30:00Z" }
+  # Tu cuenta. La creó R. su última noche (vie 23) y te dejó notas como rsalcido, cuando aún tenía
+  # sudo; ya se lo quitaron (T7 debe respetarlo).
+  - { ruta: /home/becario/, dueno: becario, modo: "700", mtime: "2026-10-23T23:50:00Z" }
   - ruta: /home/becario/.bashrc
     dueno: becario
-    mtime: "2026-10-26T16:05:00Z"
+    mtime: "2026-10-23T23:30:00Z"
     contenido: |
       # ~/.bashrc: executed by bash(1) for non-login shells.
 
@@ -42,7 +43,7 @@ fs:
       fi
   - ruta: /home/becario/.profile
     dueno: becario
-    mtime: "2026-10-26T16:05:00Z"
+    mtime: "2026-10-23T23:30:00Z"
     contenido: |
       # ~/.profile: executed by the command interpreter for login shells.
 
@@ -54,7 +55,7 @@ fs:
       fi
   - ruta: /home/becario/.bash_logout
     dueno: becario
-    mtime: "2026-10-26T16:05:00Z"
+    mtime: "2026-10-23T23:30:00Z"
     contenido: |
       # ~/.bash_logout: executed by bash(1) when login shell exits.
   - ruta: /home/becario/LEEME.txt
@@ -66,21 +67,41 @@ fs:
 
       1. El usuario es "becario". La contraseña está en el post-it.
       2. Los tickets llegan a ~/tickets/. Uno por archivo.
-      3. Si la impresora de la Línea 2 falla, casi siempre es el cable.
+      3. Si la impresora de la Línea 2 falla, casi siempre es el cable. Nadie me cree.
 
       Y una cosa más: no confíes en los números del turno nocturno.
       Revisa todo dos veces.
       — R.
-  - { ruta: /home/becario/tickets/, dueno: becario, mtime: "2026-10-27T15:30:00Z" }
-  # Oculta: aparece con ls -a (T1-M4). Las demás notas de R. llegan con las misiones de T2 y T3.
+  - { ruta: /home/becario/tickets/, dueno: becario }
+  # Oculta: aparece con ls -a (T1-M4). Todo lo de R. ya está aquí desde su última noche: notas.txt se
+  # lee y se respalda en T2 (antes de que .r/ desaparezca en T3); .llaves/ sirve en T10.
   - { ruta: /home/becario/.r/, dueno: rsalcido, grupo: sistemas, mtime: "2026-10-23T23:50:00Z" }
   - ruta: /home/becario/.r/hola
     dueno: rsalcido
     grupo: sistemas
     mtime: "2026-10-23T23:50:00Z"
     contenido: |
-      Si encontraste esto, vas bien.
+      Si encontraste esto, leíste el manual.
+      Ya vas mejor que la mayoría.
       — R.
+  - ruta: /home/becario/.r/notas.txt
+    dueno: rsalcido
+    grupo: sistemas
+    mtime: "2026-10-23T23:48:00Z"
+    contenido: |
+      Notas de R.
+
+      Parte 1: Lo que no cuadra
+      Los números del turno nocturno salen perfectos.
+      Demasiado perfectos, para una planta como esta.
+
+      Parte 2: Alguien entra de noche
+      Hay movimiento en el servidor cuando no hay nadie de sistemas.
+      Siempre unos minutos antes de la medianoche.
+
+      Parte 3: Si me sacan
+      Hazte una copia de esta carpeta. Hoy.
+  - { ruta: /home/becario/.r/.llaves/, dueno: rsalcido, grupo: sistemas, modo: "750", mtime: "2026-10-23T23:46:00Z" }
 
   # Estado de las líneas de producción (lo actualiza el MES; T1-M3 y T1-F1).
   - { ruta: /srv/, dueno: root, mtime: "2025-06-02T09:00:00Z" }
@@ -88,14 +109,28 @@ fs:
   - ruta: /srv/lineas/linea1/estado.txt
     dueno: root
     mtime: "2026-10-28T15:00:00Z"
-    contenido: "Línea 1: OPERANDO\n"
+    contenido: |
+      Línea 1: OPERANDO
+      Piezas turno matutino: {{piezas_l1}}
+      Paros sin causa (octubre): 0
   - ruta: /srv/lineas/linea2/estado.txt
     dueno: root
     mtime: "2026-10-28T15:00:00Z"
-    contenido: "Línea 2: OPERANDO (impresora de etiquetas intermitente)\n"
+    contenido: |
+      Línea 2: OPERANDO
+      Piezas turno matutino: {{piezas_l2}}
+      Paros sin causa (octubre): 0
+      Nota: impresora de etiquetas intermitente
   - ruta: /srv/lineas/linea3/estado.txt
     dueno: root
     mtime: "2026-10-28T15:00:00Z"
     contenido: |
       Línea 3: OPERANDO
-      Nota: paros sin causa registrados a las 23:59
+      Piezas turno matutino: {{piezas_l3}}
+      Paros sin causa (octubre): {{paros_l3}}
+      Nota: todos los paros sin causa son a las 23:59
+
+# Generados con la semilla al crear la partida.
+generadores:
+  # Tu bandeja: {{n_tickets}} tickets de rutina; uno es de Karla (T1-M2).
+  - { generador: bandeja_t1, destino: /home/becario/tickets/, cantidad: "{{n_tickets}}", dueno: becario }
