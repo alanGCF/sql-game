@@ -193,7 +193,7 @@ Ejemplo comentado: `docs/ejemplos/mision-ejemplo.yaml`.
 
 - **Código:** 12 caracteres del alfabeto Crockford base32 sin `I L O U` (≈ 60 bits), con dígito verificador para detectar errores de tecleo antes de llamar al servidor.
 - **Almacenamiento:** tabla `partidas(codigo_hash bytea primary key, datos jsonb, revision int, creada timestamptz, actualizada timestamptz)`. Nunca se guarda el código en claro.
-- **Retención:** partidas sin actividad en 12 meses se borran (tarea programada) *(propuesta D-18)*.
+- **Retención:** partidas sin actividad durante 60 días (2 meses) se borran con una tarea programada diaria (D-18). El juego avisa en el menú cuántos días le quedan a una partida inactiva.
 - **Sin cookies, sin sesiones, sin CORS** (mismo origen).
 - Detalle de controles: `08-seguridad.md`.
 

@@ -14,7 +14,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** instalar el set "Tier 1" de `docs/skills.md` en tu Claude Code local; autorizar Context7 en los conectores de claude.ai.
 - **Listo cuando:** `/plugin list` muestra superpowers; Context7 responde.
 
-### F0-03 · Replanteo: escritorio 3D, calendario, compañera, libreta, código, aleatorización, seguridad, Railway · `hecha (2026-11-24)`
+### F0-03 · Replanteo: escritorio 3D, calendario, compañero de pistas, libreta, código, aleatorización, seguridad, Railway · `hecha (2026-11-24)`
 - Docs, ADR, decisiones y harness actualizados a las respuestas del usuario.
 
 ### F0-04 · Scaffold del proyecto · `hecha (2026-11-24)`
@@ -26,12 +26,12 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** GitHub Actions según `07-calidad-harness.md` §CI (sin el job `goldens`, que llega en F1-05); `npm audit`; CodeQL; Dependabot.
 - **Listo cuando:** el push a `develop` muestra todos los checks en verde.
 
-### F0-06 · Despliegue en Railway · `en-progreso` (imagen y guía listas; falta que el usuario cree el servicio y confirme `/healthz`) · depende: F0-04
+### F0-06 · Despliegue en Railway · `pospuesta` (imagen y guía listas; el usuario creará el servicio más adelante) · depende: F0-04
 - **Hacer:** `Dockerfile` multi-etapa (usuario no root), `.dockerignore`, servidor escuchando en `PORT`; guía en `docs/despliegue.md` (crear proyecto, servicio desde el repo con rama `main`, PostgreSQL, variables, healthcheck `/healthz`, "esperar a CI").
 - **Listo cuando:** el usuario despliega `main` y `/healthz` responde 200 en la URL de Railway.
 - **Verificar:** usuario + `curl -I` a la URL (cabeceras de seguridad presentes).
 
-### F0-07 · Spike: escena 3D del cubículo + 3 estilos visuales · `en-progreso` (escena y capturas listas; falta que el usuario elija estilo, D-08) · depende: F0-04
+### F0-07 · Spike: escena 3D del cubículo + 3 estilos visuales · `hecha (2026-11-24)` *(el usuario eligió el estilo C, D-08)* · depende: F0-04
 - **Hacer:** cubículo en graybox (escritorio, monitor, teclado, teléfono, libreta, pizarrón, calendario, post-its, lonchera, taza, adornos, mamparas, algo de oficina al fondo); cámara que sigue al cursor; resaltado al pasar el cursor; acercarse/alejarse del monitor con una terminal DOM de prueba; tres estilos (A/B/C de `direccion-arte.md`) conmutables con `?estilo=`; modo `?test=1`.
 - **Listo cuando:** capturas de Playwright de los 3 estilos (vista general, mirando a los lados, monitor acercado) enviadas al usuario.
 - **Verificar:** `/revision-visual`; el usuario elige estilo (D-08).
@@ -109,7 +109,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ## F3 en adelante (resumen)
 
 - **F3** Escena del cubículo (estilo D-08): modelado, cámara, interactivos, transiciones, monitor + terminal real, menú, ajustes, `?test=1`, capturas de referencia.
-- **F4** Teléfono · pistas de Lupita · paciencia · libreta · pizarrón · post-its · calendario · gafete · visitas · audio y subtítulos · API de partidas y código · sincronización · Turno 0 · release v0.1.
+- **F4** Teléfono · pistas de Eduardo · paciencia · libreta · pizarrón · post-its · calendario · gafete · visitas · audio y subtítulos · API de partidas y código · sincronización · Turno 0 · release v0.1.
 - **F5** `sql.js` · generador `mes.db` · `sqlite3` · app Datos · T2–T4 · favores T1–T3.
 - **F6** Red · app Red · `wall` · T5 · favores T4–T5 · auditoría de seguridad · **v0.2**.
 - **F7** T6–T8 · tiempo extra · logros · repetir misiones.

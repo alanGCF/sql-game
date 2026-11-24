@@ -45,17 +45,16 @@ izq│                                         │der
 | Adornos | Foto, plantita, figurita, papeles, envolturas, clips | aumentan con favores *(D-16)* |
 | Decoraciones de fecha | Globos y letrero (T0), calabaza (T3), papel picado y cempasúchil (T4) | por día |
 
-## Estilos a explorar (D-08)
+## Estilo elegido: C · Estilizado limpio (D-08)
 
-| | A · Low-poly cálido | B · Retro PS1 | C · Estilizado limpio |
-|---|---|---|---|
-| Idea | Formas simples, colores planos, luz cálida de lámpara | Baja resolución, pixeles grandes, dithering, paleta limitada | Sombreado suave, sombras y oclusión ambiental, brillo en pantallas |
-| Referencias de sensación | *Unpacking*, *A Short Hike* (en 3D) | *Buckshot Roulette*, *Iron Lung* | *Not For Broadcast*, *Firewatch* |
-| Legibilidad del texto | Alta (texto en DOM nítido) | El mundo se pixelea; las capas DOM se mantienen nítidas | Alta |
-| Rendimiento | El mejor | Muy bueno (render a baja resolución) | El más pesado (postprocesado) |
-| Riesgo | Verse genérico | Cansar la vista en sesiones largas | Tiempo de arte mayor |
+Sombreado suave, sombras suaves y reflejos sutiles; formas limpias con algo de detalle (bordes redondeados en objetos pequeños), paleta de oficina neutra con acentos cálidos. Referencias de sensación: *Not For Broadcast*, *Firewatch*.
 
-Paleta base (común): beige de mampara, gris acero, madera clara de escritorio, naranja de seguridad como acento, azul noche en la ventana al final del turno. Contraste AA en todas las capas DOM.
+- **Luz:** luz de oficina neutra del techo + lámpara de escritorio cálida + ventana que cambia de atardecer a noche durante el turno.
+- **Materiales:** mate en mamparas y papel; satinado en escritorio y plásticos; pantalla emisiva sin reflejos.
+- **Rendimiento:** es el estilo más pesado; presupuesto de 150 draw calls y medición en hardware real (Iris Xe/UHD 620) desde F3. Si no da 60 fps: menos sombras dinámicas, luz horneada y una opción de "calidad baja" en Ajustes.
+- Los estilos A y B del spike quedan como referencia en `src/scene/estilos.ts` hasta F3, donde se retiran.
+
+Paleta base: gris claro de mampara, madera clara del escritorio, blanco cálido de pared, naranja de seguridad como acento, azul noche en la ventana al final del turno. Contraste AA en todas las capas DOM.
 
 ## Capas DOM (interfaz)
 
@@ -73,16 +72,23 @@ Paleta base (común): beige de mampara, gris acero, madera clara de escritorio, 
 - Ambientales sutiles: polvo en la luz de la ventana, gente pasando a lo lejos.
 - Todo respeta "reducir movimiento".
 
-## Audio
+## Audio (D-19: escaso, nunca saturado)
 
-| Capa | Ejemplos |
+**El silencio es lo normal.** El jugador está concentrado frente a la computadora; el sonido solo aparece cuando aporta algo.
+
+| Regla | Valor |
 |---|---|
-| Ambiente continuo | Aire acondicionado, oficina lejana, teclados, máquinas de la planta a lo lejos |
-| Eventos ambientales | Impresora, teléfono de otro escritorio, montacargas, voceo ("Mantenimiento, favor de reportarse a Línea 3"), puerta |
-| Interacción | Teclas (al teclear en la terminal), clic de objetos, abrir libreta, lápiz, plumón, descolgar/colgar, tono de marcado |
-| Historia | Alarma de la estación de fuga a las 23:59, `wall`, llamada de número desconocido |
-| Voces | Según D-19: balbuceo por personaje + subtítulos |
-| Música | Radio opcional con música libre de derechos; sin música de fondo constante |
+| Ruido continuo de fondo (aire acondicionado, murmullo de oficina) | **No hay** |
+| Eventos ambientales (impresora, teléfono de otro escritorio, montacargas, voceo, puerta) | Como máximo uno cada 2–4 min (al azar con la semilla), de 1–3 s, a bajo volumen y "a lo lejos" (posicional) |
+| Simultaneidad | Nunca dos eventos ambientales a la vez; ninguno mientras hay un diálogo o una llamada |
+| Interacción | Solo en acciones con significado (descolgar, abrir libreta, tachar pendiente, objetivo cumplido); ≤ 300 ms y discretos |
+| Teclear en la terminal | Sin sonido por defecto (opción en Ajustes) |
+| Historia | Raros y claros: alarma de fuga a las 23:59, `wall`, llamada de número desconocido |
+| Voces | Murmullo corto por personaje mientras aparece el texto + subtítulos siempre |
+| Música | Ninguna de fondo; solo el radio opcional del tiempo extra, si el jugador lo prende |
+| Ajustes | Volumen general, efectos, ambiente (apagable) y voces; "modo silencio" |
+
+Generación: los sonidos de interfaz y el murmullo de voces se sintetizan con Web Audio (sin archivos, sin licencias); los ambientales reales (impresora, voceo) son pocos archivos CC0 cortos registrados en `docs/diseno/assets.md`.
 
 ## Referencias de juegos (por mecánica, no para copiar su aspecto)
 
@@ -96,7 +102,7 @@ Paleta base (común): beige de mampara, gris acero, madera clara de escritorio, 
 | *Hacknet* | Historia contada con comandos reales de terminal |
 | *Her Story* | Investigar una base de datos para reconstruir la verdad (paralelo con SQL) |
 | *Return of the Obra Dinn* / *Outer Wilds* | Libreta/bitácora que se llena sola con lo que descubres |
-| *Firewatch* | Una compañera al otro lado de la línea que te acompaña y orienta (Lupita) |
+| *Firewatch* | Alguien al otro lado de la línea que te acompaña y orienta (Eduardo) |
 | *Disco Elysium* | La voz interior del protagonista (globo de pensamiento) |
 | *Keep Talking and Nobody Explodes* | Interacción con objetos sobre una mesa y consulta de un manual |
 | *Unpacking* | Contar historia con objetos y desorden |

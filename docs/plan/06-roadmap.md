@@ -31,7 +31,7 @@ El motor no depende de la escena: se construye y prueba headless mientras se dec
 - **Salida:** se puede jugar T1 en el navegador desde el escritorio 3D; revisión visual aprobada por el usuario.
 
 ### F4 — Sistemas del escritorio + servidor de partidas + T0 → **v0.1** · L
-- Teléfono (directorio, marcar, paciencia, llamadas entrantes), pistas de Lupita, libreta (automática y notas propias, sin copiar/pegar), pizarrón y post-its, calendario, gafete, visitas, audio ambiental y subtítulos, oficina viva básica.
+- Teléfono (directorio, marcar, paciencia, llamadas entrantes), pistas de Eduardo, libreta (automática y notas propias, sin copiar/pegar), pizarrón y post-its, calendario, gafete, visitas, audio ambiental y subtítulos, oficina viva básica.
 - Servidor: API de partidas, código, checkpoints, sincronización.
 - Contenido: Turno 0 (bienvenida y tutorial) completo.
 - **Salida:** T0–T1 jugables de punta a punta; continuar con código en otra computadora; playtest ronda 1. Release interno v0.1 en Railway.

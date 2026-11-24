@@ -101,7 +101,7 @@ function Monitor() {
   const pantalla = useTexturaCanvas(1024, 600, dibujarPantalla);
   const vista = useEscena((s) => s.vista);
   const postIt = useTexturaCanvas(160, 160, dibujarPostIt(["pass:", "duna47"]));
-  const postIt2 = useTexturaCanvas(160, 160, dibujarPostIt(["Lupita", "ext. 214"]));
+  const postIt2 = useTexturaCanvas(160, 160, dibujarPostIt(["Eduardo", "ext. 214"]));
   const [cx, cy, cz] = MONITOR.centro;
   return (
     <Interactivo nombre="Computadora" vista="monitor">
@@ -355,7 +355,7 @@ function Oficina() {
           <Caja pos={[0, ESCRITORIO_Y, -0.4]} tam={[1.7, 0.03, 0.7]} color={C.escritorio} />
         </group>
       ))}
-      {/* una compañera a lo lejos (silueta) */}
+      {/* alguien a lo lejos (silueta) */}
       <group position={[1.6, 0, -3.4]}>
         <mesh position={[0, 0.8, 0]}>
           <capsuleGeometry args={[0.18, 0.9, 4, estilo.flat ? 8 : 16]} />

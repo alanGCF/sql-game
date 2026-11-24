@@ -1,13 +1,11 @@
 # 04 — Mecánicas
 
-Las marcadas *(propuesta D-xx)* esperan confirmación del usuario en `decisiones-abiertas.md`.
-
 ## Loop principal
 
 ```
 Llegas al cubículo (inicio de turno) → pendientes en el pizarrón → visitas / llamadas / tickets
    → te acercas a la computadora → terminal, datos, red → objetivo cumplido (se tacha en el pizarrón)
-   → ¿atorado? marcas a Lupita y pides pista → … → misión completada → siguiente pendiente
+   → ¿atorado? marcas a Eduardo y pides pista → … → misión completada → siguiente pendiente
    → fin del turno (00:00): resumen en el calendario → siguiente día
 ```
 
@@ -26,17 +24,17 @@ Una misión dura 3–8 minutos. El juego guarda solo y en cada checkpoint actual
 | Objeto | Interacción | Para qué | Desde |
 |---|---|---|---|
 | **Computadora** (monitor + teclado) | Acercarse → apps | Terminal, Tickets, Correo, Datos (T4), Red (T5) | T0 |
-| **Teléfono** de escritorio | Acercarse → directorio y teclado numérico | Pistas (Lupita), rumores, favores, llamadas de la historia | T0 |
+| **Teléfono** de escritorio | Acercarse → directorio y teclado numérico | Pistas (Eduardo), rumores, favores, llamadas de la historia | T0 |
 | **Libreta de apuntes** | Abrir → hojear pestañas, escribir | Historia, comandos aprendidos, pistas recibidas, tus notas | T0 |
 | **Pizarrón** pequeño en la mampara | Acercarse | Pendientes del turno; se tachan al cumplirse; post-its de favores | T0 |
 | **Post-its** (monitor y pizarrón) | Clic → leer | Datos sueltos (tu contraseña en T0, extensiones), favores | T0 |
 | **Calendario** de pared | Acercarse → clic en un día | Avance de la partida, calificación de turnos anteriores, tiempo extra del sábado 7 | T0 |
-| **Gafete** | Clic | Tu nombre y número de empleado = código de partida *(propuesta D-15)* | T0 |
+| **Gafete** | Clic | Tu nombre y número de empleado = código de partida *(D-15)* | T0 |
 | **Lonchera** | Abrir | Lo que te mandaron de comer ese día; a veces una nota | T1 |
 | **Taza** | Clic → tomar café | Ambiente (sonido); se vacía durante el turno | T0 |
 | **Cajón** | Abrir | Cosas que olvidó R. (algunas son pistas de la historia), clips, un manual viejo | T1 |
 | **Reloj de pared** | Mirar | Hora del juego (15:30–00:00) | T0 |
-| **Adornos y desorden** | Clic → reacción/comentario | Foto, planta, figurita, papeles, envolturas; los favores completados agregan regalos *(propuesta D-16)* | T0 |
+| **Adornos y desorden** | Clic → reacción/comentario | Foto, planta, figurita, papeles, envolturas; los favores completados agregan regalos *(D-16)* | T0 |
 | **Radio** pequeño *(opcional)* | Clic → prender/cambiar estación | Música ambiental con licencia libre | TE |
 
 ## Computadora
@@ -46,7 +44,7 @@ Apps en la pantalla del monitor (la interfaz se dibuja como si fuera el sistema 
 | App | Desde | Qué es |
 |---|---|---|
 | **Terminal** | T0 (inicio de sesión), T1 | Shell simulado del host actual |
-| **Tickets** | T1 | Mesa de ayuda: los tickets llegan aquí y se **responden tecleando** la respuesta *(propuesta D-17)* |
+| **Tickets** | T1 | Mesa de ayuda: los tickets llegan aquí y se **responden tecleando** la respuesta *(D-17)* |
 | **Correo** | T1 | Correos de la historia (Karla, Treviño, R., Calidad Corporativa) |
 | **Datos** | T4 | Cliente SQL visual sobre la misma base que `sqlite3`: editor, palabras clave resaltadas, tabla de resultados, esquema |
 | **Red** | T5 | Mapa de la red que se dibuja conforme descubres hosts con comandos |
@@ -93,17 +91,17 @@ Hay varias frases por caso para que no se repitan. El globo no gasta pistas ni a
 ## Teléfono
 
 - Al acercarte ves el teléfono, el **directorio de extensiones** (pegado en la mampara) y un teclado numérico. Marcas tecleando o con clic en los números.
-- Contactos: Lupita (214), Don Chuy (301), Karla (402), Conmutador (0), Comedor (150), Vigilancia (900), Gerencia (100). Detalle y voces en `02-trama.md`.
+- Contactos: Eduardo (214), Don Chuy (301), Karla (402), Conmutador (0), Comedor (150), Vigilancia (900), Gerencia (100). Detalle y voces en `02-trama.md`.
 - **Paciencia por turno:** llamadas 1–2 → charla, rumor o aviso; 3 → "¿No tienes trabajo? Ponte a trabajar"; 4+ → no contesta. Gerencia gasta paciencia al doble.
 - **Llamadas entrantes:** el teléfono suena; contestas con clic. Si no contestas, se prende la luz de buzón.
 - Las conversaciones son diálogos con subtítulos y, a veces, opciones de respuesta.
 
-## Pistas: Lupita por teléfono
+## Pistas: Eduardo por teléfono
 
-- Marcas a Lupita y eliges "Necesito una pista". Ella sabe en qué pendiente estás (o eliges el pendiente si hay varios).
+- Marcas a Eduardo y eliges "Necesito una pista". Sabe en qué pendiente estás (o eliges el pendiente si hay varios).
 - Tres niveles por objetivo, uno por llamada: **empujón** ("¿Ya viste qué hay en esa carpeta?") → **concepto** ("Hay un comando que muestra lo que tiene un archivo; viene de *concatenate*") → **comando exacto** dictado ("Teclea `cat LEEME.txt`, con mayúsculas").
 - Las pistas recibidas quedan escritas en la libreta (sección Pistas), sin poder copiarse: hay que teclearlas.
-- **Pedir pista no gasta la paciencia de Lupita** *(propuesta D-14)*; platicar con ella sí. Si fallas 3 veces seguidas el mismo objetivo, piensas en voz alta: *"Igual y le marco a Lupita…"*.
+- **Pedir pista no gasta la paciencia de Eduardo** *(D-14)*; platicar sí. Si fallas 3 veces seguidas el mismo objetivo, piensas en voz alta: *"Igual y le marco a Eduardo…"*.
 - Sin castigo de progreso: solo afecta las estrellas de la misión.
 
 ## Libreta de apuntes
@@ -114,7 +112,7 @@ Objeto físico en el escritorio; se abre como libreta de espiral con pestañas:
 |---|---|---|
 | **Historia** | El juego, automático | Hechos importantes: "R. dejó una carpeta oculta", "delta_svc entra a las `{{hora_acceso}}`" |
 | **Comandos** | El juego, al aprender | Cada comando/concepto: explicación corta, un ejemplo, y "En tu Linux real…" |
-| **Pistas** | El juego | Pistas que te dio Lupita |
+| **Pistas** | El juego | Pistas que te dio Eduardo |
 | **Mis notas** | El jugador | Notas libres tecleadas (sin pegar), hasta 200 notas de 500 caracteres |
 
 Las entradas automáticas aparecen con animación de escritura a mano y un sonido de lápiz. Es el sustituto del "manual": el jugador lo consulta sin salir del escritorio.
@@ -123,7 +121,7 @@ Las entradas automáticas aparecen con animación de escritura a mano y un sonid
 
 - El pizarrón muestra los **pendientes del turno** (objetivos de la misión actual y siguientes del día). Al cumplirse, se tachan con una animación de plumón.
 - Los **favores** aparecen como post-its pegados en el pizarrón o en el monitor; al completarse, el post-it se arruga y cae al bote.
-- Post-its informativos: contraseña (T0), extensiones, recordatorios de Lupita.
+- Post-its informativos: contraseña (T0), extensiones, recordatorios de Eduardo.
 
 ## Calendario
 
@@ -134,7 +132,7 @@ Las entradas automáticas aparecen con animación de escritura a mano y un sonid
 
 ## Código de partida (checkpoint)
 
-- **Nuevo ingreso:** escribes tu nombre; se genera un código de 12 caracteres (`K7QF-29XM-PL4D`, alfabeto sin caracteres ambiguos). Se muestra grande con la indicación "anótalo" y queda impreso en tu gafete *(propuesta D-15)*.
+- **Nuevo ingreso:** escribes tu nombre; se genera un código de 12 caracteres (`K7QF-29XM-PL4D`, alfabeto sin caracteres ambiguos). Se muestra grande con la indicación "anótalo" y queda impreso en tu gafete *(D-15)*.
 - **Checkpoints:** al completar cada misión o favor y al terminar el turno, la partida se guarda en el servidor bajo ese código. Entre checkpoints, el progreso también se guarda en el navegador.
 - **Checar entrada:** en el menú tecleas el código y continúas desde el último checkpoint, en cualquier computadora.
 - El código es la única llave de la partida: quien lo tenga puede continuarla. No se piden correos ni contraseñas.
@@ -142,10 +140,10 @@ Las entradas automáticas aparecen con animación de escritura a mano y un sonid
 
 ## La oficina viva
 
-- **Ambiente sonoro:** zumbido del aire acondicionado, teclados lejanos, impresora, teléfonos de otros escritorios, voceo de la planta ("Mantenimiento, favor de reportarse a Línea 3"), pitidos de montacargas, la alarma de la estación de fuga a las 23:59.
+- **Sonido escaso (D-19):** el silencio es lo normal. No hay ruido continuo de fondo; solo de vez en cuando algo a lo lejos (una impresora, un teléfono de otro escritorio, el voceo de la planta, el pitido de un montacargas) y los sonidos de lo que tú haces. Reglas en `docs/diseno/direccion-arte.md` §Audio.
 - **Luz:** la ventana pasa de tarde (15:30) a noche; las lámparas se ajustan; a las 00:00 el turno termina.
 - **Visitas:** alguien se acerca por el pasillo (pasos, voz). Pueden ser de historia, favores o ambientales, y traen rumores.
-- **Fechas especiales:** escritorio de bienvenida (T0), Halloween (T3), altar de Día de Muertos (T4), oficina medio vacía en tiempo extra *(propuestas)*.
+- **Fechas especiales (D-20):** marcadas en el calendario, con adornos en tu escritorio y comentarios de los compañeros; no afectan la historia. Detalle en `02-trama.md` §Fechas especiales.
 - **Reloj de juego:** avanza con lo que haces (comandos, llamadas, misiones), no con el tiempo real; los eventos guionizados ocurren a su hora.
 
 ## Estructura

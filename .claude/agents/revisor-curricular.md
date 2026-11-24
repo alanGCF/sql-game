@@ -15,7 +15,7 @@ Fuentes: `docs/plan/03-curriculo.md`, `docs/plan/04-mecanicas.md` (§Objetivos, 
 3. **Validación por resultado:** predicados de estado o `respuesta`; nunca el texto del comando. `comando_ejecutado` solo para observacionales.
 4. **Aleatorización:** respuestas con `esperado_de` (calculadas) salvo datos fijos de la historia; ningún valor variable escrito a mano en textos (usa `{{variable}}`); al menos una respuesta por misión cambia con la semilla.
 5. **Contraejemplos** cubren el atajo obvio; **alternativas** cubren otra forma válida.
-6. **Pistas de Lupita:** 3 por objetivo (empujón → concepto → comando exacto entre backticks); en su voz; sin regañar.
+6. **Pistas de Eduardo:** 3 por objetivo (empujón → concepto → comando exacto entre backticks); en su voz; sin regañar.
 7. **Superficie y vigencia:** comandos/banderas de `solucion` están en la superficie, ya se enseñaron y son la forma actual.
 8. **Favores (`tipo: favor`):** `ensena: []`; `refuerza` ya enseñado; `disponible_desde` 1–2 misiones después; no modifica banderas de la historia.
 9. **Repaso:** reutiliza al menos un concepto previo (excepto T1-M1).

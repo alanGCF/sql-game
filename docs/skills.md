@@ -10,7 +10,7 @@ Investigación del 2026-11-07, actualizada el 2026-11-24 con el cambio a escrito
 |---|---|---|
 | **superpowers** (obra) | Lluvia de ideas, planes, TDD, depuración sistemática, verificación | `/plugin install superpowers@claude-plugins-official` *(ya declarado en `.claude/settings.json`)* |
 | **ponytail** (DietrichGebert) | Cambio mínimo completo; `shortcut:`; `/ponytail-review` | Ya tienes `ponytail`, `ponytail-review`, `ponytail-debt` en tu cuenta |
-| **Context7** (upstash) | Documentación vigente de three.js, R3F, drei, Vite, Fastify, sql.js, Playwright, Zod | Ya configurado en tu cuenta, **pero requiere autorizarlo** en los conectores de claude.ai; alternativa: `npx ctx7 setup --claude` |
+| **Context7** (upstash) | Documentación vigente de three.js, R3F, drei, Vite, Fastify, sql.js, Playwright, Zod | Conector de claude.ai autorizado y verificado (2026-11-24); alternativa local: `npx ctx7 setup --claude` |
 | **react-three-fiber-game** (openai/plugins) | Guía para juegos 3D en el navegador con R3F + drei y capas DOM, HUD, carga de GLB | `npx skills add https://github.com/openai/plugins --skill react-three-fiber-game` *(verificar contenido antes de instalar)* |
 | **anthropics/skills** → `example-skills` | `frontend-design` (capas DOM con criterio), `webapp-testing` (Playwright), `skill-creator` | `/plugin marketplace add anthropics/skills` → `/plugin install example-skills@anthropic-agent-skills` |
 | **emilkowalski/skills** | `emil-design-eng`, `animate`, `choreograph`, `animation-performance`, `review-animations` para transiciones e interfaz | `npx skills@latest add emilkowalski/skills` |
@@ -32,6 +32,18 @@ Investigación del 2026-11-07, actualizada el 2026-11-24 con el cambio a escrito
 | Skills de Phaser / game-creator | Motores 2D/canvas distintos a nuestro stack |
 | claude-code-game-studios | Demasiado pesado; no se pudo verificar su contenido |
 | Skills genéricas de three.js sin mantenimiento claro | Riesgo de prácticas viejas; preferir Context7 + docs oficiales |
+
+## Sonido (D-19)
+
+No hay una skill que resuelva el audio sola; ayudan en piezas. Política del juego: sonido escaso (`docs/diseno/direccion-arte.md` §Audio).
+
+| Recurso | Uso aquí | Nota |
+|---|---|---|
+| Skills de principios de audio para juegos (p. ej. `add-audio` de opusgamelabs/game-creator, skills de "game audio" de la comunidad) | Lista de revisión: mezcla, prioridades, no repetir, volumen por categoría | Su código apunta a otros motores (Phaser/Howler); tomar solo las reglas. Verificar contenido antes de instalar |
+| **Web Audio** nativo (vía three.js, ADR-015) | Sonidos de interfaz y balbuceo de voces sintetizados en código: sin archivos, sin licencias | Opción elegida |
+| **ZzFX** (MIT, ~1 KB) | Alternativa si sintetizar a mano cuesta demasiado | Requiere ADR de dependencia |
+| **rFXGen** / **jsfxr** | Diseñar efectos tipo "beep" y exportarlos a `.wav` | Herramientas de diseño, no dependencias |
+| **freesound.org** (filtro CC0), **Kenney** (CC0) | Los pocos ambientales reales: impresora, voceo, montacargas | Registrar cada archivo en `docs/diseno/assets.md` |
 
 ## ¿Claude Design o Claude Code? (D-08)
 

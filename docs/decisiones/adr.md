@@ -68,9 +68,10 @@ Controles de `docs/plan/08-seguridad.md`: validación Zod en servidor, SQL param
 
 Solo dos ramas. Se trabaja en `develop` (un commit por tarea). `main` recibe `develop` con `--ff-only` tras CI, verificación, revisión visual, revisión de seguridad y aprobación del usuario. Railway despliega `main`.
 
-## ADR-015 · Audio con Web Audio vía three.js · aceptada
+## ADR-015 · Audio con Web Audio vía three.js · aceptada (actualizada con D-19)
 
-**Decisión.** `AudioListener`/`PositionalAudio` de three.js (sin librería extra) para ambiente, efectos posicionales (teléfono, pasos, impresora) y voces; formato `.ogg`/`.mp3`; el audio arranca tras la primera interacción (política de autoplay). Subtítulos para todo sonido relevante.
+**Decisión.** `AudioListener`/`PositionalAudio` de three.js (sin librería extra) para eventos ambientales posicionales (teléfono, impresora, montacargas) y voces. Sonidos de interfaz y balbuceo de voces **sintetizados** con Web Audio (osciladores y envolventes, parámetros por personaje); solo los ambientales reales son archivos `.ogg` CC0 cortos. Un **planificador de audio** con semilla aplica las reglas de `direccion-arte.md` §Audio (sin ruido continuo, máximo un evento ambiental cada 2–4 min, nunca dos a la vez, silencio durante diálogos). El audio arranca tras la primera interacción (política de autoplay). Subtítulos para todo sonido relevante.
+**Consecuencias.** (+) Casi sin peso de descarga ni licencias que rastrear; el planificador se prueba sin DOM. (−) Hay que diseñar los sintetizadores a mano; si cuesta demasiado, ZzFX (MIT) con su propio ADR.
 
 ## ADR-016 · Diseño visual dentro de Claude Code, no en Claude Design · aceptada
 

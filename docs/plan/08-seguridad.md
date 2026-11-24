@@ -20,7 +20,7 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 | **Adivinar códigos ajenos** | Fuerza bruta sobre `GET /api/partidas/:codigo` | ≈ 60 bits de entropía (CSPRNG), límite de tasa por IP, validación de formato antes de tocar la base, respuesta uniforme para inexistente, alertas por volumen |
 | **Sobrescribir partidas ajenas** | `PUT` con un código adivinado | Mismo control anterior; además `revision` monotónica |
 | **Robo de la base** | Fuga de datos | Solo se guarda `sha256(código)`; no hay datos personales salvo el nombre elegido; respaldos de Railway |
-| **Usar el servidor como almacenamiento gratis** | Partidas de 10 MB con basura | Cuerpo ≤ 64 KB, esquema Zod estricto (rechaza claves desconocidas), límites por campo (notas ≤ 200 × 500 car.), límite de creación 10/h por IP, retención de 12 meses |
+| **Usar el servidor como almacenamiento gratis** | Partidas de 10 MB con basura | Cuerpo ≤ 64 KB, esquema Zod estricto (rechaza claves desconocidas), límites por campo (notas ≤ 200 × 500 car.), límite de creación 10/h por IP, retención de 60 días (D-18) |
 | **Denegación de servicio** | Ráfagas de peticiones | `@fastify/rate-limit`, límites de cuerpo y tiempo de conexión, sin operaciones costosas por petición; protección del proxy de Railway |
 | **XSS** | Nombre o notas con `<script>` | React escapa por defecto; prohibido `dangerouslySetInnerHTML` (regla de lint); contenido Markdown de la libreta se compila en build, no del usuario; CSP estricta |
 | **Clickjacking** | Juego embebido en otro sitio | `frame-ancestors 'none'`, `X-Frame-Options: DENY` |
@@ -39,7 +39,7 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 - [ ] Errores sin trazas ni detalles internos hacia el cliente; logs con `pino` redactando `codigo`, cabeceras de autorización y cuerpos.
 - [ ] Contenedor como usuario no root, imagen mínima, solo `dist/` y dependencias de producción.
 - [ ] Sin endpoints de administración expuestos.
-- [ ] Tarea de retención (borrado de partidas inactivas).
+- [ ] Tarea de retención: borrado de partidas con 60 días sin actividad (D-18).
 
 ## Controles del cliente
 

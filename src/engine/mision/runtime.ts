@@ -152,7 +152,7 @@ export class MisionEnCurso {
     return { ...avance, correcta: this.cumplidos.has(objetivo) };
   }
 
-  /** Siguiente nivel de pista del objetivo (Lupita por teléfono); null si ya dio las tres. */
+  /** Siguiente nivel de pista del objetivo (Eduardo por teléfono); null si ya dio las tres. */
   pista(objetivo: string): Pista | null {
     const o = this.mision.objetivos.find((x) => x.id === objetivo);
     if (!o) throw new Error(`objetivo inexistente: ${objetivo}`);

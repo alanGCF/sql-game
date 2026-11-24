@@ -13,7 +13,7 @@ Términos con significado específico en este proyecto. Úsalos igual en docs, c
 | **Objetivo** | `objective` | Condición verificable; se muestra como **pendiente** en el pizarrón. |
 | **Predicado** | `predicate` | Regla que el motor evalúa sobre el mundo o una respuesta. |
 | **Respuesta** | `answer` | Lo que el jugador teclea en un ticket o en la libreta; se normaliza y se compara con el valor calculado del mundo. |
-| **Pista** | `hint` | Ayuda de 3 niveles que da Lupita por teléfono. |
+| **Pista** | `hint` | Ayuda de 3 niveles que da Eduardo por teléfono. |
 | **Paciencia** | `patience` | Cuántas llamadas aguanta un contacto en un turno antes de dejar de contestar. |
 | **Rumor** | `rumor` | Charla de ambiente o dirección de la historia; nunca resuelve un objetivo. |
 | **Visita** | `visit` | Alguien se acerca al cubículo (historia, favor o ambiente). |

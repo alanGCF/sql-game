@@ -25,19 +25,18 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | — | Código de partida | Se genera al empezar; continuar desde el menú |
 | — | Fuera de alcance | Globo de pensamiento "no sé qué haga esto, mejor no le doy Enter" |
 | — | Ramas | Solo `main` y `develop` |
-| D-08 (parte) | Herramienta de diseño | Respondido por el agente: seguir en Claude Code (ver ADR-016); falta elegir estilo |
+| D-08 | Estilo visual 3D | **C · Estilizado limpio** (ver `docs/diseno/direccion-arte.md`) |
+| D-13 | Compañero que da pistas | **Eduardo Téllez**, Sistemas Sr., ext. 214 |
+| D-14 | Paciencia del compañero | Recomendación aceptada: pedir pista **nunca** gasta paciencia; platicar sí |
+| D-15 | Código de partida | Recomendación aceptada: número de empleado impreso en el gafete y "Checar entrada" en el menú |
+| D-16 | Recompensa de favores | Recomendación aceptada: XP + adorno nuevo en el escritorio |
+| D-17 | Dónde se responden las preguntas | Recomendación aceptada: tickets en la app Tickets; hallazgos en la libreta |
+| D-18 | Retención de partidas en el servidor | **2 meses** (60 días sin actividad) |
+| D-19 | Voces y sonido | Recomendación aceptada: balbuceo por personaje + subtítulos. Además: **sonido escaso**, solo de vez en cuando, nunca ruido constante (reglas en `direccion-arte.md` §Audio) |
+| D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
 
 ## Abiertas
 
 | ID | Decisión | Opciones | Recomendación | Bloquea |
 |---|---|---|---|---|
-| **D-05** | Nombre del juego | "Fuga" (doble sentido: prueba de fuga y fuga de información) · "23:59" · "Lote {{n}}" · "Planta 7" · "Turno Vespertino" · otro | **"Fuga"** o **"23:59"**; nombre clave mientras tanto: Planta 7 | menú, créditos |
-| **D-08** | Estilo visual 3D | A "Low-poly cálido" · B "Retro PS1" · C "Estilizado limpio" (capturas del spike F0-07) | Decidir viendo capturas | F3 |
-| **D-13** | Compañero(a) que da pistas | Lupita Rentería (técnica Sr., 29) · Memo Saldívar (técnico Sr., 31) · otro | **Lupita** (ya escrita en los docs, fácil de cambiar) | contenido T0 |
-| **D-14** | ¿Lupita deja de contestar si la llamas mucho? | (a) pedir pista nunca gasta paciencia; platicar sí · (b) todo gasta paciencia | **(a)**: si deja de contestar, el jugador se atora | F4 |
-| **D-15** | Código de partida como número de empleado | (a) impreso en tu gafete y "Checar entrada" en el menú · (b) código genérico en el menú | **(a)**: diegético y fácil de recordar dónde está | F4 |
-| **D-16** | Recompensa de favores | (a) XP + adorno nuevo en tu escritorio · (b) solo XP | **(a)**: el escritorio cuenta tu historia | F4 |
-| **D-17** | Dónde se responden las preguntas | (a) tickets en la app Tickets; hallazgos en la libreta · (b) todo en la libreta | **(a)** | F2-03 |
-| **D-18** | Retención de partidas en el servidor | 6 · 12 · 24 meses sin actividad | **12 meses** | F4 |
-| **D-19** | Estilo de las voces | (a) balbuceo por personaje + subtítulos · (b) sin voz, solo subtítulos y sonido de teléfono · (c) voces grabadas | **(a)**: barato y con personalidad | F4 |
-| **D-20** | Fechas especiales | Halloween (T3), altar de muertos (T4), lunes 16 festivo con citación | **Todas**: dan vida a la oficina | contenido |
+| **D-05** | Nombre del juego | Propuestos por el usuario: Código Sombra · Archivo Cero · Operación Medianoche · Huellas en el Sistema · Rastro en el Log · Desde el Cubículo · Consulta Nocturna | **Rastro en el Log** (alternativa: Huellas en el Sistema). Pendiente de confirmar; nombre clave mientras tanto: Planta 7 | menú, créditos |

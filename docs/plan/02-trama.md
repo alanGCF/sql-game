@@ -15,7 +15,7 @@ Tu trabajo diario son tickets normales de sistemas. Tu investigación es reconst
 - Misterio corporativo de bajo perfil con humor de planta. Nada de "hackers con capucha".
 - La oficina se siente viva: voceo, chismes, gente que pasa, la luz que cambia de tarde a noche.
 - La tensión sube con el calendario: cada turno estás más cerca del viernes 13 y del embarque.
-- Consecuencias de seguridad industrial, no violencia. Español de México; el humor norteño viene de Don Chuy y de Lupita, sin caricatura.
+- Consecuencias de seguridad industrial, no violencia. Español de México; el humor norteño viene de Don Chuy y de Eduardo, sin caricatura.
 
 ## Calendario
 
@@ -24,12 +24,12 @@ La planta trabaja **de lunes a viernes**. Todos los días son de 2026.
 | Fecha | Día | Turno | Qué pasa |
 |---|---|---|---|
 | Lun 26 oct | — | (no jugable) | Inducción general a la planta. Se menciona en el Turno 0. |
-| **Mar 27 oct** | Bienvenida | **T0** | Tu escritorio está decorado. Lupita se presenta y te enseña a jugar. Sin conceptos técnicos. |
+| **Mar 27 oct** | Bienvenida | **T0** | Tu escritorio está decorado. Eduardo se presenta y te enseña a jugar. Sin conceptos técnicos. |
 | Mié 28 oct | 1er turno | **T1** | Inducción a Linux. |
 | Jue 29 oct | | **T2** | |
-| Vie 30 oct | | **T3** | Decoración de Halloween en la oficina *(propuesta)*. |
+| Vie 30 oct | | **T3** | Víspera de Halloween (D-20): calabaza y telarañas de papel en tu escritorio; comentarios de los compañeros. |
 | Sáb 31 – Dom 1 | fin de semana | — | |
-| Lun 2 nov | | **T4** | Altar de Día de Muertos en la oficina *(propuesta)*. |
+| Lun 2 nov | | **T4** | Día de Muertos (D-20): papel picado y cempasúchil en tu escritorio, pan de muerto en la lonchera; comentarios de los compañeros. |
 | Mar 3 nov | | **T5** | Cierre del MVP (`wall` de Delta). |
 | Mié 4 – Vie 6 nov | | **T6–T8** | |
 | **Sáb 7 nov** | tiempo extra | **TE** (opcional) | 3–4 favores de repaso. No afecta la historia. |
@@ -37,7 +37,21 @@ La planta trabaja **de lunes a viernes**. Todos los días son de 2026.
 | Lun 9 – Jue 12 nov | | **T9–T12** | |
 | **Vie 13 nov** | último turno | **T13** | Tu jugada final. |
 | Sáb 14 nov 06:00 | — | — | Sale (o no) el embarque del lote `{{lote}}`. |
-| **Lun 16 nov** | epílogo | **Final** | Llegas solo a ver qué pasó: si te despiden, si se detuvo el embarque o si lograste el mejor final. *(Nota: el tercer lunes de noviembre es descanso obligatorio por el Día de la Revolución; propuesta: la planta está casi vacía y te citaron de todos modos, lo que sube la tensión.)* |
+| **Lun 16 nov** | epílogo | **Final** | Llegas solo a ver qué pasó: si te despiden, si se detuvo el embarque o si lograste el mejor final. Es el descanso obligatorio por el Día de la Revolución (tercer lunes de noviembre): la planta está casi vacía y te citaron de todos modos (D-20). |
+
+### Fechas especiales (D-20)
+
+Ambientación pura: **no cambian la historia** ni los objetivos.
+
+| Fecha | En el calendario | En el escritorio | Comentarios de los compañeros (ejemplos) |
+|---|---|---|---|
+| Mar 27 oct (T0) | "Bienvenida" | Globos, letrero, concha y taza nueva | Eduardo y Don Chuy te dan la bienvenida |
+| Sáb 31 oct | "Halloween" (fin de semana) | — (se ve el viernes 30) | Viernes 30: "¿Vas a disfrazarte el sábado o ya con el gafete das miedo?" |
+| Lun 2 nov (T4) | "Día de Muertos" | Papel picado, cempasúchil, pan de muerto en la lonchera | Comedor: "Hoy hay pan de muerto, pero ni le digas a Treviño." |
+| Sáb 7 nov (TE) | "Tiempo extra" | Oficina medio vacía, radio prendido | Eduardo: "¿Viniste en sábado? Te ganaste un café." |
+| Lun 16 nov (final) | "Día de la Revolución" | — | "¿A ti también te citaron en día festivo?" |
+
+Cada comentario es corto (≤ 280 caracteres), llega por visita o llamada y no gasta paciencia del contacto.
 
 ## Estructura narrativa
 
@@ -51,7 +65,7 @@ La planta trabaja **de lunes a viernes**. Todos los días son de 2026.
 | Personaje | Rol | Usuario de sistema | Ext. | Voz | Función |
 |---|---|---|---|---|---|
 | **Jugador** | Técnico de sistemas, turno vespertino | `becario` | 210 | — (nombre elegido) | Protagonista; sus pensamientos aparecen como globo de pensamiento |
-| **Lupita Rentería** *(propuesta D-13)* | Técnica de sistemas Sr., tu compañera de departamento, 4 años en la planta | `grenteria` | 214 | Cálida, sarcástica, siempre con prisa ("ando en piso, márcame") | **Te da las pistas por teléfono.** Se presenta en T0 y te enseña a jugar. Fuente de rumores. |
+| **Eduardo Téllez** *(D-13)* | Sistemas Sr., de tu mismo departamento, 4 años en la planta | `etellez` | 214 | Voz cálida y sarcástica, siempre con prisa ("ando en piso, márcame") | **Te da las pistas por teléfono.** Se presenta en T0 y te enseña a jugar. Fuente de rumores. |
 | **Jesús "Don Chuy" Ortega** | Supervisor de mantenimiento, 30 años en la planta | — | 301 | Coloquial, norteño, refranes, desconfía de "las máquinas" | Conecta lo físico con los datos ("la estación de fuga pita a las 11:59 y nadie la toca") |
 | **Ing. Rebeca Salcido ("R.")** | Ex ingeniera de sistemas y automatización | `rsalcido` | — | Precisa, escueta, irónica | Tutora indirecta vía notas escondidas; reaparece en T10 (D-12) |
 | **Ing. Karla Ibáñez** | Jefa de Calidad del turno | `kibanez` | 402 | Directa, presionada | Pide tickets; sus credenciales fueron usadas → sospechosa falsa; aliada desde T9 |
@@ -64,14 +78,14 @@ La planta trabaja **de lunes a viernes**. Todos los días son de 2026.
 
 ### Teléfono: paciencia de los contactos
 
-Cada contacto tiene **paciencia por turno**: llamadas 1–2 → contenido (charla, rumor, aviso); llamada 3 → "¿No tienes trabajo? Ponte a trabajar"; llamada 4 en adelante → no contesta (timbra o buzón). Se reinicia cada turno. Llamar a gerencia sin motivo gasta paciencia más rápido. Las **llamadas a Lupita para pedir pista no gastan paciencia** *(propuesta D-14)*; platicar con ella sí.
+Cada contacto tiene **paciencia por turno**: llamadas 1–2 → contenido (charla, rumor, aviso); llamada 3 → "¿No tienes trabajo? Ponte a trabajar"; llamada 4 en adelante → no contesta (timbra o buzón). Se reinicia cada turno. Llamar a gerencia sin motivo gasta paciencia más rápido. Las **llamadas a Eduardo para pedir pista no gastan paciencia** *(D-14)*; platicar sí.
 
 ### Rumores
 
 Cada contacto y cada visita tiene una bolsa de rumores por turno (sin repetirse). Son ambientación, foreshadowing o pistas falsas; **nunca dan la respuesta** de un objetivo: toda acusación requiere evidencia obtenida con una herramienta. Ejemplos:
 - Don Chuy (T3): "Desde agosto el turno nocturno no reporta ni una pieza de scrap. Ni cuando yo era joven éramos tan buenos."
 - Comedor (T4): "El licenciado Treviño ya ni baja a comer. Dicen que le traen la comida a la oficina desde que vino el del corporativo."
-- Lupita (T6): "A Rebeca la sacaron después de una junta con Treviño. Ella decía que la de Calidad le estaba escondiendo algo... yo no sé."
+- Eduardo (T6): "A Rebeca la sacaron después de una junta con Treviño. Ella decía que la de Calidad le estaba escondiendo algo... yo no sé."
 - Vigilancia (T7): "Un carro sin calcomanía se para afuera a las doce menos cuarto. Nomás se queda ahí y se va."
 
 ### Visitas al cubículo
@@ -83,14 +97,14 @@ Alguien se acerca por el pasillo (sonido de pasos, globo de diálogo, puedes gir
 Objetivo: aprender los controles del juego dentro de la historia. Sin conceptos de Linux.
 
 1. Apareces sentado. Tu escritorio está decorado: globos, un letrero "¡Bienvenid@, {{nombre}}!", una concha de pan y una taza con el logo de la planta.
-2. **Lupita se acerca a presentarse.** Diálogo con respuesta del jugador:
-   - Lupita: "¡Tú eres el nuevo! Soy Lupita, de sistemas. Vamos a estar en el mismo departamento."
-   - Lupita: "¿Ya te dieron el recorrido o te aventaron directo aquí?"
+2. **Eduardo se acerca a presentarse.** Diálogo con respuesta del jugador:
+   - Eduardo: "¡Tú eres el nuevo! Soy Eduardo, de sistemas. Vamos a estar en el mismo departamento."
+   - Eduardo: "¿Ya te dieron el recorrido o te aventaron directo aquí?"
    - **Jugador (elige):** "El lunes fue mi inducción a la planta." / "El lunes me dieron la inducción, pero no me acuerdo de nada." *(ambas dicen lo mismo con distinto tono)*
-   - Lupita: "Uy, la de seguridad industrial. A todos nos dormían. Bueno, aquí lo que importa es esto…"
-3. Lupita te enseña, uno por uno, con un pendiente en el pizarrón para cada cosa: mirar alrededor con el mouse → leer el post-it del monitor (tu contraseña) → abrir la libreta → revisar el calendario → marcarle desde el teléfono (ext. 214: "así me pides ayuda cuando me necesites; casi siempre ando en piso") → acercarte a la computadora, iniciar sesión tecleando la contraseña y alejarte.
-4. Ves tu **gafete** con tu número de empleado = tu código de partida *(propuesta D-15)*.
-5. Cierre: Lupita: "Mañana empieza lo bueno. Ah, y no le hagas caso a lo que dicen de la ingeniera Salcido."
+   - Eduardo: "Uy, la de seguridad industrial. A todos nos dormían. Bueno, aquí lo que importa es esto…"
+3. Eduardo te enseña, uno por uno, con un pendiente en el pizarrón para cada cosa: mirar alrededor con el mouse → leer el post-it del monitor (tu contraseña) → abrir la libreta → revisar el calendario → marcarle desde el teléfono (ext. 214: "así me pides ayuda cuando me necesites; casi siempre ando en piso") → acercarte a la computadora, iniciar sesión tecleando la contraseña y alejarte.
+4. Ves tu **gafete** con tu número de empleado = tu código de partida *(D-15)*.
+5. Cierre: Eduardo: "Mañana empieza lo bueno. Ah, y no le hagas caso a lo que dicen de la ingeniera Salcido."
 
 ## Línea por turno
 
@@ -195,7 +209,7 @@ Las filas se generan en el navegador con la semilla de la partida (`content/mund
 1. Cada misión avanza el misterio **un paso**; nunca dos revelaciones juntas.
 2. El briefing plantea el problema, no la solución.
 3. Máximo 280 caracteres por globo; 2–4 globos por diálogo.
-4. Los comandos los explican Lupita (por teléfono), las notas de R., el manual (`man`) y la libreta; los demás personajes nunca dan clases.
+4. Los comandos los explican Eduardo (por teléfono), las notas de R., el manual (`man`) y la libreta; los demás personajes nunca dan clases.
 5. Don Chuy conecta lo físico (ruidos, luces, cables, horarios) con los datos.
 6. Toda acusación necesita evidencia obtenida con una herramienta. Los rumores orientan, no resuelven.
 7. El jugador siempre está autorizado: los tickets y la historia justifican cada acción técnica.

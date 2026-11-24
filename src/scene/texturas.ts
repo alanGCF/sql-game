@@ -206,7 +206,7 @@ export function dibujarDirectorio(ctx: CanvasRenderingContext2D, w: number, h: n
   ctx.fillText("EXTENSIONES", 16, 34);
   ctx.font = `20px ${MONO}`;
   const filas = [
-    "Lupita (Sist.)  214",
+    "Eduardo (Sist.) 214",
     "Don Chuy (Mtto) 301",
     "Karla (Calidad) 402",
     "Comedor         150",

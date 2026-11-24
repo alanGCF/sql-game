@@ -92,7 +92,7 @@ Convención de IDs: `<dominio>.<área>.<concepto>`. Misión principal: `T<turno>
 
 | Misión | Tipo | Título | Nuevos conceptos | Objetivo verificable (resultado) | Avance de trama |
 |---|---|---|---|---|---|
-| T1-M1 | Ticket | ¿Dónde estoy? | `linux.nav.pwd`, `linux.nav.ls` | Responder "¿en qué carpeta estás?" y "¿cuántos elementos hay?" | Lupita te deja el primer ticket; ves `LEEME.txt` y `tickets/` |
+| T1-M1 | Ticket | ¿Dónde estoy? | `linux.nav.pwd`, `linux.nav.ls` | Responder "¿en qué carpeta estás?" y "¿cuántos elementos hay?" | Eduardo te deja el primer ticket; ves `LEEME.txt` y `tickets/` |
 | T1-M2 | Ticket | El LEEME | `linux.files.cat` | Archivo leído + responder con qué inicial firmó | "No confíes en los números del turno nocturno — R." |
 | T1-M3 | Ticket | Moverse por la planta | `linux.nav.cd`, `linux.shell.atajos` | Responder el estado de la Línea 3 leído en `/srv/lineas/linea3/estado.txt` | La Línea 3 tiene "paros sin causa a las 23:59" |
 | T1-M4 | Ticket | Pregúntale al manual | `linux.help.man`, `linux.nav.ocultos` | Descubrir en `man ls` la bandera que muestra ocultos y usarla (evento `.r/` visible) | Aparece `.r/` |
@@ -187,7 +187,7 @@ Comandos de Windows (`dir`, `cls`, `type`, `ipconfig`, `copy`, `del`) responden 
 Reglas (las valida el harness, regla C16):
 - `ensena: []`; `refuerza:` 1–3 conceptos ya enseñados.
 - Disponible **1–2 misiones principales después** de la misión que enseña el concepto más reciente que refuerza.
-- No cambia banderas de la historia principal; recompensa: XP, estrellas y un objeto decorativo para el escritorio *(propuesta D-16)*.
+- No cambia banderas de la historia principal; recompensa: XP, estrellas y un objeto decorativo para el escritorio *(D-16)*.
 - Llega como post-it en el pizarrón, llamada entrante o visita; queda pendiente hasta completarse (no caduca).
 - Los datos también salen de la semilla.
 
@@ -196,15 +196,15 @@ Reglas (las valida el harness, regla C16):
 | T1-F1 | Don Chuy (visita) | `linux.nav.cd`, `linux.files.cat` | T1-M4 | "No traigo lentes: ¿qué dice el estado de la Línea 1?" |
 | T2-F1 | Comedor (post-it) | `linux.files.copiar_mover`, `linux.shell.globs` | después de T2-M4 (inicio de T3) | Ordenar los menús de la semana en una carpeta y renombrar el que dice "jueves" con fecha mal |
 | T3-F1 | Karla (llamada) | `linux.text.grep`, `linux.shell.pipes`, `linux.text.contar` | T3-M4 | ¿Cuántos tickets mencionan "impresora"? |
-| T4-F1 | Lupita (post-it) | `sql.select.where`, `sql.select.orden` | después de T4-M4 (inicio de T5) | Los 3 lotes más grandes de la Línea 1 |
+| T4-F1 | Eduardo (post-it) | `sql.select.where`, `sql.select.orden` | después de T4-M4 (inicio de T5) | Los 3 lotes más grandes de la Línea 1 |
 | T5-F1 | Vigilancia (llamada) | `net.diag.ping`, `net.dns.resolucion` | T5-M4 | ¿Responde el checador de la caseta? |
 | T6-F1 | Comedor (visita) | `sql.agg.funciones`, `sql.agg.group_by` | después de T6-M4 | Promedio de piezas por turno (para el pastel del mes) |
-| T7-F1 | Lupita (post-it) | `linux.perms.chmod`, `linux.files.find` | después de T7-M4 | Encontrar y corregir permisos de un script de respaldo |
+| T7-F1 | Eduardo (post-it) | `linux.perms.chmod`, `linux.files.find` | después de T7-M4 | Encontrar y corregir permisos de un script de respaldo |
 | T8-F1 | Don Chuy (llamada) | `net.puertos.ss`, `net.http.curl` | después de T8-M4 | ¿Está arriba el servicio del tablero de la Línea 2? |
 | TE-F1…F4 | varios | mezcla de T1–T8 | sábado 7 (opcional) | 4 favores de repaso mixto |
 | T9-F1 | Karla (visita) | `sql.join.inner` | T9-M3 | Lista de empleados con sus accesos del día |
-| T10-F1 | Lupita (llamada) | `net.ssh.scp`, `linux.files.tar` | después de T10-M4 | Copiar un respaldo al servidor de archivos |
-| T11-F1 | Lupita (post-it) | `linux.script.basico`, `linux.sched.cron` | después de T11-M4 | Programar la limpieza semanal de `/tmp` del servidor |
+| T10-F1 | Eduardo (llamada) | `net.ssh.scp`, `linux.files.tar` | después de T10-M4 | Copiar un respaldo al servidor de archivos |
+| T11-F1 | Eduardo (post-it) | `linux.script.basico`, `linux.sched.cron` | después de T11-M4 | Programar la limpieza semanal de `/tmp` del servidor |
 | T12-F1 | Karla (llamada) | `sql.tx.transacciones` | después de T12-M4 | Corregir un dato mal capturado de forma segura |
 | T13-F1 | Don Chuy (visita) | `linux.files.checksum` | T13-M3 | Verificar que el firmware que bajó no venga corrupto |
 

@@ -86,7 +86,7 @@ const FRASES: Record<MotivoPensamiento, readonly string[]> = {
   fuera_de_alcance: [
     "No sé qué haga esto… mejor no le doy Enter.",
     "Mmm, eso no me lo han enseñado. Mejor no me arriesgo.",
-    "Ni idea de qué haga eso. Mejor le pregunto a Lupita antes de romper algo.",
+    "Ni idea de qué haga eso. Mejor le pregunto a Eduardo antes de romper algo.",
   ],
   avanzado: [
     "Eso se ve muy avanzado. Mejor no me arriesgo.",

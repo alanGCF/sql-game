@@ -2,7 +2,7 @@
 # dependen de decisiones abiertas se marcan como propuesta.
 personajes:
   jugador: { nombre: "{{nombre}}", rol: "Técnico de sistemas, turno vespertino", extension: 210, usuario: becario }
-  companero: { nombre: Lupita Rentería (propuesta D-13), rol: Técnica de sistemas Sr.; da las pistas, extension: 214, usuario: grenteria, paciencia: 2 }
+  companero: { nombre: Eduardo Téllez, rol: Sistemas Sr.; da las pistas, extension: 214, usuario: etellez, paciencia: 2 }
   don_chuy: { nombre: Jesús "Don Chuy" Ortega, rol: Supervisor de mantenimiento, extension: 301, paciencia: 2 }
   rsalcido: { nombre: Ing. Rebeca Salcido (R.), rol: Ex ingeniera de sistemas y automatización, usuario: rsalcido }
   karla: { nombre: Ing. Karla Ibáñez, rol: Jefa de Calidad del turno, extension: 402, usuario: kibanez, paciencia: 2 }

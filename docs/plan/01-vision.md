@@ -8,7 +8,7 @@ Eres el nuevo técnico de sistemas del turno vespertino de una planta de manufac
 
 - **Primera persona, sentado.** La cámara mira hacia donde apunta el cursor; ves tu escritorio, un poco del cubículo y algo de la oficina. No caminas.
 - **El escritorio es la interfaz.** Computadora (terminal y herramientas), teléfono (compañero que da pistas, rumores, contactos), libreta de apuntes (se llena sola y también escribes tú), pizarrón de pendientes, calendario con tu avance, post-its, lonchera, adornos.
-- **La oficina está viva.** Ruido de fondo, voceo de la planta, gente que pasa y se acerca a platicar o a pedirte un favor, la luz de la ventana que cambia de tarde a noche.
+- **La oficina está viva, sin saturar.** De vez en cuando se oye algo a lo lejos (una impresora, el voceo de la planta); gente que pasa y se acerca a platicar o a pedirte un favor; la luz de la ventana que cambia de tarde a noche; fechas especiales con adornos y comentarios.
 - **Aprender haciendo.** Cada comando que aprendes sirve para avanzar la historia; los favores de los compañeros sirven para repasar.
 
 ## Para quién
