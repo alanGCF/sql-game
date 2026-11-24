@@ -81,7 +81,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ## F2 — Runtime de misiones + harness de contenido + T1 headless
 
-### F2-01 · Esquemas (misión, favor, personajes, contactos, currículo, partida) · `en-progreso` (esquema de misión/favor con predicados hecho y probado; faltan currículo en YAML, personajes, contactos y partida)
+### F2-01 · Esquemas (misión, favor, personajes, contactos, currículo, partida) · `hecha (2026-11-24)` *(misión/favor, `content/curriculo.yaml` con 65 conceptos y la superficie, `content/personajes.yaml` con contactos y paciencia, partida en `shared/`)*
 - **Listo cuando:** `docs/ejemplos/mision-ejemplo.yaml` valida; errores legibles con ruta del campo.
 
 ### F2-02 · Pipeline de contenido (YAML → JSON por turno) · `pendiente` · depende: F2-01
@@ -90,8 +90,12 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F2-04 · Guardado local, formato versionado y restaurar misión · `hecha (2026-11-24)` *(diferencias del mundo, guardar/cargar, restaurar; `shared/partida.ts` con esquema estricto, migraciones y límite de 64 KB; la escritura en IndexedDB va con la UI en F4)*
 
-### F2-05 · Harness de contenido C1–C18 con semillas · `en-progreso` (C1, C2, C3, C4, C5, C8 parcial, C11, C13 y C17 hechos con `npm run validate:content`; C6, C7, C9, C10, C12, C14, C15, C16 y C18 necesitan el currículo en YAML y contenido real)
+### F2-05 · Harness de contenido C1–C18 con semillas · `hecha (2026-11-24)` *(C1–C11, C13, C15–C18; C12 y C14 pasan a F2-09)*
 - **Listo cuando:** un fixture por regla la dispara; el ejemplo pasa con 25 semillas.
+
+### F2-09 · Reglas C12 (finales alcanzables) y C14 (ortografía) · `pendiente` · depende: F2-05
+- **Hacer:** C12 cuando exista contenido del Turno 13 (hoy no hay finales que revisar); C14 con `cspell` y diccionario es-MX del proyecto (dependencia nueva con ADR) al empezar a escribir contenido real (F2-08).
+- **Listo cuando:** un fixture con un final inalcanzable y otro con una falta de ortografía disparan su regla.
 
 ### F2-06 · `npm run play --mision` (interactivo, `--solucion`, `--sesion/--cmd`) · `pendiente` · depende: F2-03, F1-11
 

@@ -4,7 +4,9 @@ import { textoPlano } from "../shell/lexer";
 import { plantilla } from "../vars";
 import { type Entrada, vfsDesde } from "../vfs";
 import { diferencias } from "../vfs-diff";
+import type { Curriculo, Personajes } from "./curriculo";
 import { type Mision, type Paso, validarMision } from "./esquema";
+import { revisarConCurriculo } from "./harness-curriculo";
 import { calcularEsperado, evaluar } from "./predicados";
 import { MisionEnCurso } from "./runtime";
 
@@ -18,6 +20,8 @@ export interface Hallazgo {
 
 export interface OpcionesHarness {
   semillas: number;
+  curriculo?: Curriculo;
+  personajes?: Personajes;
   /** Mundo base del turno; por omisión, solo la carpeta personal del usuario inicial. */
   mundoBase?: (m: Mision) => Entrada[];
 }
@@ -79,6 +83,7 @@ export async function revisarMision(datos: unknown, o: OpcionesHarness): Promise
     return h;
   }
   const m = v.mision;
+  if (o.curriculo) h.push(...revisarConCurriculo(m, o.curriculo, o.personajes));
 
   // C8 (parcial): cada comando de la solución se ejecuta en el motor y existe en la superficie.
   for (const p of m.solucion) {
