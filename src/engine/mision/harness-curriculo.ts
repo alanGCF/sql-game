@@ -4,6 +4,11 @@ import type { Hallazgo } from "./harness";
 
 /** Reglas del harness que usan el currículo y los personajes (C6, C7, C9, C10, C15, C16, C18). */
 
+/** Escapa todos los metacaracteres de una expresión regular (incluida la diagonal invertida). */
+function escaparRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function codigoDisponible(d: string): string {
   return /^T\d+-M\d+$/.test(d) ? d : codigoDeId(d);
 }
@@ -89,7 +94,7 @@ export function revisarConCurriculo(m: Mision, c: Curriculo, p?: Personajes): Ha
   for (const [nombre, g] of Object.entries(m.variables ?? {})) {
     if (g.tipo === "ip") {
       const base = g.red.split("/")[0]?.split(".").slice(0, 3).join(".") ?? "";
-      for (const ip of textos.match(new RegExp(`${base.replace(/\./g, "\\.")}\\.(\\d+)`, "g")) ?? []) {
+      for (const ip of textos.match(new RegExp(`${escaparRegex(base)}\\.(\\d+)`, "g")) ?? []) {
         const oct = Number(ip.split(".")[3]);
         if (oct >= g.min && oct <= g.max) error("C18", `"${ip}" debería ser {{${nombre}}}`);
       }
