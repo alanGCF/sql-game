@@ -86,7 +86,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F2-02 · Pipeline de contenido (YAML → JSON por turno) · `pendiente` · depende: F2-01
 
-### F2-03 · Predicados, `esperado_de`, eventos, pistas, estrellas · `pendiente` · depende: F2-01, F1-05
+### F2-03 · Predicados, `esperado_de`, eventos, pistas, estrellas · `en-progreso` (predicados de archivos, respuestas normalizadas, `esperado_de` en mundo oculto, banderas, sesión y combinadores hechos; faltan eventos, pistas y estrellas)
 
 ### F2-04 · Guardado local, formato versionado y restaurar misión · `pendiente` · depende: F2-03
 
