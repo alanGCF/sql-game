@@ -86,9 +86,9 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F2-02 · Pipeline de contenido (YAML → JSON por turno) · `pendiente` · depende: F2-01
 
-### F2-03 · Predicados, `esperado_de`, eventos, pistas, estrellas · `en-progreso` (predicados de archivos, respuestas normalizadas, `esperado_de` en mundo oculto, banderas, sesión y combinadores hechos; faltan eventos, pistas y estrellas)
+### F2-03 · Predicados, `esperado_de`, eventos, pistas, estrellas · `hecha (2026-11-24)` *(runtime `MisionEnCurso`: parches con variables y generadores, eventos al_iniciar/al_cumplir/al_completar, pistas por nivel, estrellas D-09)*
 
-### F2-04 · Guardado local, formato versionado y restaurar misión · `pendiente` · depende: F2-03
+### F2-04 · Guardado local, formato versionado y restaurar misión · `en-progreso` (diferencias del mundo, guardar/cargar y restaurar misión hechos; falta el esquema versionado de la partida en `shared/` con migraciones y límite de 64 KB)
 
 ### F2-05 · Harness de contenido C1–C18 con semillas · `pendiente` · depende: F2-03
 - **Listo cuando:** un fixture por regla la dispara; el ejemplo pasa con 25 semillas.
