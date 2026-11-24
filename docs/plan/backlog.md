@@ -44,7 +44,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** árbol en memoria, rutas absolutas/relativas, `..`, `~`, metadatos, permisos por usuario, capa de diferencias.
 - **Listo cuando:** tests de rutas, permisos (r/w/x), diferencias y restauración.
 
-### F1-02 · Reloj de juego, RNG y variables de partida · `en-progreso` (reloj y RNG hechos; generadores de variables y plantillas `{{var}}` pendientes)
+### F1-02 · Reloj de juego, RNG y variables de partida · `hecha (2026-11-24)` *(generadores entero, ip, hora, elegir, clave; plantillas `{{var}}`)*
 - **Hacer:** `clock.ts`; PRNG con semilla y sub-semillas; generadores de variables (`entero`, `ip`, `hora`, `elegir`); plantillas `{{var}}`.
 - **Listo cuando:** misma semilla → mismas variables; semillas distintas → distribución dentro de rangos (test de 10 000 semillas).
 
