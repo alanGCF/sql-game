@@ -14,7 +14,7 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "test": "vitest run",
-    "validate:content": "node scripts/no-implementado.mjs F2-05",
+    "validate:content": "tsx scripts/validate-content.ts",
     "play": "tsx scripts/play.ts",
     "e2e": "playwright test",
     "build": "vite build && tsc -p server/tsconfig.build.json",

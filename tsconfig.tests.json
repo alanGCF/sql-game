@@ -12,6 +12,7 @@
     "src/engine",
     "scripts/play.ts",
     "src/game/mundoDemo.ts",
-    "shared"
+    "shared",
+    "scripts/validate-content.ts"
   ]
 }

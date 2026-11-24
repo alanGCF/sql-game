@@ -90,7 +90,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F2-04 · Guardado local, formato versionado y restaurar misión · `hecha (2026-11-24)` *(diferencias del mundo, guardar/cargar, restaurar; `shared/partida.ts` con esquema estricto, migraciones y límite de 64 KB; la escritura en IndexedDB va con la UI en F4)*
 
-### F2-05 · Harness de contenido C1–C18 con semillas · `pendiente` · depende: F2-03
+### F2-05 · Harness de contenido C1–C18 con semillas · `en-progreso` (C1, C2, C3, C4, C5, C8 parcial, C11, C13 y C17 hechos con `npm run validate:content`; C6, C7, C9, C10, C12, C14, C15, C16 y C18 necesitan el currículo en YAML y contenido real)
 - **Listo cuando:** un fixture por regla la dispara; el ejemplo pasa con 25 semillas.
 
 ### F2-06 · `npm run play --mision` (interactivo, `--solucion`, `--sesion/--cmd`) · `pendiente` · depende: F2-03, F1-11
