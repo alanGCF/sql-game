@@ -9,6 +9,8 @@
   "include": [
     "tests/engine",
     "tests/content",
+    "tests/game",
+    "src/game/jornada.ts",
     "src/engine",
     "scripts/play.ts",
     "shared",

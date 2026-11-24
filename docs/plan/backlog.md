@@ -132,7 +132,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 Salida de la fase: se puede jugar T1 completo en el navegador desde el escritorio 3D (estilo C); revisión visual aprobada por el usuario. Las pistas por teléfono, la libreta y el código de partida llegan en F4. Las tareas marcadas **(consultar)** llevan decisiones de estética: se proponen 2–3 opciones con capturas antes de cerrarlas.
 
-### F3-01 · Orquestador del turno (`src/game`, sin DOM) · `pendiente` · depende: F2-02, F2-06, F2-08
+### F3-01 · Orquestador del turno (`src/game`, sin DOM) · `hecha (2026-11-24)` · depende: F2-02, F2-06, F2-08
 - **Hacer:** cargar `turno-NN.json` y `comun.json`; un solo mundo por partida (semilla) que persiste entre misiones; avanzar misiones en orden; favores disponibles según `disponible_desde`; cola de efectos (diálogos, llamadas, visitas, flags) para la interfaz; respuestas por objetivo.
 - **Listo cuando:** pruebas unitarias juegan T1 completo con la solución de cada misión, encadenadas sobre el mismo mundo, con 25 semillas.
 

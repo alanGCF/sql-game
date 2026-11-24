@@ -15,7 +15,12 @@ export default defineConfig({
     proxy: { "/api": "http://localhost:3000" },
   },
   test: {
-    include: ["tests/engine/**/*.test.ts", "tests/server/**/*.test.ts", "tests/content/**/*.test.ts"],
+    include: [
+      "tests/engine/**/*.test.ts",
+      "tests/server/**/*.test.ts",
+      "tests/content/**/*.test.ts",
+      "tests/game/**/*.test.ts",
+    ],
     environment: "node",
   },
 });
