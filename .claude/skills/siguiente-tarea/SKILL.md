@@ -1,17 +1,19 @@
 ---
 name: siguiente-tarea
-description: Elige y ejecuta la siguiente tarea desbloqueada del backlog del proyecto (docs/plan/backlog.md). Usar con /siguiente-tarea, "¿qué sigue?", "continúa con el plan" o al retomar el proyecto en una sesión nueva.
+description: Elige y ejecuta la siguiente tarea desbloqueada del backlog (docs/plan/backlog.md) en la rama develop. Usar con /siguiente-tarea, "¿qué sigue?", "continúa con el plan" o al retomar el proyecto en una sesión nueva.
 ---
 
 # Siguiente tarea
 
-1. Lee `docs/plan/backlog.md`. Toma la **primera** tarea con estado `pendiente` cuyas dependencias estén todas en `hecha`. Si el usuario nombró una tarea (`F1-03`), usa esa y verifica sus dependencias.
-2. Muestra en pocas líneas: ID, Hacer, Listo cuando, Verificar y los archivos que probablemente toques.
-3. Si la tarea depende de una decisión de `docs/plan/decisiones-abiertas.md` que siga `abierta`, **detente y pregunta** esa decisión. No la decidas tú.
-4. Cambia el estado a `en-progreso` en el backlog.
-5. Ejecuta con TDD: test que falla → implementación mínima → test pasa → refactor. Si la skill `test-driven-development` (superpowers) está disponible, síguela. Aplica ponytail: el cambio mínimo completo; un atajo deliberado lleva `// shortcut: …`.
-6. Si la tarea toca contenido usa `nueva-mision`; si toca un comando, `nuevo-comando`; si toca diseño, `handoff-diseno`.
-7. Corre la skill `verificar`. Si algo falla, corrígelo; si no puedes, deja la tarea `en-progreso` y reporta el fallo con la salida real.
-8. En verde: estado `hecha (AAAA-MM-DD)`, actualiza los docs afectados y haz commit `F#-##: <resumen>`.
+1. Asegúrate de estar en `develop` y actualizado (`git checkout develop && git pull`). No crees ramas.
+2. Lee `docs/plan/backlog.md`. Toma la **primera** `pendiente` con dependencias `hecha`. Si el usuario nombró una tarea, usa esa y verifica sus dependencias.
+3. Muestra en pocas líneas: ID, Hacer, Listo cuando, Verificar, archivos probables.
+4. Si la tarea depende de una decisión de **funcionalidad o estética** abierta (`docs/plan/decisiones-abiertas.md`), pregúntala (con capturas u opciones concretas) y **toma otra tarea desbloqueada mientras tanto**. Las decisiones de código las tomas tú y las registras en `docs/decisiones/adr.md`.
+5. Marca la tarea `en-progreso`.
+6. TDD (skill `test-driven-development` de superpowers si está). Ponytail: cambio mínimo completo; atajos con `// shortcut: …`. Consulta documentación actual de las librerías que toques.
+7. Usa `nueva-mision`, `nuevo-comando` o `revision-visual` según el tipo de tarea.
+8. `verificar`. Si hubo cambios visibles, `revision-visual`. Si tocó servidor/dependencias/cabeceras, `auditor-seguridad`.
+9. En verde: estado `hecha (AAAA-MM-DD)`, docs afectados actualizados, **un commit** `F#-##: <resumen>` en `develop`, push a `origin develop`.
+10. Continúa con la siguiente tarea desbloqueada sin esperar, salvo que necesites una decisión del usuario.
 
-Reporta al final: qué se hizo, cómo se verificó (comandos y resultado), qué quedó fuera y cuál es la siguiente tarea desbloqueada.
+Nunca hagas push a `main` sin aprobación explícita del usuario (ver `CLAUDE.md` §Cómo se trabaja).

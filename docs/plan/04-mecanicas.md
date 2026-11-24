@@ -1,127 +1,223 @@
 # 04 — Mecánicas
 
+Las marcadas *(propuesta D-xx)* esperan confirmación del usuario en `decisiones-abiertas.md`.
+
 ## Loop principal
 
 ```
-Mapa de turnos → Briefing (diálogo) → Juego (terminal / datos / red) → Objetivo cumplido → … → Misión completada (concepto aprendido) → siguiente misión
-                                          ↑            │
-                                          └── Pistas ←─┘  (opcional, 3 niveles)
+Llegas al cubículo (inicio de turno) → pendientes en el pizarrón → visitas / llamadas / tickets
+   → te acercas a la computadora → terminal, datos, red → objetivo cumplido (se tacha en el pizarrón)
+   → ¿atorado? marcas a Lupita y pides pista → … → misión completada → siguiente pendiente
+   → fin del turno (00:00): resumen en el calendario → siguiente día
 ```
 
-Sesión típica en el teléfono: **una misión de 3–8 minutos**. El juego guarda solo; se puede salir en cualquier momento y continuar exactamente donde quedaste.
+Una misión dura 3–8 minutos. El juego guarda solo y en cada checkpoint actualiza la partida en el servidor (código de partida).
 
-## Estructura
+## Escena y cámara
 
-- **Turno** (capítulo) = un día laboral 15:30–00:00 en el reloj de juego. 4 misiones aprox.
-- **Misión** = 1–3 objetivos, 1–2 conceptos nuevos. Tipos:
-  - `ticket` — enseña el concepto en un problema cotidiano.
-  - `investigacion` — aplica el concepto al misterio.
-  - `repaso` — reutiliza conceptos previos con datos nuevos (sin conceptos nuevos).
-  - `evento` — guionizada (algo pasa en el mundo) y luego hay que reaccionar.
-  - `final` — decisión y desenlace.
-- **Objetivo** = una condición verificable sobre el estado del mundo o una respuesta del jugador.
+- **Primera persona, sentado.** No puedes levantarte ni caminar.
+- **La cámara gira hacia donde apunta el cursor** (sin capturar el puntero): la posición del cursor en pantalla se traduce en giro horizontal (±65°) y vertical (−30° a +15°), con zona muerta al centro y suavizado. Ves tu escritorio, tu cubículo y un poco de la oficina detrás de las mamparas; el resto queda fuera de vista a propósito.
+- **Interacción:** pasar el cursor sobre un objeto lo resalta y muestra su nombre; clic para usarlo.
+- **Acercarse:** clic en la computadora, teléfono, libreta, pizarrón o calendario → transición de cámara (≈ 0.6 s, suavizada) hacia el objeto y aparece su interfaz. **Alejarse:** `Esc`, clic fuera o el botón "Levantar la vista". Mientras estás acercado la cámara no sigue al cursor.
+- **Alternativas** (Ajustes): cámara por bordes de pantalla, por arrastre o con flechas; `Tab` recorre los objetos interactivos y `Enter` los usa; reducir movimiento convierte las transiciones en cortes.
 
-## Objetivos: validación por resultado
+## Objetos del escritorio
 
-El motor evalúa **predicados** después de cada comando. Ninguno compara el texto exacto del comando.
+| Objeto | Interacción | Para qué | Desde |
+|---|---|---|---|
+| **Computadora** (monitor + teclado) | Acercarse → apps | Terminal, Tickets, Correo, Datos (T4), Red (T5) | T0 |
+| **Teléfono** de escritorio | Acercarse → directorio y teclado numérico | Pistas (Lupita), rumores, favores, llamadas de la historia | T0 |
+| **Libreta de apuntes** | Abrir → hojear pestañas, escribir | Historia, comandos aprendidos, pistas recibidas, tus notas | T0 |
+| **Pizarrón** pequeño en la mampara | Acercarse | Pendientes del turno; se tachan al cumplirse; post-its de favores | T0 |
+| **Post-its** (monitor y pizarrón) | Clic → leer | Datos sueltos (tu contraseña en T0, extensiones), favores | T0 |
+| **Calendario** de pared | Acercarse → clic en un día | Avance de la partida, calificación de turnos anteriores, tiempo extra del sábado 7 | T0 |
+| **Gafete** | Clic | Tu nombre y número de empleado = código de partida *(propuesta D-15)* | T0 |
+| **Lonchera** | Abrir | Lo que te mandaron de comer ese día; a veces una nota | T1 |
+| **Taza** | Clic → tomar café | Ambiente (sonido); se vacía durante el turno | T0 |
+| **Cajón** | Abrir | Cosas que olvidó R. (algunas son pistas de la historia), clips, un manual viejo | T1 |
+| **Reloj de pared** | Mirar | Hora del juego (15:30–00:00) | T0 |
+| **Adornos y desorden** | Clic → reacción/comentario | Foto, planta, figurita, papeles, envolturas; los favores completados agregan regalos *(propuesta D-16)* | T0 |
+| **Radio** pequeño *(opcional)* | Clic → prender/cambiar estación | Música ambiental con licencia libre | TE |
 
-| Predicado | Se cumple cuando… | Ejemplo |
-|---|---|---|
-| `respuesta` | el jugador responde una pregunta y la respuesta normalizada está en `acepta` | "¿Qué usuario entra a las 23:58?" → `delta_svc` |
-| `archivo_leido` | el contenido de un archivo pasó por stdout de un comando de lectura (`cat`, `less`, `head`, `tail`, `grep` con coincidencia…) | leer `LEEME.txt` |
-| `archivo_existe` / `no_existe` | ruta presente/ausente (tipo opcional) | `~/bitacora/` creada |
-| `archivo_contiene` | contenido cumple regex o igualdad | `turno1.txt` tiene ≥2 líneas |
-| `arbol_igual` | dos rutas tienen los mismos archivos y contenidos | respaldo de `.r/` |
-| `permisos` | modo/dueño de una ruta | `chmod 600` a una llave |
-| `consulta_resultado` | el último result set del jugador coincide con el de `esperado_sql` (opciones: `orden_importa`, `columnas: por_nombre \| por_posicion`) | inspecciones de hoy de la Línea 2 |
-| `estado_db` | una consulta de verificación sobre la base devuelve lo esperado | existe la tabla `evidencia` con 37 filas |
-| `host_descubierto` | el jugador obtuvo respuesta de un host (ping, dig, ss, nmap) | `mantto-delta` |
-| `proceso` | proceso existe/no existe | `sync_mes` terminado |
-| `servicio` / `firewall` | estado de red | `ufw deny from 10.7.3.99` activo |
-| `cron` | entrada de cron activa/inactiva | línea de `ajuste.sh` comentada |
-| `sesion_en` | el jugador está en un host/usuario/cwd | conectado a `mantto-delta` |
-| `flag` | bandera de historia activa | `respaldo_r` |
-| `comando_ejecutado` | **solo** para comandos observacionales sin efecto verificable (`pwd`, `whoami`) y siempre preferir `respuesta` | — |
+## Computadora
 
-Combinadores: `todos: […]`, `alguno: […]`, `no: …`.
-
-**Por qué `respuesta` es el predicado principal:** obliga a usar la herramienta para encontrar algo, acepta cualquier camino correcto (`grep … | wc -l` o contar a mano con `cat`) y convierte la lección en un hallazgo de la historia. La pregunta se responde en un campo propio (no en la terminal), con normalización: minúsculas, sin acentos, sin espacios extra, sinónimos en `acepta`.
-
-## Pistas
-
-Tres niveles por objetivo, se abren en un panel inferior:
-
-1. **Empujón** — hacia dónde mirar. *"Para ver qué hay dentro de un archivo no basta con listarlo."*
-2. **Concepto** — qué herramienta y por qué. *"Hay un comando corto que muestra el contenido de un archivo; su nombre viene de 'concatenate'."*
-3. **Solución** — el comando exacto, con botón **"Insertar en la terminal"**.
-
-Reglas: sin castigo de progreso; solo afecta la calificación de la misión. Si el jugador falla 3 veces seguidas el mismo objetivo (errores de sintaxis o comandos sin efecto), aparece un aviso discreto "¿Quieres una pista?".
-
-## Calificación y progresión
-
-- **XP** por misión (base por tipo) + bonos: sin pistas, solución "elegante" (ej. una sola tubería en vez de 4 comandos), primer intento.
-- **Calificación de misión:** ★★★ sin pistas · ★★ con pistas nivel 1–2 · ★ con pista nivel 3. Repetible para mejorar.
-- **Rangos** (por XP acumulada): Becario → Técnico → Técnico Sr. → Ingeniero → Ingeniero Sr. → Líder de Ingeniería.
-- **Logros** ejemplos: "Tubería maestra" (5 comandos encadenados), "Nunca sin respaldo", "ROLLBACK a tiempo", "Leí el manual" (usar `man` 10 veces), "Sin red de seguridad" (turno completo sin pistas).
-- **Desbloqueos:** turnos en orden; dentro de un turno, misiones en orden. Las misiones completadas se pueden repetir.
-
-## Aplicaciones dentro del juego
-
-La pantalla de juego tiene "apps" (pestañas) que se desbloquean con la historia:
+Apps en la pantalla del monitor (la interfaz se dibuja como si fuera el sistema de la planta):
 
 | App | Desde | Qué es |
 |---|---|---|
-| **Terminal** | T0 | Shell simulado del host actual. Siempre disponible. |
-| **Mensajes** | T0 | Chat con personajes; briefings y eventos llegan aquí. Adjuntos aparecen como archivos en el sistema. |
-| **Bitácora** | T0 | Manual personal: cada concepto aprendido con explicación corta, ejemplos tocables (insertan el comando), "Pruébalo en tu Linux real" y la tarjeta de campo del turno. |
-| **Datos** | T3 | Cliente SQL visual sobre la misma base que `sqlite3`: editor multilínea, chips de palabras clave y de tablas/columnas, tabla de resultados, vista de esquema. |
-| **Red** | T4 | Mapa de la red que se dibuja conforme descubres hosts (desconocido → descubierto → con servicios → asegurado). Tocar un nodo muestra IP, nombre, puertos. |
+| **Terminal** | T0 (inicio de sesión), T1 | Shell simulado del host actual |
+| **Tickets** | T1 | Mesa de ayuda: los tickets llegan aquí y se **responden tecleando** la respuesta *(propuesta D-17)* |
+| **Correo** | T1 | Correos de la historia (Karla, Treviño, R., Calidad Corporativa) |
+| **Datos** | T4 | Cliente SQL visual sobre la misma base que `sqlite3`: editor, palabras clave resaltadas, tabla de resultados, esquema |
+| **Red** | T5 | Mapa de la red que se dibuja conforme descubres hosts con comandos |
 
-Datos y Red son **ayudas visuales**, no atajos: lo que muestran lo obtuviste con comandos (el mapa solo agrega nodos que descubriste; la app Datos ejecuta tu SQL, no lo escribe por ti).
+Datos y Red son ayudas visuales, no atajos: el mapa solo muestra lo que descubriste con comandos y la app Datos ejecuta tu SQL, no lo escribe.
 
-## Terminal: comportamiento
+## Terminal
 
-- Prompt real: `becario@srv-sistemas:~$` (cambia con `cd`, `ssh`, `sudo -i` no soportado).
-- Salida fiel a GNU/Linux en inglés. Debajo de los errores aparece una **glosa** en español, desactivable en Ajustes:
+- Prompt real: `becario@srv-sistemas:~$` (cambia con `cd`, `ssh`).
+- **Salida idéntica a la del sistema real** (inglés, locale C). Debajo de errores y salidas nuevas aparece una **glosa** en español, desactivable:
   ```
   becario@srv-sistemas:~$ cat leeme.txt
   cat: leeme.txt: No such file or directory
   ↳ No existe "leeme.txt" aquí. Linux distingue mayúsculas: ¿será LEEME.txt?
   ```
-- "Quisiste decir": typo a distancia 1–2 de un comando conocido → glosa con sugerencia (`sl` → `ls`).
-- Comandos de Windows → glosa: `dir` → "En Linux se usa `ls`", `cls` → `clear`, `ipconfig` → `ip a`, `type` → `cat`.
-- Comando no implementado → `bash: X: command not found` + glosa "Existe en Linux real, pero este servidor no lo tiene".
-- Salida larga: se pagina automáticamente; tocar "ver todo" abre el visor.
-- Líneas narrativas (mensajes del sistema de juego, `wall`) tienen estilo distinto y no se confunden con salida de comandos.
-- **Restaurar misión:** botón en el menú de la misión que regresa el mundo al estado de inicio de la misión (por si el jugador hace `rm -r` de algo importante). Pide confirmación. No borra el progreso de misiones previas.
+- `Tab` autocompleta comandos y rutas; `↑`/`↓` recorren el historial (como en bash).
+- Errores de dedo de comandos que no existen (`sl`, `cta`) → `command not found` real + glosa "¿quisiste decir…?".
+- Comandos de Windows → glosa: `dir` → `ls`, `cls` → `clear`, `ipconfig` → `ip a`, `type` → `cat`.
+- Comandos obsoletos que ya no vienen instalados (`ifconfig`, `netstat`) → `command not found` + glosa con el equivalente moderno.
+- Salida larga: se pagina; `less` y `man` abren un visor propio dentro del monitor.
+- **Restaurar misión:** en el menú de la computadora; regresa el mundo de la misión a su estado inicial (con confirmación).
 
-## Entrada en móvil (requisito crítico)
+### Fuera de alcance: el globo de pensamiento
 
-- `<input>` nativo de una línea (no un canvas) con `autocapitalize="off"`, `autocorrect="off"`, `spellcheck="false"`, `autocomplete="off"`, `enterkeyhint="send"`, `font-size ≥ 16px` (evita zoom en iOS).
-- **Barra de accesos** fija encima del teclado: `Tab` · `↑` · `↓` · `|` · `/` · `-` · `~` · `*` · `>` · `"` · `'` · `.` · `Ctrl+C`. Configurable en Ajustes. Los botones no roban el foco del input (no cierran el teclado).
-- **Autocompletado visible:** chips de sugerencias sobre la barra (comandos, rutas del directorio actual, banderas aprendidas). Tocar un chip inserta el texto.
-- **Historial:** `↑`/`↓` en la barra; además, mantener presionada una línea de salida con un comando la copia al input.
-- **Teclado abierto:** con `visualViewport` el layout se reajusta: input + barra pegados al teclado, la salida se encoge y hace auto-scroll a la última línea. Nunca queda el input oculto.
-- En SQL (app Datos): editor multilínea, chips de palabras clave (`SELECT`, `FROM`, `WHERE`, `GROUP BY`…), chips de tablas y columnas del esquema actual, botón **Ejecutar** grande.
+Para que no se note que no es una terminal completa y para controlar lo que se ejecuta, antes de ejecutar cada línea el motor la clasifica:
+
+| Caso | Ejemplo | Qué pasa |
+|---|---|---|
+| Soportado | `grep -i error app.log` | Se ejecuta |
+| Comando inexistente en Linux (error de dedo) | `sl`, `lss` | `command not found` real + glosa (es parte de aprender) |
+| Comando o bandera **real** que no está en la superficie | `awk '{print $1}'`, `ls -Z`, `vim`, `apt install` | **No se ejecuta.** Aparece un globo de pensamiento del protagonista: *"No sé qué haga esto… mejor no le doy Enter."* La línea se queda en el input para corregirla |
+| Sintaxis avanzada no soportada | `$(…)`, `` `…` ``, `<<EOF`, `&` en segundo plano, funciones | Globo: *"Eso se ve muy avanzado. Mejor no me arriesgo."* |
+| Destructivo o peligroso | `rm -rf /`, `:(){ :\|:& };:`, `chmod -R 777 /`, `dd`, `mkfs` | Globo: *"Si hago esto me corren el primer día."* |
+| Entrada anómala | > 500 caracteres, caracteres de control | Globo: *"Creo que me dormí sobre el teclado."* |
+
+Hay varias frases por caso para que no se repitan. El globo no gasta pistas ni afecta la calificación. Así el jugador nunca ve un comportamiento falso de un comando que no simulamos.
+
+### Todo se teclea
+
+- La terminal, la app Datos, las respuestas de tickets y la libreta **bloquean pegar y soltar texto** (`paste`, `drop`, `insertFromPaste`). Si el jugador intenta pegar: globo *"Mejor lo escribo yo, así se me queda."*
+- El texto de la libreta, las pistas y los post-its **no se puede seleccionar ni copiar**.
+- Es un empujón de diseño, no un control de seguridad: alguien con herramientas del navegador puede saltárselo y no pasa nada.
+
+## Teléfono
+
+- Al acercarte ves el teléfono, el **directorio de extensiones** (pegado en la mampara) y un teclado numérico. Marcas tecleando o con clic en los números.
+- Contactos: Lupita (214), Don Chuy (301), Karla (402), Conmutador (0), Comedor (150), Vigilancia (900), Gerencia (100). Detalle y voces en `02-trama.md`.
+- **Paciencia por turno:** llamadas 1–2 → charla, rumor o aviso; 3 → "¿No tienes trabajo? Ponte a trabajar"; 4+ → no contesta. Gerencia gasta paciencia al doble.
+- **Llamadas entrantes:** el teléfono suena; contestas con clic. Si no contestas, se prende la luz de buzón.
+- Las conversaciones son diálogos con subtítulos y, a veces, opciones de respuesta.
+
+## Pistas: Lupita por teléfono
+
+- Marcas a Lupita y eliges "Necesito una pista". Ella sabe en qué pendiente estás (o eliges el pendiente si hay varios).
+- Tres niveles por objetivo, uno por llamada: **empujón** ("¿Ya viste qué hay en esa carpeta?") → **concepto** ("Hay un comando que muestra lo que tiene un archivo; viene de *concatenate*") → **comando exacto** dictado ("Teclea `cat LEEME.txt`, con mayúsculas").
+- Las pistas recibidas quedan escritas en la libreta (sección Pistas), sin poder copiarse: hay que teclearlas.
+- **Pedir pista no gasta la paciencia de Lupita** *(propuesta D-14)*; platicar con ella sí. Si fallas 3 veces seguidas el mismo objetivo, piensas en voz alta: *"Igual y le marco a Lupita…"*.
+- Sin castigo de progreso: solo afecta las estrellas de la misión.
+
+## Libreta de apuntes
+
+Objeto físico en el escritorio; se abre como libreta de espiral con pestañas:
+
+| Pestaña | Quién escribe | Contenido |
+|---|---|---|
+| **Historia** | El juego, automático | Hechos importantes: "R. dejó una carpeta oculta", "delta_svc entra a las `{{hora_acceso}}`" |
+| **Comandos** | El juego, al aprender | Cada comando/concepto: explicación corta, un ejemplo, y "En tu Linux real…" |
+| **Pistas** | El juego | Pistas que te dio Lupita |
+| **Mis notas** | El jugador | Notas libres tecleadas (sin pegar), hasta 200 notas de 500 caracteres |
+
+Las entradas automáticas aparecen con animación de escritura a mano y un sonido de lápiz. Es el sustituto del "manual": el jugador lo consulta sin salir del escritorio.
+
+## Pizarrón y post-its
+
+- El pizarrón muestra los **pendientes del turno** (objetivos de la misión actual y siguientes del día). Al cumplirse, se tachan con una animación de plumón.
+- Los **favores** aparecen como post-its pegados en el pizarrón o en el monitor; al completarse, el post-it se arruga y cae al bote.
+- Post-its informativos: contraseña (T0), extensiones, recordatorios de Lupita.
+
+## Calendario
+
+- Calendario de pared de octubre–noviembre 2026 (del 26 de octubre al 16 de noviembre).
+- Días pasados: calificación del turno (estrellas) y marca de favores hechos. Hoy: encerrado en círculo. Sábado 7: "Tiempo extra (opcional)".
+- Clic en un día pasado → resumen del turno (misiones, estrellas, hallazgos) y opción de **repetir** una misión para mejorar estrellas (no cambia la historia).
+- Al terminar el viernes 6, una visita o llamada ofrece el tiempo extra del sábado; el jugador decide ir o no.
+
+## Código de partida (checkpoint)
+
+- **Nuevo ingreso:** escribes tu nombre; se genera un código de 12 caracteres (`K7QF-29XM-PL4D`, alfabeto sin caracteres ambiguos). Se muestra grande con la indicación "anótalo" y queda impreso en tu gafete *(propuesta D-15)*.
+- **Checkpoints:** al completar cada misión o favor y al terminar el turno, la partida se guarda en el servidor bajo ese código. Entre checkpoints, el progreso también se guarda en el navegador.
+- **Checar entrada:** en el menú tecleas el código y continúas desde el último checkpoint, en cualquier computadora.
+- El código es la única llave de la partida: quien lo tenga puede continuarla. No se piden correos ni contraseñas.
+- Si no hay conexión, el juego sigue con el guardado local y sincroniza al volver.
+
+## La oficina viva
+
+- **Ambiente sonoro:** zumbido del aire acondicionado, teclados lejanos, impresora, teléfonos de otros escritorios, voceo de la planta ("Mantenimiento, favor de reportarse a Línea 3"), pitidos de montacargas, la alarma de la estación de fuga a las 23:59.
+- **Luz:** la ventana pasa de tarde (15:30) a noche; las lámparas se ajustan; a las 00:00 el turno termina.
+- **Visitas:** alguien se acerca por el pasillo (pasos, voz). Pueden ser de historia, favores o ambientales, y traen rumores.
+- **Fechas especiales:** escritorio de bienvenida (T0), Halloween (T3), altar de Día de Muertos (T4), oficina medio vacía en tiempo extra *(propuestas)*.
+- **Reloj de juego:** avanza con lo que haces (comandos, llamadas, misiones), no con el tiempo real; los eventos guionizados ocurren a su hora.
+
+## Estructura
+
+- **Turno** = un día laboral (T0–T13) + tiempo extra (TE) + epílogo.
+- **Misión principal:** 1–3 objetivos, 1–2 conceptos nuevos. Tipos: `ticket`, `investigacion`, `repaso`, `evento`, `final`.
+- **Favor:** misión secundaria de repaso (`tipo: favor`), opcional, no afecta la historia.
+- **Objetivo:** condición verificable; aparece como pendiente en el pizarrón.
+
+## Objetivos: validación por resultado
+
+El motor evalúa **predicados** después de cada comando. Ninguno compara el texto del comando.
+
+| Predicado | Se cumple cuando… |
+|---|---|
+| `respuesta` | el jugador teclea la respuesta (en el ticket o en la libreta, según el objetivo) y, normalizada, coincide con el valor esperado. El valor esperado **se calcula del mundo** de esa semilla (`esperado_de`), no se escribe a mano |
+| `archivo_leido` | el contenido de un archivo pasó por la salida de un comando de lectura |
+| `archivo_existe` / `no_existe` / `archivo_contiene` / `arbol_igual` | estado del sistema de archivos |
+| `permisos` | modo/dueño de una ruta |
+| `consulta_resultado` | el último resultado SQL del jugador coincide con el de `esperado_sql` (opciones de orden y columnas) |
+| `estado_db` | una consulta de verificación sobre la base devuelve lo esperado |
+| `host_descubierto`, `proceso`, `servicio`, `firewall`, `cron`, `sesion_en` | estado de red, procesos y sesiones |
+| `flag` | bandera de historia |
+| `comando_ejecutado` | solo para comandos observacionales sin efecto (`pwd`, `whoami`); preferir `respuesta` |
+
+Combinadores: `todos`, `alguno`, `no`. Normalización de respuestas: minúsculas, sin acentos, sin espacios extra, sinónimos en `acepta_tambien`.
+
+## Calificación y progresión
+
+- **Estrellas por misión:** ★★★ sin pistas · ★★ con pistas nivel 1–2 · ★ con pista nivel 3. Se ven en el calendario.
+- **XP** por misión y favor; bonos por solución elegante (una sola tubería) o primer intento.
+- **Rangos:** Becario → Técnico → Técnico Sr. → Ingeniero → Ingeniero Sr. → Líder de Ingeniería.
+- **Logros:** "Tubería maestra", "Nunca sin respaldo", "ROLLBACK a tiempo", "Leí el manual", "Sin red de seguridad" (turno sin pistas), "Hora extra" (tiempo extra completo), "No molestes" (te colgaron todos los contactos).
+
+## Aleatorización por partida
+
+Objetivo: que nadie pase el juego memorizando respuestas, sin cambiar la historia.
+
+- Al crear la partida se genera una **semilla** (se guarda con el código).
+- El contenido declara **variables de partida** con generadores: rangos numéricos, IPs dentro de una subred, horas dentro de una ventana, elección de una lista (ver ejemplos en `02-trama.md`).
+- Textos, archivos, logs y filas de la base usan `{{variable}}` o se **generan** a partir de la semilla (cantidad de alarmas, accesos, inspecciones).
+- **Fijo:** personajes, diálogos (salvo valores), orden de misiones, qué se aprende, quién es el culpable, el calendario.
+- **Variable:** números de lote, IPs de algunos equipos, puertos, horas exactas, conteos, PIDs, contraseñas, tamaños y fechas de archivos, el orden de filas.
+- Las respuestas esperadas se **calculan** del mundo generado con una solución de referencia, así siempre son consistentes.
+- El harness valida cada misión con muchas semillas (25 en cada CI, 500 cada noche).
 
 ## Guardado
 
-- Automático tras cada comando que cambie el estado y cada objetivo cumplido.
-- Contenido: progreso (misiones, calificaciones, XP, logros, banderas), estado del mundo como **diferencias** respecto al mundo base del turno, historial de comandos de la misión actual, base de datos modificada (si aplica, desde T11).
-- Exportar/importar partida como archivo (Ajustes) para cambiar de dispositivo, mientras no haya backend.
+- Local (IndexedDB) tras cada comando que cambia el estado; servidor en cada checkpoint.
+- Contenido: semilla, progreso (misiones, estrellas, XP, logros, banderas, favores), estado del mundo como diferencias respecto al mundo base, notas del jugador, paciencia de contactos del turno.
+- Formato versionado con migraciones. Tamaño máximo de una partida: 64 KB.
 
-## Tarjeta de campo y Modo Taller
+## Menú
 
-- **Tarjeta de campo**: al terminar un turno, resumen imprimible/compartible de los comandos y consultas aprendidos, con ejemplos reales. Vive en la Bitácora.
-- **Modo Taller** (desbloqueado al terminar cada turno): terminal libre con ejercicios cortos generados con semilla sobre datos distintos a la historia, para practicar sin presión. Mismo motor de predicados.
+Sobre la misma escena (no hay otra página): la oficina de noche con el monitor encendido. Opciones: **Nuevo ingreso**, **Checar entrada** (código), **Continuar** (si hay guardado local), **Ajustes**, **Créditos**. `Esc` sin estar acercado a un objeto abre la pausa.
 
-## Ajustes
+## Ajustes y accesibilidad
 
-Tamaño de fuente de la terminal (4 pasos), tema (oscuro, claro, alto contraste), reducir movimiento, vibración en eventos, sonido (opcional, apagado por defecto), glosas en español sí/no, personalizar barra de accesos, exportar/importar/reiniciar partida.
+- Sensibilidad y modo de cámara (cursor, bordes, arrastre, flechas); invertir eje.
+- Reducir movimiento (sin transiciones ni balanceo), desactivar parpadeos.
+- Tamaño de texto de la terminal, de la libreta y de los subtítulos; fondo de subtítulos.
+- Volumen general, ambiente, voces, efectos; subtítulos siempre disponibles (todo sonido importante tiene texto).
+- Glosas en español sí/no; contraste alto en la interfaz del monitor.
+- Navegación completa por teclado (`Tab`/`Enter`/`Esc`).
 
 ## Estados de falla
 
-No hay "game over". Lo peor que pasa:
+No hay "game over":
 - Romper el mundo de la misión → **Restaurar misión**.
-- En eventos con reloj (23:59 del Turno 10), si no actúas a tiempo, ocurre la consecuencia narrativa y la misión se repite desde el inicio con un diálogo nuevo.
-- Final malo en Turno 12 → se puede repetir el turno.
+- Eventos con reloj (23:59 del T11): si no actúas a tiempo ocurre la consecuencia y la misión se repite con un diálogo nuevo.
+- Final malo → se puede repetir el Turno 13.
+
+## Port móvil (v2, fuera de alcance)
+
+Notas para no cerrarse la puerta: la escena admite cámara por arrastre táctil; la terminal es DOM (funciona con teclado virtual); la lógica del juego no depende del puntero. El diseño de interacción táctil, el teclado virtual y el rendimiento se resuelven en v2.

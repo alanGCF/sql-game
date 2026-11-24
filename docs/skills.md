@@ -1,58 +1,50 @@
 # Skills y plugins para el proyecto
 
-Investigación del 2026-11-07. Criterio: que ayuden a **este** proyecto (juego web móvil, motor TS, mucho contenido validado, diseño en Claude Design) sin meter ruido de contexto ni frameworks que se pisen entre sí.
+Investigación del 2026-11-07, actualizada el 2026-11-24 con el cambio a escritorio y escena 3D.
 
-**Regla general:** no instales dos frameworks de proceso completos a la vez (ECC, superpowers, spec-kit, the-architect y mattpocock se solapan en planear/TDD/revisar). Elegimos **superpowers** como metodología base y tomamos piezas puntuales de los demás.
+**Regla general:** no instalar dos frameworks de proceso completos a la vez. Base: **superpowers**. Lo demás, piezas puntuales.
 
 ## Tier 1 — instalar
 
-| Skill / plugin | Qué aporta aquí | Cuándo se usa | Instalación (Claude Code) |
-|---|---|---|---|
-| **superpowers** (obra) | `brainstorming`, `writing-plans`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `subagent-driven-development`, `requesting-code-review` | Todo F1–F8: diseñar → plan → TDD → verificar | `/plugin install superpowers@claude-plugins-official` *(ya declarado en `.claude/settings.json` → se ofrece al abrir el repo)* |
-| **ponytail** (DietrichGebert) | Cambio mínimo completo; nunca recorta validación, seguridad ni accesibilidad; `shortcut:` como deuda explícita; `/ponytail-review` | Al implementar y antes de cada commit | **Ya tienes** `ponytail`, `ponytail-review` y `ponytail-debt` en tu cuenta. El plugin completo agrega `/ponytail-audit` y `/ponytail-gain`: `/plugin marketplace add DietrichGebert/ponytail` y luego `/plugin install ponytail@ponytail` (no lo instales encima de las skills que ya tienes o quedarán duplicadas) |
-| **Context7** (upstash) | Documentación actualizada de React, Vite, sql.js, Playwright, vite-plugin-pwa, Zod | Antes de escribir código contra APIs que cambian (F0-04 en adelante) | Ya tienes el plugin configurado en tu cuenta. Alternativa CLI+skill: `npx ctx7 setup --claude` (Node ≥ 22.13; OAuth; API key gratis recomendada). **En este entorno cloud no conectó:** la política de red bloqueó `mcp.context7.com` (ver abajo) |
-| **emilkowalski/skills** | `mobile-native` (hover pegado, tap highlight, bug de 100vh, zoom en inputs, safe areas — justo nuestros riesgos), `emil-design-eng`, `break-ui` (datos extremos), `animation-performance`, `review-animations` | F3 en adelante, al implementar el diseño | `npx skills@latest add emilkowalski/skills` |
-| **anthropics/skills** → `example-skills` | `frontend-design` (UI con criterio), `webapp-testing` (Playwright), `skill-creator` (para mejorar nuestras skills del proyecto) | F3 (UI), E2E, mantenimiento del harness | `/plugin marketplace add anthropics/skills` y luego `/plugin install example-skills@anthropic-agent-skills` |
-| **design** (plugin ya activo en tu cuenta) | `design:ux-copy` (glosas, pistas, errores), `design:accessibility-review`, `design:design-handoff`, `design:design-critique`, `design:user-research`, `design:research-synthesis` | Textos de la UI, auditoría a11y, handoff de Claude Design, playtests | Ya disponible |
-
-## Tier 2 — usar piezas puntuales
-
-| Skill / plugin | Qué tomar | Qué NO | Instalación |
-|---|---|---|---|
-| **mattpocock/skills** | `grill-me` (cerrar `decisiones-abiertas.md` con un interrogatorio), `to-tickets` (convertir el backlog en issues de GitHub con dependencias), `domain-modeling` (mantener `glosario.md` y ADRs), `handoff` | Su `tdd`, `code-review` e `implement` duplican a superpowers | `/plugin install mattpocock-skills@claude-plugins-official`, luego `/setup-matt-pocock-skills` una vez |
-| **the-architect** (Hainrixz, tiene versión en español) | `/architect-audit` o `/architect-brownfield` como **segunda opinión** del plan; su Gate B (pre-mortem adversarial desde 8 ángulos) es valioso antes de F1 | No regenerar el plan desde cero: ya existe y duplicaría `docs/` | `/plugin marketplace add Hainrixz/the-architect` y luego `/plugin install the-architect@soyenriquerocha` |
-| **Playwright CLI skills** | Alternativa a `webapp-testing` para E2E móvil | Elegir una de las dos, no ambas | `npm install -g @playwright/cli@latest` y `playwright-cli install --skills` *(fuente no oficial; verificar antes)* |
-
-## Tier 3 — no instalar (por ahora)
-
-| Repo | Por qué no | Qué ya tomamos de él |
+| Skill / plugin | Qué aporta aquí | Instalación (Claude Code) |
 |---|---|---|
-| **ECC** (affaan-m) | 71 agentes, 314 skills, 98 comandos y hooks globales: se solapa con superpowers y mete mucho ruido de contexto; su propio README advierte no apilar instalaciones | La idea de `eval-harness` / `verification-loop` / `quality-gate` → nuestro harness de contenido y la skill `verificar` |
-| **spec-kit** (GitHub) | Flujo formal constitution → spec → plan → tasks; requiere Python 3.11 + `uv`; duplicaría `CLAUDE.md` + `docs/plan/` + `backlog.md` | La "constitución" = `CLAUDE.md`; el patrón spec/plan/tasks = `docs/plan/` + `backlog.md` |
-| **opusgamelabs/game-creator** | Pensado para Phaser/Three.js (canvas); nuestro juego es DOM | Su `qa-game` (boot, gameplay, regresión visual, rendimiento) inspiró `qa-movil` |
-| **donchitos/claude-code-game-studios** | 49 agentes / 72 skills, muy pesado; no pude verificar el contenido de sus SKILL.md | Su `team-narrative` y `playtest-report` inspiraron `disenador-narrativo` y `playtester-novato` |
-| Skills de Phaser (`phaserjs/phaser`, etc.) | No usamos motor de juego canvas | — |
+| **superpowers** (obra) | Lluvia de ideas, planes, TDD, depuración sistemática, verificación | `/plugin install superpowers@claude-plugins-official` *(ya declarado en `.claude/settings.json`)* |
+| **ponytail** (DietrichGebert) | Cambio mínimo completo; `shortcut:`; `/ponytail-review` | Ya tienes `ponytail`, `ponytail-review`, `ponytail-debt` en tu cuenta |
+| **Context7** (upstash) | Documentación vigente de three.js, R3F, drei, Vite, Fastify, sql.js, Playwright, Zod | Ya configurado en tu cuenta, **pero requiere autorizarlo** en los conectores de claude.ai; alternativa: `npx ctx7 setup --claude` |
+| **react-three-fiber-game** (openai/plugins) | Guía para juegos 3D en el navegador con R3F + drei y capas DOM, HUD, carga de GLB | `npx skills add https://github.com/openai/plugins --skill react-three-fiber-game` *(verificar contenido antes de instalar)* |
+| **anthropics/skills** → `example-skills` | `frontend-design` (capas DOM con criterio), `webapp-testing` (Playwright), `skill-creator` | `/plugin marketplace add anthropics/skills` → `/plugin install example-skills@anthropic-agent-skills` |
+| **emilkowalski/skills** | `emil-design-eng`, `animate`, `choreograph`, `animation-performance`, `review-animations` para transiciones e interfaz | `npx skills@latest add emilkowalski/skills` |
+| **design** (plugin activo) | `ux-copy` (glosas, pistas, diálogos), `accessibility-review`, `user-research` / `research-synthesis` (playtests) | Ya disponible |
 
-## Skills propias del proyecto (ya creadas en `.claude/`)
+## Tier 2 — piezas puntuales
 
-`siguiente-tarea`, `verificar`, `nueva-mision`, `nuevo-comando`, `handoff-diseno` + subagentes `disenador-narrativo`, `revisor-curricular`, `verificador-fidelidad`, `qa-movil`, `playtester-novato`. Detalle en `docs/plan/07-calidad-harness.md`.
+| Skill / plugin | Qué tomar | Instalación |
+|---|---|---|
+| **react-three-fiber** (anthemflynn/ccmp) | Referencia de R3F v9 + React 19 (hooks, rendimiento) | `npx skills add anthemflynn/ccmp --skill react-three-fiber` *(verificar)* |
+| **mattpocock/skills** | `grill-me` (cerrar decisiones), `to-tickets` (backlog → issues), `domain-modeling` (glosario/ADR) | `/plugin install mattpocock-skills@claude-plugins-official` |
+| **the-architect** | `/architect-audit` como segunda opinión y pre-mortem del plan | `/plugin marketplace add Hainrixz/the-architect` → `/plugin install the-architect@soyenriquerocha` |
 
-## Context7 en sesiones cloud (Claude Code web)
+## Tier 3 — no instalar
 
-En esta sesión el servidor MCP de Context7 falló al conectar porque la política de red del entorno denegó `mcp.context7.com`. Para usarlo en sesiones web: menú del entorno cloud en la barra de título de la sesión → **Edit** → **Network access** → agregar `mcp.context7.com` (y `context7.com` si usas el CLI) en *Allowed domains*, dejando marcada la casilla de gestores de paquetes. Pasos oficiales: https://code.claude.com/docs/en/cloud-environments#network-access. En tu Claude Code local no hace falta nada.
+| Repo | Por qué no |
+|---|---|
+| ECC, spec-kit | Se solapan con superpowers y con `docs/plan/`; sus ideas ya están en el harness |
+| Skills de Phaser / game-creator | Motores 2D/canvas distintos a nuestro stack |
+| claude-code-game-studios | Demasiado pesado; no se pudo verificar su contenido |
+| Skills genéricas de three.js sin mantenimiento claro | Riesgo de prácticas viejas; preferir Context7 + docs oficiales |
+
+## ¿Claude Design o Claude Code? (D-08)
+
+Respuesta corta: **seguir en Claude Code** (ADR-016). Claude Design produce pantallas y prototipos 2D; el juego es una escena 3D en una sola pantalla con interfaz diegética, y el look se define en el código de la escena (materiales, luz, postprocesado). Iteramos con capturas reales de Playwright. Claude Design queda opcional para explorar el look de las capas 2D (terminal, libreta, teléfono).
+
+## Skills y subagentes propios (`.claude/`)
+
+Skills: `siguiente-tarea`, `verificar`, `revision-visual`, `nueva-mision`, `nuevo-comando`.
+Subagentes: `disenador-narrativo`, `revisor-curricular`, `verificador-fidelidad`, `qa-visual`, `playtester-novato`, `auditor-seguridad`.
 
 ## Fuentes
 
-- https://github.com/affaan-m/ECC
-- https://github.com/Hainrixz/the-architect
-- https://github.com/obra/superpowers
-- https://github.com/github/spec-kit
-- https://github.com/emilkowalski/skills
-- https://github.com/mattpocock/skills
-- https://github.com/upstash/context7 · https://context7.mintlify.dev/docs/clients/claude-code · https://tessl.io/registry/skills/github/upstash/context7/context7-cli
-- https://github.com/DietrichGebert/ponytail · https://skillselion.com/guides/ponytail-skill-claude-code-guide
-- https://github.com/anthropics/skills
-- https://skills.sh/donchitos/claude-code-game-studios/team-narrative · https://opusgamelabs.github.io/game-creator
-- https://qaskills.sh/blog/playwright-cli-install-quickstart-2026
-- https://github.com/xtermjs/xterm.js/issues/3600 · https://github.com/xtermjs/xterm.js/issues/5377 (problemas de xterm.js en móvil → ADR-002)
-- https://www.pistack.xyz/posts/2026-11-03-postgres-in-the-browser-pglite-libsql-turso-postgres-wasm/ · https://www.infoq.com/news/2024/05/pglite-wasm-postgres-browser (sql.js vs PGlite → ADR-003)
+- https://github.com/obra/superpowers · https://github.com/DietrichGebert/ponytail · https://github.com/upstash/context7
+- https://tessl.io/registry/skills/github/openai/plugins/react-three-fiber-game · https://skills.sh/anthemflynn/ccmp/react-three-fiber · https://github.com/cloudai-x/threejs-skills
+- https://github.com/anthropics/skills · https://github.com/emilkowalski/skills · https://github.com/mattpocock/skills · https://github.com/Hainrixz/the-architect
+- https://github.com/affaan-m/ECC · https://github.com/github/spec-kit

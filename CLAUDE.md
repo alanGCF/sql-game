@@ -1,85 +1,101 @@
-# CLAUDE.md — Turno Nocturno
+# CLAUDE.md — Planta 7 *(nombre clave; título del juego por definir, D-05)*
 
-Juego web móvil-primero que enseña Linux, SQL y redes desde cero mediante una historia de misterio en una planta de manufactura ficticia. El plan completo vive en `docs/` (índice: `docs/README.md`). Este archivo es la **constitución**: si algo aquí choca con otro documento, gana este archivo y se corrige el otro.
+Juego web **de escritorio** que enseña Linux, SQL y redes desde cero mediante una historia de misterio en una planta de manufactura ficticia. Se juega en primera persona, sentado en tu cubículo en 3D: la computadora, el teléfono, la libreta, el pizarrón y el calendario son la interfaz. El plan completo vive en `docs/` (índice: `docs/README.md`). Este archivo es la **constitución**: si algo aquí choca con otro documento, gana este archivo y se corrige el otro.
 
 Idioma del proyecto: **español** (docs, contenido, commits, comentarios). Identificadores de código en inglés.
 
-## Estado actual
-
-Fase 0 (planeación + harness). No existe `package.json` todavía; los scripts `npm run …` de abajo se crean en la tarea F0-04 del backlog. Si un script no existe, dilo; no asumas que pasa.
-
 ## Pilares no negociables
 
-1. **Móvil primero.** Todo se diseña y prueba primero a 360–430 px de ancho, en vertical, con el teclado del teléfono abierto.
-2. **La herramienta avanza la trama.** Cada concepto enseñado revela información o cambia el estado del mundo que la historia necesita. Si se puede quitar la herramienta y la historia sigue igual, la misión está mal diseñada.
-3. **Validación por resultado.** Los objetivos se cumplen por el estado del mundo o por una respuesta del jugador, nunca comparando la cadena exacta del comando. Cualquier solución correcta debe valer.
-4. **Fidelidad.** Lo que se aprende funciona igual en un Linux real (GNU coreutils/bash), en SQLite real y con herramientas de red reales. La salida de los comandos se imprime en inglés como en el sistema real; las explicaciones van en español (glosas).
-5. **Una idea nueva por misión** (máximo dos). Cada concepto se reutiliza después.
-6. **Contenido como datos; motor sin DOM.** `src/engine/` es TypeScript puro sin React ni `window`. Las misiones son YAML en `content/`, validadas en build.
-7. **Ligero y offline.** Presupuestos en `docs/plan/05-arquitectura.md` §Presupuestos. Funciona sin red después de la primera carga.
-8. **Accesible.** WCAG 2.1 AA. El estado nunca depende solo del color.
-9. **Seguridad responsable.** El jugador siempre actúa como empleado autorizado administrando/defendiendo su propia red. Nada de técnicas ofensivas reales.
+1. **Escritorio primero.** Navegador de escritorio con mouse y teclado, 1280×720 como mínimo y 1920×1080 como objetivo. El port a móvil es posterior (v2) y no condiciona decisiones de v1.
+2. **Una sola pantalla.** Todo el juego ocurre en una sola escena 3D con interfaz diegética (objetos del escritorio) y capas DOM encima. No hay navegación entre páginas.
+3. **La herramienta avanza la trama.** Cada concepto enseñado revela información o cambia el estado del mundo que la historia necesita. Si se puede quitar la herramienta y la historia sigue igual, la misión está mal diseñada.
+4. **Validación por resultado.** Los objetivos se cumplen por el estado del mundo o por una respuesta del jugador, nunca comparando la cadena exacta del comando. Cualquier solución correcta debe valer.
+5. **Vigencia y fidelidad.** Lo que se enseña es lo **actual**: mismo comportamiento y salida que la versión estable vigente de GNU/Linux (Debian stable / Ubuntu LTS), SQLite y las herramientas de red modernas (`ip`, `ss`, `dig`, `grep -E`, llaves `ed25519`…). Nada obsoleto se enseña como vigente. Política completa: `docs/plan/03-curriculo.md` §Política de vigencia.
+6. **Todo se teclea.** El jugador escribe cada comando y cada nota: no se puede pegar en la terminal ni en la libreta, ni copiar texto de la libreta o de las pistas.
+7. **Una idea nueva por misión** (máximo dos). Cada concepto se repasa después (misiones y favores).
+8. **Contenido como datos; motor sin DOM; mundo determinista por semilla.** `src/engine/` es TypeScript puro. Las misiones son YAML en `content/`. Cada partida tiene una semilla que varía los datos (no la historia) para que las respuestas no se memoricen.
+9. **Seguro por defecto.** El sitio es público: toda entrada es hostil hasta validarse. Ver `docs/plan/08-seguridad.md`.
+10. **Accesible.** Subtítulos de todo audio, controles alternativos por teclado, contraste AA en la interfaz, opción de reducir movimiento.
+11. **Seguridad responsable en la ficción.** El jugador siempre actúa como empleado autorizado administrando o defendiendo su propia red. Nada de técnicas ofensivas reales.
 
-## Flujo de trabajo para agentes
+## Cómo se trabaja
+
+- **Ramas:** solo `main` (producción; Railway despliega de aquí) y `develop` (trabajo diario). No se crean más ramas.
+- **Commits:** uno por tarea del backlog, mensaje `F#-##: <resumen en español>`. Un push puede llevar varios commits si son de tareas relacionadas.
+- **A `main`** solo se lleva `develop` (`git merge --ff-only develop`) cuando: CI en verde, `/verificar` en verde, revisión visual con Playwright sin regresiones, revisión de seguridad sin hallazgos altos **y aprobación del usuario**.
+- **Autonomía:** el agente trabaja de forma continua y toma las decisiones de **código**. Las decisiones de **funcionalidad y estética** se consultan con el usuario (proponer opciones con capturas, no decidir solo). Registro: `docs/plan/decisiones-abiertas.md`.
+- **Revisión visual constante:** cualquier cambio en la escena o la interfaz pasa por `/revision-visual` (Playwright + capturas) antes de cerrarse.
+
+## Flujo de una tarea
 
 1. `/siguiente-tarea` toma la siguiente tarea desbloqueada de `docs/plan/backlog.md`.
-2. Si hay ambigüedad de diseño, usa brainstorming (superpowers) o pregunta; si toca una decisión de `docs/plan/decisiones-abiertas.md` sin resolver, **detente y pregunta**.
-3. Implementa con TDD (rojo → verde → refactor). Cambio mínimo completo (ponytail): nada de abstracciones especulativas. Un atajo deliberado se marca con `// shortcut: <qué y cuándo revisarlo>`.
-4. `/verificar` antes de declarar algo terminado. Reporta resultados reales, incluidos fallos.
-5. Commit por tarea: `F#-##: <resumen en español>`.
+2. Si la tarea toca una decisión de funcionalidad/estética abierta, **pregunta** y sigue con otra tarea mientras tanto.
+3. TDD (rojo → verde → refactor). Cambio mínimo completo (ponytail); atajo deliberado = `// shortcut: <qué y cuándo revisarlo>`.
+4. `/verificar` y, si hubo cambios visibles, `/revision-visual`.
+5. Commit `F#-##: …` en `develop` y push.
 
-Skills del proyecto (`.claude/skills/`): `siguiente-tarea`, `verificar`, `nueva-mision`, `nuevo-comando`, `handoff-diseno`.
-Subagentes (`.claude/agents/`): `disenador-narrativo`, `revisor-curricular`, `verificador-fidelidad`, `qa-movil`, `playtester-novato`.
+Skills del proyecto (`.claude/skills/`): `siguiente-tarea`, `verificar`, `revision-visual`, `nueva-mision`, `nuevo-comando`.
+Subagentes (`.claude/agents/`): `disenador-narrativo`, `revisor-curricular`, `verificador-fidelidad`, `qa-visual`, `playtester-novato`, `auditor-seguridad`.
 
-Antes de escribir código contra una librería cuya API cambia (React, Vite, sql.js, Playwright, vite-plugin-pwa, Zod), consulta su documentación actual con Context7 si está disponible.
+Antes de escribir código contra una librería cuya API cambia (React, three.js, @react-three/fiber, drei, Vite, Fastify, sql.js, Playwright, Zod), consulta su documentación actual (Context7 si está autorizado; si no, `npm view`, el changelog o los tipos instalados).
 
-## Comandos (a partir de F0-04)
+## Comandos
 
 ```bash
-npm run dev              # servidor de desarrollo
-npm run typecheck        # tsc --noEmit
+npm run dev              # cliente (Vite) + servidor en modo desarrollo
+npm run typecheck        # tsc --noEmit (cliente, servidor, scripts)
 npm run lint             # biome check
-npm run test             # vitest: motor + harness de contenido
+npm run test             # vitest: motor, servidor, harness de contenido
 npm run validate:content # solo el harness de contenido (acepta rutas)
-npm run play -- --mision <id> [--solucion]   # jugar una misión headless en terminal
-npm run e2e              # playwright, proyectos móviles
-npm run build && npm run size                # build + presupuestos
+npm run play -- --mision <id> [--semilla N] [--solucion]   # jugar headless
+npm run e2e              # playwright: flujos + capturas visuales
+npm run build && npm run size   # build + presupuestos
+npm start                # servidor de producción (sirve el build y /api)
 ```
+
+Si un script imprime "no implementado: <tarea>", esa parte aún no existe; dilo, no lo cuentes como aprobado.
 
 ## Reglas de código
 
 - TypeScript `strict`. Sin `any` salvo en fronteras con librerías, comentado.
-- `src/engine/**` no importa de `src/ui/**`, React ni APIs del DOM. La UI consume el motor por su API pública.
-- Un comando simulado = un archivo en `src/engine/commands/` + tests golden en `tests/golden/<comando>/` + página man en `content/man/<comando>.md`. Solo se implementan las banderas listadas en `docs/plan/03-curriculo.md` §Superficie de comandos.
-- Determinismo: nada de `Date.now()` ni `Math.random()` en el motor; usa el reloj de juego y el RNG con semilla.
-- Dependencia nueva = justificarla en `docs/decisiones/adr.md`.
+- `src/engine/**` no importa de `src/scene/**`, `src/ui/**`, React, three.js ni APIs del DOM.
+- `server/**` no confía en nada del cliente: valida con los esquemas Zod de `shared/`, consultas SQL siempre parametrizadas, límites de tamaño y de tasa.
+- Un comando simulado = un archivo en `src/engine/commands/` + goldens en `tests/golden/<comando>/` + página de libreta en `content/libreta/comandos/<comando>.md`. Solo las banderas de la superficie de comandos (`03-curriculo.md`).
+- Determinismo: el motor no usa `Date.now()` ni `Math.random()`; usa el reloj de juego y el RNG con semilla.
+- Dependencia nueva = justificarla en `docs/decisiones/adr.md` y revisar su mantenimiento y licencia.
+- Assets (modelos, texturas, sonidos, fuentes) solo con licencia CC0/CC-BY/OFL registrada en `docs/diseno/assets.md`.
 - No desactives, saltes ni borres tests para que pase la compuerta.
 
 ## Reglas de contenido
 
-- Español de México, tuteo, frases cortas. Máximo 280 caracteres por burbuja de diálogo.
-- Toda misión trae `solucion`, al menos una `soluciones_alternativas` y al menos un `contraejemplos` (formato: `docs/ejemplos/mision-ejemplo.yaml`).
-- Tres pistas por objetivo: empujón → concepto → solución ejecutable entre backticks. Las pistas no regañan.
-- Personas, empresas, IPs y dominios son ficticios. Consistencia con la biblia del mundo (`docs/plan/02-trama.md` §Biblia del mundo).
+- Español de México, tuteo, frases cortas. Máximo 280 caracteres por globo de diálogo.
+- Toda misión trae `solucion`, ≥ 1 `soluciones_alternativas` y ≥ 1 `contraejemplos`, y debe resolverse con **cualquier semilla** (formato: `docs/ejemplos/mision-ejemplo.yaml`).
+- Las pistas las da el compañero de trabajo por teléfono, en tres niveles: empujón → concepto → comando exacto (que el jugador debe teclear). Las pistas no regañan.
+- Datos variables (lote, IPs, horas, conteos, contraseñas) siempre como `{{variable}}` de partida; la historia y los personajes no cambian.
+- Personas, empresas, IPs y dominios ficticios; consistencia con la biblia del mundo (`docs/plan/02-trama.md`).
 
 ## Definición de terminado
 
 - Tests nuevos o actualizados que fallaban antes del cambio y pasan después.
 - `/verificar` en verde (o el fallo reportado explícitamente al usuario).
-- Si cambió contenido: harness de contenido en verde y revisión de `revisor-curricular`.
-- Si cambió UI: `qa-movil` sin bloqueantes a 360×740 y 390×844 con teclado abierto.
-- Docs afectados actualizados (currículo, superficie de comandos, backlog).
+- Contenido: harness en verde con el conjunto de semillas de CI y revisión de `revisor-curricular`.
+- Escena o interfaz: `/revision-visual` sin regresiones y capturas revisadas.
+- Servidor o algo expuesto a internet: `auditor-seguridad` sin hallazgos altos.
+- Docs afectados actualizados (currículo, superficie de comandos, backlog, ADR).
 
 ## Mapa de documentos
 
-- `docs/plan/01-vision.md` — público, objetivos de aprendizaje, no-objetivos.
-- `docs/plan/02-trama.md` — historia, personajes, turnos, finales, biblia del mundo.
-- `docs/plan/03-curriculo.md` — grafo de conceptos, mapa misión↔concepto, superficie de comandos.
-- `docs/plan/04-mecanicas.md` — loop, objetivos, pistas, progresión, entrada móvil.
-- `docs/plan/05-arquitectura.md` — stack, módulos, interfaces, esquema de misión, presupuestos.
+- `docs/plan/01-vision.md` — público, objetivos de aprendizaje, plataformas, no-objetivos.
+- `docs/plan/02-trama.md` — historia, calendario, personajes, turnos, favores, finales, biblia del mundo.
+- `docs/plan/03-curriculo.md` — conceptos, mapa de misiones y favores, superficie de comandos, política de vigencia.
+- `docs/plan/04-mecanicas.md` — escritorio 3D, objetos, teléfono, libreta, pizarrón, calendario, terminal, pistas, código de partida, aleatorización.
+- `docs/plan/05-arquitectura.md` — stack, módulos, escena, servidor, esquema de misión, presupuestos.
 - `docs/plan/06-roadmap.md` — fases, versiones, criterios de salida.
-- `docs/plan/07-calidad-harness.md` — harness de agentes, harness de contenido, pruebas, CI.
+- `docs/plan/07-calidad-harness.md` — harness de agentes, de contenido, pruebas, revisión visual, CI.
+- `docs/plan/08-seguridad.md` — modelo de amenazas, controles, revisión antes de producción.
 - `docs/plan/backlog.md` — tareas con Hacer / Listo cuando / Verificar.
-- `docs/decisiones/adr.md` — decisiones de arquitectura tomadas.
-- `docs/diseno/brief-claude-design.md` — requerimientos para Claude Design.
+- `docs/plan/decisiones-abiertas.md` — decisiones de funcionalidad/estética pendientes del usuario.
+- `docs/decisiones/adr.md` — decisiones técnicas tomadas.
+- `docs/diseno/direccion-arte.md` — escena, objetos, estilo, referencias, audio.
+- `docs/diseno/assets.md` — inventario y licencias de assets.
 - `docs/glosario.md` — vocabulario del dominio.

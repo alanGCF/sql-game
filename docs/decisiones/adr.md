@@ -1,69 +1,79 @@
-# Registro de decisiones de arquitectura (ADR)
+# Registro de decisiones técnicas (ADR)
 
-Formato corto: contexto → decisión → consecuencias. Estado: `propuesta` (pendiente de tu visto bueno en F0-03), `aceptada`, `reemplazada por ADR-X`.
+Formato corto: contexto → decisión → consecuencias. Las decisiones de código las toma el agente; las de funcionalidad/estética están en `docs/plan/decisiones-abiertas.md`.
 
 ---
 
-## ADR-001 · Shell simulado en TypeScript, no emulador de Linux · propuesta
+## ADR-001 · Shell simulado en TypeScript, no emulador de Linux · aceptada
 
-**Contexto.** Opciones para "una terminal Linux en el navegador": emular una máquina x86 (v86, WebVM/CheerpX) o simular un shell. Los emuladores descargan decenas de MB, consumen CPU/batería en celulares de gama media y no permiten instrumentar objetivos (saber qué leyó o cambió el jugador) sin hacks.
+**Contexto.** Emular x86 (v86, WebVM) descarga decenas de MB, consume CPU y no permite saber qué leyó o cambió el jugador; además ejecutaría cualquier cosa.
+**Decisión.** Intérprete propio con VFS, red simulada y un subconjunto fiel y vigente de comandos.
+**Consecuencias.** (+) Ligero, determinista, testeable, controlable (globo de pensamiento). (−) Fidelidad a mano: goldens de `debian:stable` y `verificador-fidelidad`.
 
-**Decisión.** Intérprete propio en TS con VFS en memoria, red simulada y un subconjunto fiel de comandos (`03-curriculo.md` §Superficie de comandos).
+## ADR-002 · Terminal propia en DOM sobre el monitor, no xterm.js · aceptada
 
-**Consecuencias.** (+) Ligero, determinista, testeable, offline, predicados exactos. (−) Hay que mantener fidelidad a mano: goldens capturados de Linux real y subagente `verificador-fidelidad`. Comandos fuera de la superficie responden "command not found" + glosa.
+**Contexto.** Con el cambio a escritorio xterm.js sería viable, pero emula una terminal real de PTY: dificulta interceptar cada línea antes de ejecutarla (clasificador), bloquear pegar, insertar glosas y estilos por tipo de línea, y testear con Playwright.
+**Decisión.** Lista de líneas en DOM + input propio, posicionado sobre el monitor de la escena cuando el jugador se acerca. `less`/`man` con visor propio.
+**Consecuencias.** (+) Control total de la entrada, accesible, fácil de probar. (−) Sin aplicaciones de pantalla completa (vim, top), que están fuera de alcance de todas formas.
 
-## ADR-002 · Terminal propia en DOM, no xterm.js · propuesta
+## ADR-003 · SQLite en WASM con `sql.js`, en Web Worker, carga diferida · aceptada (D-03)
 
-**Contexto.** xterm.js es excelente en escritorio, pero sus issues abiertos documentan problemas en móvil: entrada corrupta en Android, sin manejo táctil dedicado ni integración con teclado virtual (xtermjs/xterm.js #3600, #5377). Nuestro juego no necesita aplicaciones de pantalla completa (vim, top).
+**Decisión.** `sql.js` cargado al llegar al T4 (precarga durante T3) dentro de un Worker para no bloquear el render 3D. La base se genera con la semilla.
+**Consecuencias.** Dialecto SQLite; diferencias con otros motores documentadas en la libreta.
 
-**Decisión.** Salida como lista de líneas en el DOM + `<input>` nativo de una línea + barra de accesos. `less` y `man` usan un visor paginado propio.
+## ADR-004 · Contenido como datos (YAML validado) · aceptada
 
-**Consecuencias.** (+) Teclado nativo, accesibilidad (lectores de pantalla), copiar/pegar nativo, estilos por tipo de línea. (−) Sin TUI. Validación temprana con el spike F0-07.
+Misiones, favores, mundo, personajes, contactos, rumores, visitas, currículo y libreta en `content/`, validados con Zod y convertidos a JSON en build.
 
-## ADR-003 · SQLite en WASM con `sql.js`, carga diferida · propuesta (depende de D-03)
+## ADR-005 · Validación por resultado · aceptada
 
-**Contexto.** `sql.js` ≈ 1 MB de WASM; PGlite (Postgres) ≈ 3 MB gzip con persistencia integrada.
+Objetivos = predicados sobre el estado o respuestas; respuestas esperadas calculadas del mundo (`esperado_de`). Exige alternativas y contraejemplos en cada misión.
 
-**Decisión.** `sql.js`, cargado al llegar a T3 y precargado en segundo plano durante T2.
+## ADR-006 · Salidas en inglés real + glosas en español · aceptada (D-04)
 
-**Consecuencias.** (+) Peso aceptable en datos móviles. (−) Dialecto SQLite: diferencias con Postgres/MySQL se documentan en la Bitácora (tipos dinámicos, `||` para concatenar, fechas como texto). Persistencia manual (exportar a IndexedDB) desde T11.
+## ADR-007 · Stack web · aceptada (actualizada)
 
-## ADR-004 · Contenido como datos (YAML validado) · propuesta
+**Decisión.** Vite + React + TypeScript strict + Zustand + Vitest + Playwright + Biome. Despliegue en Railway (ADR-010). Sin GitHub Pages.
 
-**Contexto.** 52 misiones con narrativa, mundo y validaciones. Si viven en código, cada misión exige programar y revisar TS.
+## ADR-008 · Mundo determinista por semilla · aceptada
 
-**Decisión.** Misiones, mundo, personajes, currículo y páginas man en `content/` (YAML/Markdown), validados con Zod y convertidos a JSON en build.
+El motor no usa `Date.now()` ni `Math.random()`. Reloj de juego y RNG con semilla.
 
-**Consecuencias.** (+) Escribir misiones es barato y lo valida el harness; separa narrativa de motor; facilita traducción. (−) Los predicados están acotados a los del catálogo; un predicado nuevo es cambio de motor.
+## ADR-009 · Escena 3D con three.js + React Three Fiber + drei · aceptada
 
-## ADR-005 · Validación por resultado · propuesta
+**Contexto.** El juego ocurre en un cubículo 3D en primera persona con interfaz diegética y capas DOM (terminal, libreta, teléfono). Opciones: three.js directo, React Three Fiber (R3F), Babylon.js, PlayCanvas, motores con exportación web (Godot, Unity).
+**Decisión.** three.js con R3F (declarativo, mismo React que las capas DOM) y drei (cámaras, `Html`, cargadores, utilidades de interacción). Postprocesado solo si el estilo elegido lo necesita.
+**Consecuencias.** (+) Un solo lenguaje y árbol de componentes; DOM nítido y accesible para texto; ecosistema grande; el estado del juego se comparte sin puentes. (−) Hay que cuidar rendimiento (draw calls, texturas) y evitar re-renders de React en el bucle de render (`useFrame`, refs). Godot/Unity se descartan por peso del build web, integración pobre con DOM y pruebas con Playwright más difíciles.
 
-**Contexto.** Comparar el comando exacto rechaza soluciones correctas (`cat ./LEEME.txt` vs `cat LEEME.txt`) y enseña a memorizar, no a resolver.
+## ADR-010 · Servidor Fastify + PostgreSQL en Railway para el código de partida · aceptada
 
-**Decisión.** Objetivos = predicados sobre el estado del mundo o respuestas del jugador. `comando_ejecutado` solo para comandos observacionales sin efecto.
+**Contexto.** El código de partida debe permitir continuar en otra computadora → hace falta guardar en servidor desde v1. El usuario usa Railway (Hobby). Antes se había aceptado Django para v2.
+**Decisión.** Un solo servicio Node (Fastify) que sirve el build estático y `/api/partidas`, con PostgreSQL de Railway. Esquemas Zod compartidos con el cliente (`shared/`).
+**Consecuencias.** (+) Un solo lenguaje, un solo despliegue, la misma validación en cliente y servidor (menos huecos de seguridad), costo bajo. (−) Se descarta Django para no mantener dos backends; si en v2 se necesitan cuentas o modo salón, se agregan al mismo servicio.
 
-**Consecuencias.** (+) Cualquier camino correcto vale; las respuestas se vuelven hallazgos de la historia. (−) Cada comando debe registrar lecturas/cambios; el harness exige alternativas y contraejemplos.
+## ADR-011 · Variables de partida y respuestas calculadas · aceptada
 
-## ADR-006 · Salidas en inglés real + glosas en español · propuesta (depende de D-04)
+**Decisión.** Semilla por partida; variables declaradas con generadores; textos y datos con `{{variable}}`; respuestas esperadas calculadas con una solución de referencia sobre una copia oculta del mundo. El harness prueba cada misión con muchas semillas.
+**Consecuencias.** (+) No se pueden memorizar respuestas; la historia no cambia. (−) El contenido no puede depender de valores fijos (regla C18).
 
-**Contexto.** Traducir la salida de `ls` o los errores de SQLite haría que el jugador no reconozca nada en un sistema real.
+## ADR-012 · Entrada solo tecleada · aceptada
 
-**Decisión.** La salida es idéntica a GNU/Linux/SQLite (locale C). Debajo de errores y salidas nuevas aparece una glosa en español, desactivable.
+**Decisión.** Bloquear `paste`/`drop`/`insertFromPaste` en terminal, Datos, tickets y libreta; texto de libreta, pistas y post-its no seleccionable. Es un empujón de diseño, no un control de seguridad.
 
-**Consecuencias.** (+) Transferencia directa. (−) Más texto en pantalla; la glosa debe ser corta y tener estilo distinto.
+## ADR-013 · Línea base de seguridad · aceptada
 
-## ADR-007 · Stack web estático · propuesta
+Controles de `docs/plan/08-seguridad.md`: validación Zod en servidor, SQL parametrizado, código de ≈ 60 bits guardado como hash, límites de tamaño y tasa, CSP estricta y cabeceras, contenedor no root, `npm audit`, CodeQL, auditoría antes de `main`.
 
-**Contexto.** Juego 100 % cliente, offline, desplegable gratis; autor con experiencia en Python/Django (backend), el navegador exige JS/TS.
+## ADR-014 · Ramas `main` y `develop` · aceptada
 
-**Decisión.** Vite + React + TypeScript strict + CSS Modules/variables + Zustand + Vitest + Playwright + Biome + vite-plugin-pwa; persistencia en IndexedDB; GitHub Pages. Sin backend en v1.
+Solo dos ramas. Se trabaja en `develop` (un commit por tarea). `main` recibe `develop` con `--ff-only` tras CI, verificación, revisión visual, revisión de seguridad y aprobación del usuario. Railway despliega `main`.
 
-**Consecuencias.** (+) Cero costo de hosting, un solo lenguaje en el cliente, Claude Design entrega componentes compatibles con React. (−) Sin sincronización entre dispositivos (exportar/importar partida mientras tanto); backend Django queda para v2 (D-07).
+## ADR-015 · Audio con Web Audio vía three.js · aceptada
 
-## ADR-008 · Mundo determinista · propuesta
+**Decisión.** `AudioListener`/`PositionalAudio` de three.js (sin librería extra) para ambiente, efectos posicionales (teléfono, pasos, impresora) y voces; formato `.ogg`/`.mp3`; el audio arranca tras la primera interacción (política de autoplay). Subtítulos para todo sonido relevante.
 
-**Contexto.** El harness necesita que la solución dé siempre el mismo resultado y las respuestas sean fijas.
+## ADR-016 · Diseño visual dentro de Claude Code, no en Claude Design · aceptada
 
-**Decisión.** El motor no usa `Date.now()` ni `Math.random()`: reloj de juego y RNG con semilla por misión. Los datos de `mes.db` salen de un generador con semilla fija.
-
-**Consecuencias.** (+) Pruebas reproducibles, respuestas estables. (−) Variedad en Modo Taller depende de cambiar la semilla explícitamente.
+**Contexto.** El usuario preguntó si diseñar en Claude Design o seguir en Claude Code. Claude Design trabaja interfaces 2D (pantallas, componentes, prototipos HTML). Este juego es una escena 3D en una sola pantalla con interfaz diegética.
+**Decisión.** Todo el desarrollo visual en Claude Code: escena en R3F, estilos como código, iteración con capturas de Playwright que se envían al usuario para decidir. Skills de apoyo: R3F/three.js, `frontend-design`, `emil-design-eng`. Claude Design queda como opcional para explorar el look de las capas 2D (terminal, libreta, teléfono) si el usuario quiere.
+**Consecuencias.** (+) Sin traspasos entre herramientas; lo que se ve en las capturas es el juego real. (−) La exploración visual cuesta código; se mitiga con el spike de 3 estilos sobre la misma escena.

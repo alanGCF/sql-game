@@ -5,18 +5,17 @@ description: Ejecuta la compuerta de calidad completa del proyecto y reporta res
 
 # Verificar
 
-Corre en este orden. Al primer fallo, corrígelo y vuelve a empezar desde ese paso. Nunca desactives, saltes ni borres tests para pasar.
+En orden; al primer fallo, corrige y repite desde ese paso. Nunca desactives, saltes ni borres tests.
 
 | # | Paso | Comando | Cuándo |
 |---|---|---|---|
 | 1 | Tipos | `npm run typecheck` | siempre |
 | 2 | Lint/format | `npm run lint` | siempre |
-| 3 | Motor + contenido | `npm run test` | siempre |
+| 3 | Motor + servidor + contenido | `npm run test` | siempre |
 | 4 | Build + presupuestos | `npm run build && npm run size` | siempre |
-| 5 | E2E móvil | `npm run e2e -- --trace off` | si cambió `src/ui/`, un flujo de juego o contenido de T0 |
+| 5 | Flujos y capturas | `npm run e2e -- --trace off` | si cambió `src/scene`, `src/ui`, `src/game`, `server` o contenido jugable |
+| 6 | Dependencias | `npm audit --audit-level=high` | si cambió `package.json` o el lock |
 
-Si un script no existe todavía (Fase 0), dilo literalmente: "no existe aún (F0-04)". No lo cuentes como aprobado.
+Si un script imprime "no implementado: <tarea>", dilo literalmente; no cuenta como aprobado.
 
-## Reporte
-
-Tabla `paso | resultado | detalle` con conteos (tests pasados/fallidos, avisos del harness de contenido, tamaños vs presupuesto). Si algo falló y no se pudo corregir, pega la salida relevante. Termina con una línea: `VERDE` o `ROJO: <qué falta>`.
+Reporte: tabla `paso | resultado | detalle` (conteos de tests, avisos del harness, tamaños vs presupuesto). Última línea: `VERDE` o `ROJO: <qué falta>`.

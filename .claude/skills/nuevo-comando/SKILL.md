@@ -1,23 +1,23 @@
 ---
 name: nuevo-comando
-description: Implementa o amplía un comando simulado del shell del juego (ls, grep, ping, sqlite3…) con fidelidad a Linux real. Usar al pedir "implementa el comando X", "agrega la bandera -n a grep", o al tocar src/engine/commands/.
+description: Implementa o amplía un comando simulado del shell del juego (ls, grep, ping, sqlite3…) con fidelidad y vigencia respecto a Debian stable. Usar al pedir "implementa el comando X", "agrega la bandera -n a grep", o al tocar src/engine/commands/.
 ---
 
 # Nuevo comando
 
-1. **Alcance:** revisa `docs/plan/03-curriculo.md` §Superficie de comandos. Solo se implementan las banderas listadas. Si piden una nueva, primero agrégala a esa tabla (y dilo en el reporte).
-2. **Consulta la API** de librerías involucradas con Context7 si aplica (p. ej. `sql.js` para `sqlite3`).
-3. **Captura el comportamiento real** en un directorio nuevo y vacío del scratchpad:
-   - escribe `setup.sh` que crea el estado (archivos, permisos, contenido);
-   - ejecuta el comando real con `LC_ALL=C TZ=UTC`;
-   - guarda en `tests/golden/<comando>/<caso>/`: `setup.sh`, `cmd.txt`, `stdout.txt`, `stderr.txt`, `code.txt`.
-   - Cubre: caso feliz, cada bandera soportada, combinación de banderas, archivo inexistente, permiso denegado, bandera no soportada.
-   - SQL: usa `python3 -I -c "import sqlite3 …"` (no hay CLI `sqlite3`). Redes: no hay equivalente real; escribe el golden según la documentación oficial y cita la fuente con `# fuente:`.
-4. **TDD:** el test de goldens falla → implementa `src/engine/commands/<comando>.ts` con la interfaz `Command` de `05-arquitectura.md` (registrando rutas leídas y cambios para los predicados) → pasa.
-5. **Glosas:** errores comunes del comando con glosa en español (`src/engine/gloss/`).
-6. **Man en español:** `content/man/<comando>.md` con resumen, sinopsis, banderas soportadas, 2–3 ejemplos y "En Linux real además…".
-7. **Registro y autocompletado** del comando.
-8. **Revisión:** subagente `verificador-fidelidad` sobre los casos nuevos.
-9. Skill `verificar`.
+1. **Alcance y vigencia:** revisa `docs/plan/03-curriculo.md` §Superficie de comandos y §Política de vigencia. Solo banderas listadas; si piden otra, primero agrégala a la tabla (y dilo). Si el comando es obsoleto en sistemas actuales, no se implementa: va a glosas (`command not found` + equivalente moderno).
+2. **Documentación actual:** revisa el `man` de la versión de referencia (en `debian:stable`) y, para librerías, Context7 o el changelog.
+3. **Goldens desde el sistema real:**
+   - escribe `setup.sh` (estado), `cmd.txt` (comando);
+   - captura con `scripts/capture-goldens.sh <comando> <caso>` en `debian:stable` (Docker local o job de CI `goldens`); guarda `stdout.txt`, `stderr.txt`, `code.txt`, `version.txt`;
+   - si no hay Docker, captura en el sandbox **solo** si la versión coincide y anótalo; si no coincide, deja el caso marcado `pendiente-captura` para el job de CI;
+   - cubre: caso feliz, cada bandera, combinaciones, archivo inexistente, permiso denegado, bandera fuera de superficie (debe ir al clasificador, no al comando).
+   - SQL: `python3 -I -c "import sqlite3 …"`. Redes: formato de la documentación oficial con `# fuente:`.
+4. **TDD:** test de goldens rojo → `src/engine/commands/<comando>.ts` con la interfaz `Command` (registrando lecturas y cambios) → verde.
+5. **Clasificador:** agrega el comando y sus banderas a la superficie; banderas reales no soportadas deben producir globo de pensamiento.
+6. **Glosas** de errores comunes en `src/engine/gloss/`.
+7. **Libreta:** `content/libreta/comandos/<comando>.md` (explicación corta, ejemplo, "En tu Linux real…", y si aplica "Si lo ves en un tutorial viejo…").
+8. Registro y autocompletado.
+9. `verificador-fidelidad` sobre los casos nuevos; luego `/verificar`.
 
-Reporta: banderas implementadas, casos golden (cuántos y cuáles), desviaciones documentadas y resultado de la verificación.
+Reporta: banderas implementadas, goldens (cuántos, versión de referencia), desviaciones documentadas, vigencia revisada y resultado de la verificación.

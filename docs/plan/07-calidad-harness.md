@@ -1,105 +1,111 @@
 # 07 — Calidad y harness
 
-"Harness" aquí son dos cosas:
+"Harness" son dos cosas:
 
-1. **Harness de agentes** — todo lo que rodea a Claude Code para que construya el juego de forma consistente: `CLAUDE.md`, skills, subagentes, hooks, permisos, backlog con criterios verificables.
-2. **Harness de contenido y pruebas** — el código que demuestra automáticamente que cada misión es resoluble, enseña lo que dice y respeta el currículo; más las pruebas del motor y de la UI móvil.
+1. **Harness de agentes** — lo que rodea a Claude Code para que construya el juego de forma consistente: `CLAUDE.md`, skills, subagentes, hooks, permisos, backlog verificable.
+2. **Harness de pruebas** — código que demuestra automáticamente que el motor es fiel, que cada misión se resuelve con cualquier semilla, que la escena se ve como debe y que el servidor resiste abuso.
 
 ## 1. Harness de agentes (`.claude/`)
 
-| Pieza | Archivo | Para qué |
-|---|---|---|
-| Constitución | `CLAUDE.md` | Pilares, reglas de código y contenido, definición de terminado |
-| Permisos | `.claude/settings.json` | Permite sin preguntar `npm run *`, vitest, playwright, tsc, biome y `git status/diff/log`; niega `git push --force` y leer `.env` |
-| Hook post-edición | `.claude/hooks/post-edit.mjs` | Tras cada `Edit`/`Write`: `biome check --write` del archivo; si es YAML de `content/`, corre `validate:content` de ese archivo. Si falla, devuelve el error a Claude (exit 2) para que lo corrija. No hace nada mientras no exista el tooling |
-| Plugin habilitado | `.claude/settings.json` → `enabledPlugins` | `superpowers` (brainstorming, planes, TDD, debugging, verificación) |
-| Skill `siguiente-tarea` | `.claude/skills/siguiente-tarea/` | Toma la siguiente tarea desbloqueada del backlog y la ejecuta con TDD |
-| Skill `verificar` | `.claude/skills/verificar/` | Compuerta completa: typecheck → lint → test → build/size → e2e |
-| Skill `nueva-mision` | `.claude/skills/nueva-mision/` | Flujo para escribir una misión correcta y validada |
-| Skill `nuevo-comando` | `.claude/skills/nuevo-comando/` | Flujo para implementar un comando fiel (goldens desde Linux real) |
-| Skill `handoff-diseno` | `.claude/skills/handoff-diseno/` | Integrar el export de Claude Design |
-| Subagente `disenador-narrativo` | `.claude/agents/` | Revisa acoplamiento herramienta→trama, voz, consistencia, longitud móvil |
-| Subagente `revisor-curricular` | `.claude/agents/` | Revisa prerequisitos, ≤ 2 conceptos, validación por resultado, pistas |
-| Subagente `verificador-fidelidad` | `.claude/agents/` | Compara comando simulado vs Linux/SQLite real en el sandbox |
-| Subagente `qa-movil` | `.claude/agents/` | Playwright móvil: teclado abierto, tamaños táctiles, a11y, persistencia |
-| Subagente `playtester-novato` | `.claude/agents/` | Juega una misión como principiante usando solo `npm run play` |
+| Pieza | Para qué |
+|---|---|
+| `CLAUDE.md` | Constitución: pilares, flujo de ramas, autonomía, reglas, definición de terminado |
+| `settings.json` | Permisos sin preguntar para `npm run *`, vitest, playwright, tsc, biome, `git status/diff/log`; niega `git push --force` y leer `.env`; habilita superpowers |
+| `hooks/post-edit.mjs` | Tras cada edición: `biome check --write` del archivo; si es YAML de `content/`, valida ese archivo. Si falla, devuelve el error a Claude (exit 2) |
+| Skill `siguiente-tarea` | Toma la siguiente tarea desbloqueada y la ejecuta con TDD |
+| Skill `verificar` | Compuerta: typecheck → lint → test → build/size → e2e |
+| Skill `revision-visual` | Corre las capturas de Playwright, las compara contra la referencia y **las mira** para juzgar si se ven bien |
+| Skill `nueva-mision` | Escribir una misión o favor correcto, con variables de partida, validado con muchas semillas |
+| Skill `nuevo-comando` | Implementar un comando fiel y vigente (goldens en `debian:stable`) |
+| Subagente `disenador-narrativo` | Acoplamiento herramienta→trama, voz, consistencia, longitud de globos |
+| Subagente `revisor-curricular` | Prerequisitos, ≤ 2 conceptos, validación por resultado, pistas, favores |
+| Subagente `verificador-fidelidad` | Comando simulado vs real y **vigencia** (nada obsoleto) |
+| Subagente `qa-visual` | Playwright en escritorio: escena, transiciones, capas DOM, accesibilidad, rendimiento |
+| Subagente `playtester-novato` | Juega una misión como principiante con `npm run play` |
+| Subagente `auditor-seguridad` | Revisa el diff contra `08-seguridad.md` antes de ir a `main` |
 
-Flujo típico de una tarea:
-
-```
-/siguiente-tarea → (brainstorming si hay ambigüedad) → test que falla → implementación mínima → /verificar → revisores (si aplica) → commit
-```
+Flujo de una tarea: `/siguiente-tarea` → test que falla → implementación mínima → `/verificar` → `/revision-visual` (si hay cambios visibles) → revisores → commit en `develop`.
 
 ## 2. Harness de contenido (`npm run validate:content`)
 
-Corre en cada build, en CI y en el hook al editar YAML. Cada regla tiene severidad **error** (rompe CI) o **aviso**.
+Corre en cada build, en CI y en el hook al editar YAML. Severidad **error** (rompe CI) o **aviso**.
 
 | # | Regla | Severidad |
 |---|---|---|
-| C1 | El YAML cumple el esquema Zod (campos, tipos, longitudes: título ≤ 40, burbuja ≤ 280, 2–4 burbujas, 1–3 objetivos, 3 pistas) | error |
-| C2 | **Autosolución:** en un mundo recién cargado, ejecutar `solucion` cumple todos los objetivos y la misión termina | error |
-| C3 | Cada `soluciones_alternativas` también completa la misión (garantiza validación por resultado) | error |
-| C4 | Ningún `contraejemplos` cumple el objetivo al que apunta | error |
-| C5 | La pista 3 de cada objetivo contiene al menos un bloque entre backticks que, ejecutado tras los pasos previos de la solución, cumple ese objetivo | error |
-| C6 | `requiere` ⊆ conceptos de `ensena` de misiones anteriores (por `turno`, `orden`) | error |
-| C7 | `ensena` tiene ≤ 2 conceptos y todos existen en `curriculo.yaml` | error |
-| C8 | Todo comando y bandera usados en `solucion` están en la superficie de comandos y fueron enseñados en esta misión o antes | error |
-| C9 | Cada concepto se reutiliza ≥ 2 veces en misiones posteriores (salvo Turno 12) | aviso |
-| C10 | Referencias válidas: personajes, hosts, rutas, tablas y conceptos existen | error |
-| C11 | Determinismo: dos ejecuciones de `solucion` producen el mismo estado final (hash) | error |
-| C12 | Todos los finales de T12 son alcanzables (una ruta de solución por final) | error |
-| C13 | Duración estimada 3–8 min y ≤ 3 objetivos | aviso |
-| C14 | Ortografía es-MX con diccionario del proyecto (`cspell`) en textos visibles | aviso |
-| C15 | Ningún texto de briefing contiene literalmente la solución de un objetivo | aviso |
+| C1 | Esquema Zod (campos, tipos, longitudes: título ≤ 40, globo ≤ 280, 2–4 globos, 1–3 objetivos, 3 pistas) | error |
+| C2 | **Autosolución con muchas semillas:** `solucion` completa la misión con cada semilla del conjunto (25 en CI, 500 nocturno) | error |
+| C3 | Cada `soluciones_alternativas` también completa la misión | error |
+| C4 | Ningún `contraejemplos` cumple su objetivo | error |
+| C5 | La pista 3 de cada objetivo contiene un comando entre backticks que, ejecutado tras los pasos previos, cumple el objetivo | error |
+| C6 | `requiere` ⊆ conceptos enseñados antes | error |
+| C7 | `ensena` ≤ 2 conceptos, todos existen en `curriculo.yaml` | error |
+| C8 | Comandos y banderas de `solucion` están en la superficie y ya se enseñaron | error |
+| C9 | Cada concepto se repasa ≥ 2 veces después (misiones o favores), salvo T13 | aviso |
+| C10 | Referencias válidas: personajes, contactos, hosts, rutas, tablas, conceptos, variables | error |
+| C11 | Determinismo: misma semilla → mismo estado final (hash) | error |
+| C12 | Todos los finales del T13 son alcanzables | error |
+| C13 | Duración 3–8 min y ≤ 3 objetivos | aviso |
+| C14 | Ortografía es-MX (`cspell` con diccionario del proyecto) | aviso |
+| C15 | Ningún texto visible contiene la solución de un objetivo | aviso |
+| C16 | **Favores:** `ensena: []`, `refuerza` ya enseñado, `disponible_desde` entre 1 y 2 misiones después de la que enseña el concepto más reciente; no modifica banderas de la historia | error |
+| C17 | **Variabilidad:** al menos el 80 % de las respuestas esperadas cambian entre semillas (si no, la respuesta se puede memorizar) | aviso |
+| C18 | Ningún texto contiene un valor que debería ser `{{variable}}` (detecta valores de ejemplo pegados a mano) | error |
 
 ## 3. Pruebas del motor
 
-- **Unitarias (Vitest):** lexer, parser, expansión, VFS, permisos, red, predicados, guardado/migraciones.
-- **Goldens de fidelidad:** `tests/golden/<comando>/<caso>/` con `setup.sh` (crea el estado), `cmd.txt`, `stdout.txt`, `stderr.txt`, `code.txt`, capturados **ejecutando el comando real** con `LC_ALL=C TZ=UTC` en el sandbox. El test reproduce `setup.sh` en el VFS y compara exacto. Desviaciones permitidas (documentadas en el propio caso): fechas del reloj de juego, nombres de usuario/grupo del mundo.
-- **SQL:** cada consulta de contenido se ejecuta también con `python3 -I -c 'import sqlite3 …'` sobre la misma base para comparar resultados y mensajes de error.
-- **Red:** sin equivalente real en el sandbox; los goldens citan el formato de la documentación (iputils, iproute2, bind9 dig, curl) en un comentario `# fuente:`.
+- **Unitarias (Vitest):** lexer, parser, clasificador de entrada, expansión, VFS, permisos, red, variables/RNG, predicados, guardado y migraciones.
+- **Goldens de fidelidad y vigencia:** `tests/golden/<comando>/<caso>/` con `setup.sh`, `cmd.txt`, `stdout.txt`, `stderr.txt`, `code.txt`, `version.txt`. Se capturan **ejecutando el comando real en `debian:stable`** con `LC_ALL=C TZ=UTC` (job de CI `goldens`, también ejecutable localmente con Docker). El test reproduce `setup.sh` en el VFS y compara exacto. Desviaciones permitidas solo si están anotadas en el caso.
+- **SQL:** cada consulta de referencia del contenido se ejecuta también en SQLite nativo (Python `sqlite3`) para comparar resultados y errores.
+- **Red:** sin equivalente real; el golden cita la fuente del formato (`# fuente:` iputils, iproute2, bind9, curl).
+- **Clasificador:** tabla de ≥ 100 entradas (soportadas, typos, reales fuera de alcance, avanzadas, peligrosas, anómalas).
 - **Rendimiento:** `vitest bench` para `exec` (≤ 16 ms comando simple).
 
-## 4. Pruebas de UI (Playwright)
+## 4. Pruebas del servidor
 
-Proyectos: `pixel-7` (Chromium), `iphone-13` (WebKit), `desktop-chrome`. Chromium ya está preinstalado en el sandbox de Claude Code: `require('playwright')` funciona, **no** correr `playwright install`.
+`fastify.inject` con almacén en memoria + pruebas de integración contra PostgreSQL real (servicio de CI):
+- formato de código inválido → 400 sin tocar la base; código inexistente → respuesta uniforme;
+- cuerpo > 64 KB → 413; claves desconocidas → 400; tipos incorrectos → 400;
+- límite de tasa → 429;
+- cabeceras de seguridad presentes en estáticos y API (CSP, HSTS, nosniff, frame-ancestors);
+- `revision` vieja → 409; inyección en campos (`'; DROP TABLE`) se guarda como texto inerte;
+- errores sin trazas.
 
-| Prueba | Qué verifica |
-|---|---|
-| Loop T0-M1 | nueva partida → briefing → teclear comandos → responder → misión completada |
-| Teclado abierto | con viewport reducido a la altura con teclado: input y barra de accesos visibles, última línea visible, sin scroll horizontal |
-| Barra de accesos | tocar `|`, `Tab`, `↑` no quita el foco del input |
-| Persistencia | recargar a mitad de misión conserva historial, mundo y objetivos |
-| Restaurar misión | `rm -r` de algo importante → restaurar → mundo de inicio |
-| Offline | segunda carga sin red funciona (service worker) |
-| Accesibilidad | `@axe-core/playwright` sin violaciones *serious/critical* en cada pantalla |
-| Tamaños táctiles | todo control interactivo ≥ 44×44 px |
+## 5. Revisión visual y funcional (Playwright)
 
-## 5. CI (GitHub Actions)
+**Siempre** que cambie la escena, una interfaz o un flujo. Chromium está preinstalado en el sandbox (`require('playwright')`); no correr `playwright install`.
 
-En cada push y PR:
+- **Modo de prueba `?test=1`:** cámara sin amortiguación, animaciones desactivadas o instantáneas, reloj de juego fijo, semilla fija, ambientales apagados, `window.__game` expone acciones de prueba (girar cámara a un ángulo, acercarse a un objeto, ejecutar comando).
+- **Proyecto `desktop-1080` (1920×1080) y `desktop-720` (1280×720).** WebGL por software (SwiftShader) en headless.
+- **Capturas de referencia** (`toHaveScreenshot`, tolerancia `maxDiffPixelRatio` 0.01–0.02) de: menú, cubículo al frente, mirando a izquierda/derecha/abajo, cada vista acercada (monitor, teléfono, libreta, pizarrón, calendario), terminal con salida, globo de pensamiento, diálogo de visita, llamada en curso.
+- **Flujos funcionales:** nuevo ingreso → código mostrado → T0 completo → recargar → checar entrada con el código → mismo estado; zoom in/out; pegar bloqueado en terminal y libreta; texto de libreta no seleccionable; teclado completo (`Tab`/`Enter`/`Esc`).
+- **Accesibilidad:** axe sobre las capas DOM sin violaciones *serious/critical*; subtítulos presentes para cada audio disparado.
+- **Rendimiento:** medición de FPS y draw calls con `renderer.info` en una vista fija (umbral relajado en SwiftShader; la medición real se hace en hardware en F9).
+- **Revisión humana-agente:** la skill `revision-visual` además **abre las capturas** y las evalúa contra `docs/diseno/direccion-arte.md` (encuadre, legibilidad, contraste, que nada se salga o se encime). Las capturas del cambio se envían al usuario cuando hay decisiones estéticas.
+
+## 6. CI (GitHub Actions)
+
+En cada push a `develop` y `main` y en PRs:
 
 1. `npm ci`
-2. `npm run typecheck`
-3. `npm run lint`
-4. `npm run test` (motor + harness de contenido)
-5. `npm run build` + `npm run size` (presupuestos de `05-arquitectura.md`)
-6. `npm run e2e` (Chromium móvil + WebKit)
+2. `npm run typecheck` · `npm run lint`
+3. `npm run test` (motor, servidor, contenido con 25 semillas)
+4. `npm run build` + `npm run size`
+5. `npm run e2e` (flujos + capturas)
+6. `npm audit --audit-level=high` · CodeQL · escaneo de secretos
+7. Job `goldens` (`debian:stable`): recaptura y compara goldens (falla si el sistema real cambió)
 
-En `main`: deploy a GitHub Pages. Desde F8: Lighthouse CI móvil (rendimiento ≥ 90, accesibilidad ≥ 95).
+Nocturno: contenido con 500 semillas, goldens, auditoría de dependencias.
+Despliegue: Railway despliega `main` (configurado en el panel de Railway: rama `main`, "esperar a CI").
 
-## 6. Playtests con personas
+## 7. Playtests con personas
 
-Protocolo (se apoya en la skill `design:user-research`):
-
-- 5 personas por ronda que nunca hayan usado terminal; en su propio teléfono.
+Protocolo (skills `design:user-research` y `design:research-synthesis`):
+- 5 personas por ronda que nunca hayan usado terminal, en su propia computadora.
 - Pensar en voz alta; el observador no ayuda.
-- Medir: tiempo por misión, pistas usadas, errores repetidos, punto de abandono, frases de confusión.
-- Al final, ejercicio de transferencia en un Linux real (o un emulador web) con 3 tareas equivalentes.
-- Síntesis con `design:research-synthesis`; hallazgos bloqueantes entran al backlog antes del release.
+- Medir: tiempo por misión, pistas pedidas, llamadas "de más", errores repetidos, punto de abandono, favores completados.
+- Al final, ejercicio de transferencia en un Linux real con 3 tareas equivalentes.
+- Rondas: fin de F4 (T0–T1), fin de F6 (MVP T0–T5), fin de F8 (v0.9).
 
-Rondas: fin de F3 (T0), fin de F5 (MVP), fin de F7 (v0.9).
-
-## 7. Definición de terminado
+## 8. Definición de terminado
 
 Ver `CLAUDE.md` §Definición de terminado (fuente de verdad).

@@ -1,86 +1,139 @@
 # 02 — Trama
 
-> Propuesta v0.1. La ambientación y los nombres están sujetos a la decisión D-01 (`decisiones-abiertas.md`). Todo es ficticio: ninguna empresa, persona, IP o dominio corresponde a algo real.
+> v0.2. Ambientación aprobada (D-01). Todo es ficticio: ninguna empresa, persona, IP o dominio corresponde a algo real. Los datos marcados como `{{variable}}` cambian con la semilla de cada partida (ver `04-mecanicas.md` §Aleatorización); la historia no cambia.
 
 ## Premisa
 
 **Industrias Ocotillo, Planta 7**, en **Ciudad Médanos** (ciudad ficticia de la frontera norte), fabrica calipers de freno para un cliente automotriz. Entras como **técnico de sistemas del turno vespertino** (15:30–00:00). Tu antecesora, la **Ing. Rebeca Salcido**, renunció de un día para otro. Lo único que dejó fue un `LEEME.txt` con una frase: *"no confíes en los números del turno nocturno"*.
 
-Cada noche, a las **23:59**, un script instalado por un contratista de mantenimiento remoto cambia en la base de datos de producción los resultados de la prueba de fuga del **lote 4471** de FALLA a PASA, para que el lote salga en el embarque del lunes 16. Las piezas defectuosas podrían llegar a autos reales.
+Cada noche, a las **23:59**, un script instalado por un contratista de mantenimiento remoto cambia en la base de datos de producción los resultados de la prueba de fuga del **lote `{{lote}}`** de FALLA a PASA, para que el lote salga en el **embarque del sábado 14 de noviembre**. Las piezas defectuosas podrían terminar en autos reales.
 
-Tu trabajo diario son tickets normales de sistemas (la impresora, los logs, un reporte para Calidad). Tu investigación es reconstruir qué pasó usando esas mismas herramientas.
+Tu trabajo diario son tickets normales de sistemas. Tu investigación es reconstruir qué pasó usando esas mismas herramientas, desde tu cubículo.
 
 ## Tono
 
-- Misterio corporativo de bajo perfil, con humor de planta. Nada de "hackers con capucha".
-- Tensión que sube con el reloj del turno: cada turno termina más cerca de las 23:59.
-- Las consecuencias son de seguridad industrial (piezas defectuosas), no violencia.
-- Español de México; el humor norteño viene de Don Chuy, sin caricatura.
+- Misterio corporativo de bajo perfil con humor de planta. Nada de "hackers con capucha".
+- La oficina se siente viva: voceo, chismes, gente que pasa, la luz que cambia de tarde a noche.
+- La tensión sube con el calendario: cada turno estás más cerca del viernes 13 y del embarque.
+- Consecuencias de seguridad industrial, no violencia. Español de México; el humor norteño viene de Don Chuy y de Lupita, sin caricatura.
 
-## Estructura narrativa: Ticket + Investigación
+## Calendario
 
-Cada **turno** (capítulo) mezcla dos tipos de misión:
+La planta trabaja **de lunes a viernes**. Todos los días son de 2026.
 
-- **Ticket** — trabajo normal, bajo riesgo: aprendes el concepto. *Ej.: "la impresora de la Línea 2 no imprime" → aprendes `ping`.*
-- **Investigación** — aplicas el concepto recién aprendido al misterio. *Ej.: con `ping` descubres un equipo que no está en el inventario.*
+| Fecha | Día | Turno | Qué pasa |
+|---|---|---|---|
+| Lun 26 oct | — | (no jugable) | Inducción general a la planta. Se menciona en el Turno 0. |
+| **Mar 27 oct** | Bienvenida | **T0** | Tu escritorio está decorado. Lupita se presenta y te enseña a jugar. Sin conceptos técnicos. |
+| Mié 28 oct | 1er turno | **T1** | Inducción a Linux. |
+| Jue 29 oct | | **T2** | |
+| Vie 30 oct | | **T3** | Decoración de Halloween en la oficina *(propuesta)*. |
+| Sáb 31 – Dom 1 | fin de semana | — | |
+| Lun 2 nov | | **T4** | Altar de Día de Muertos en la oficina *(propuesta)*. |
+| Mar 3 nov | | **T5** | Cierre del MVP (`wall` de Delta). |
+| Mié 4 – Vie 6 nov | | **T6–T8** | |
+| **Sáb 7 nov** | tiempo extra | **TE** (opcional) | 3–4 favores de repaso. No afecta la historia. |
+| Dom 8 nov | — | — | |
+| Lun 9 – Jue 12 nov | | **T9–T12** | |
+| **Vie 13 nov** | último turno | **T13** | Tu jugada final. |
+| Sáb 14 nov 06:00 | — | — | Sale (o no) el embarque del lote `{{lote}}`. |
+| **Lun 16 nov** | epílogo | **Final** | Llegas solo a ver qué pasó: si te despiden, si se detuvo el embarque o si lograste el mejor final. *(Nota: el tercer lunes de noviembre es descanso obligatorio por el Día de la Revolución; propuesta: la planta está casi vacía y te citaron de todos modos, lo que sube la tensión.)* |
 
-Esto da el patrón pedagógico **aprender → aplicar** sin que se sienta como ejercicio.
+## Estructura narrativa
+
+- **Turno** = un día laboral. 4 misiones principales aprox. + 1 favor.
+- **Ticket** (aprendes el concepto en un problema cotidiano) → **Investigación** (lo aplicas al misterio).
+- **Favores** (misiones secundarias tipo *good first issue*): un compañero te pide algo pequeño que se resuelve con lo que aprendiste 1–2 misiones antes. Sirven para repasar. No mueven la historia principal. Llegan como post-it en el pizarrón, llamada o visita.
+- **Tiempo extra** (sábado 7): turno opcional con 3–4 favores de repaso de T1–T8.
 
 ## Personajes
 
-| Personaje | Rol | Usuario de sistema | Voz | Función |
-|---|---|---|---|---|
-| **Jugador** | Técnico de sistemas, turno vespertino | `becario` | — (nombre elegido por el jugador) | Protagonista |
-| **Jesús "Don Chuy" Ortega** | Supervisor de mantenimiento, 30 años en la planta | (no usa la computadora) | Coloquial, norteño, refranes, desconfía de "las máquinas" | Mentor del mundo físico: da pistas que conectan la planta con los datos ("la estación de fuga pita a las 11:59 y nadie la toca") |
-| **Ing. Rebeca Salcido ("R.")** | Ex ingeniera de sistemas y automatización | `rsalcido` | Precisa, escueta, irónica | Tutora indirecta vía notas escondidas; reaparece en Turno 9 |
-| **Ing. Karla Ibáñez** | Jefa de Calidad del turno | `kibanez` | Directa, presionada | Pide tickets; sus credenciales fueron usadas → **sospechosa falsa** |
-| **Lic. Mauricio Treviño** | Gerente de planta | `mtrevino` | Corporativo, amable en exceso | Antagonista: ordenó "que pasen los lotes" por el embarque |
-| **Óscar Delgado** | Contratista de "Soluciones Delta" (ficticia), mantenimiento remoto vía VPN | `delta_svc` | Seco, amenazante por `wall` | Ejecutor técnico del script |
-| **Calidad Corporativa** | Área de calidad del corporativo | — | Formal | Destinataria del reporte final |
+| Personaje | Rol | Usuario de sistema | Ext. | Voz | Función |
+|---|---|---|---|---|---|
+| **Jugador** | Técnico de sistemas, turno vespertino | `becario` | 210 | — (nombre elegido) | Protagonista; sus pensamientos aparecen como globo de pensamiento |
+| **Lupita Rentería** *(propuesta D-13)* | Técnica de sistemas Sr., tu compañera de departamento, 4 años en la planta | `grenteria` | 214 | Cálida, sarcástica, siempre con prisa ("ando en piso, márcame") | **Te da las pistas por teléfono.** Se presenta en T0 y te enseña a jugar. Fuente de rumores. |
+| **Jesús "Don Chuy" Ortega** | Supervisor de mantenimiento, 30 años en la planta | — | 301 | Coloquial, norteño, refranes, desconfía de "las máquinas" | Conecta lo físico con los datos ("la estación de fuga pita a las 11:59 y nadie la toca") |
+| **Ing. Rebeca Salcido ("R.")** | Ex ingeniera de sistemas y automatización | `rsalcido` | — | Precisa, escueta, irónica | Tutora indirecta vía notas escondidas; reaparece en T10 (D-12) |
+| **Ing. Karla Ibáñez** | Jefa de Calidad del turno | `kibanez` | 402 | Directa, presionada | Pide tickets; sus credenciales fueron usadas → sospechosa falsa; aliada desde T9 |
+| **Lic. Mauricio Treviño** | Gerente de planta | `mtrevino` | 100 | Corporativo, amable en exceso | Antagonista: ordenó "que pasen los lotes" |
+| **Óscar Delgado** | Contratista de "Soluciones Delta" (ficticia), mantenimiento remoto por VPN | `delta_svc` | — | Seco, amenazante por `wall` | Ejecutor técnico del script; nunca se le ve |
+| **Conmutador (Recepción)** | Operadora | — | 0 | Amable, voceo | Directorio, voceo, avisos |
+| **Comedor** | Encargada del comedor | — | 150 | Mamá de todos | Menú del día, chismes, algún favor |
+| **Caseta de vigilancia** | Guardia del turno | — | 900 | Somnoliento | Rumores de quién entra de noche (nunca da respuestas, solo dirección) |
+| **Calidad Corporativa** | Corporativo | — | (correo) | Formal | Destinataria del reporte final |
+
+### Teléfono: paciencia de los contactos
+
+Cada contacto tiene **paciencia por turno**: llamadas 1–2 → contenido (charla, rumor, aviso); llamada 3 → "¿No tienes trabajo? Ponte a trabajar"; llamada 4 en adelante → no contesta (timbra o buzón). Se reinicia cada turno. Llamar a gerencia sin motivo gasta paciencia más rápido. Las **llamadas a Lupita para pedir pista no gastan paciencia** *(propuesta D-14)*; platicar con ella sí.
+
+### Rumores
+
+Cada contacto y cada visita tiene una bolsa de rumores por turno (sin repetirse). Son ambientación, foreshadowing o pistas falsas; **nunca dan la respuesta** de un objetivo: toda acusación requiere evidencia obtenida con una herramienta. Ejemplos:
+- Don Chuy (T3): "Desde agosto el turno nocturno no reporta ni una pieza de scrap. Ni cuando yo era joven éramos tan buenos."
+- Comedor (T4): "El licenciado Treviño ya ni baja a comer. Dicen que le traen la comida a la oficina desde que vino el del corporativo."
+- Lupita (T6): "A Rebeca la sacaron después de una junta con Treviño. Ella decía que la de Calidad le estaba escondiendo algo... yo no sé."
+- Vigilancia (T7): "Un carro sin calcomanía se para afuera a las doce menos cuarto. Nomás se queda ahí y se va."
+
+### Visitas al cubículo
+
+Alguien se acerca por el pasillo (sonido de pasos, globo de diálogo, puedes girar la cámara para verlo). Tipos: **guionizadas** (Karla trae un ticket que inicia una misión; Treviño "pasa a saludar" después de algo que hiciste), **favores** (alguien te pide algo pequeño) y **ambientales** (Don Chuy con café a las 18:00; alguien preguntando si has visto su engrapadora).
+
+## Turno 0 — Bienvenida (martes 27 de octubre)
+
+Objetivo: aprender los controles del juego dentro de la historia. Sin conceptos de Linux.
+
+1. Apareces sentado. Tu escritorio está decorado: globos, un letrero "¡Bienvenid@, {{nombre}}!", una concha de pan y una taza con el logo de la planta.
+2. **Lupita se acerca a presentarse.** Diálogo con respuesta del jugador:
+   - Lupita: "¡Tú eres el nuevo! Soy Lupita, de sistemas. Vamos a estar en el mismo departamento."
+   - Lupita: "¿Ya te dieron el recorrido o te aventaron directo aquí?"
+   - **Jugador (elige):** "El lunes fue mi inducción a la planta." / "El lunes me dieron la inducción, pero no me acuerdo de nada." *(ambas dicen lo mismo con distinto tono)*
+   - Lupita: "Uy, la de seguridad industrial. A todos nos dormían. Bueno, aquí lo que importa es esto…"
+3. Lupita te enseña, uno por uno, con un pendiente en el pizarrón para cada cosa: mirar alrededor con el mouse → leer el post-it del monitor (tu contraseña) → abrir la libreta → revisar el calendario → marcarle desde el teléfono (ext. 214: "así me pides ayuda cuando me necesites; casi siempre ando en piso") → acercarte a la computadora, iniciar sesión tecleando la contraseña y alejarte.
+4. Ves tu **gafete** con tu número de empleado = tu código de partida *(propuesta D-15)*.
+5. Cierre: Lupita: "Mañana empieza lo bueno. Ah, y no le hagas caso a lo que dicen de la ingeniera Salcido."
 
 ## Línea por turno
 
-Cada fila dice qué herramienta aprende el jugador **y qué cambia en la historia gracias a ella**. Detalle de conceptos por misión en `03-curriculo.md`.
+| Turno | Fecha | Título | Dominio | Herramienta → avance de la trama |
+|---|---|---|---|---|
+| **1** | Mié 28 oct | Primer turno | Linux 0 | `pwd`, `ls`, `cd`, `cat`, `man` → lees el `LEEME.txt` de R.; el manual te enseña `ls -a` y aparece la carpeta oculta `.r/`. |
+| **2** | Jue 29 oct | Lo que dejó R. | Linux 1 | `ls -la`, `head`/`tail`/`less`, `mkdir`, `cp`, `mv`, comodines, `>`/`>>` → lees las notas de R. y **respaldas `.r/`** ("hazte una copia antes de que la borren"). |
+| **3** | Vie 30 oct | Los registros no mienten | Linux 2 | `grep`, `\|`, `wc`, `sort`, `uniq`, `cut` → en `auth.log` aparece `delta_svc` entrando cada noche a las `{{hora_acceso}}`. **Evento:** `.r/` original desaparece; tu respaldo es lo único que queda. `grep -r` encuentra el lote `{{lote}}` y `mes.db`. |
+| **4** | Lun 2 nov | El MES | SQL 1 | `sqlite3`, `SELECT`, `WHERE`, `AND/OR`, `ORDER BY`, `LIMIT` → todas las inspecciones de fuga del lote `{{lote}}` dicen PASA, pero el log del T3 registró alarmas a esas horas. Las últimas modificaciones las firma `kibanez`. |
+| **5** | Mar 3 nov | ¿Quién está en mi red? | Redes 1 | `ip a`, subred, `ping`, `/etc/hosts`, `host`/`dig`, `traceroute` → arreglas la impresora (cable flojo: Don Chuy lo reconecta) y descubres `mantto-delta` (`{{ip_delta}}`), que no está en el inventario y entra por la VPN de proveedores. **Cierre del MVP:** `Broadcast message from delta_svc@mantto-delta: ¿Quién eres, becario?` |
+| **6** | Mié 4 nov | Cuadrar números | SQL 2 | `DISTINCT`, `LIKE`/`IN`/`BETWEEN`, `NULL`, agregaciones, `GROUP BY`, `HAVING` → el scrap del turno nocturno es 0 desde el 14 de agosto (alta de `delta_svc`); `kibanez` "inspecciona" `{{insp_por_hora}}` piezas por hora a las 23:59, imposible. |
+| **7** | Jue 5 nov | Permisos y procesos | Linux 3 | `whoami`/`id`, `rwx`, `chmod`, `sudo`, `ps`, `kill`, `find` → `find` muestra archivos de `delta_svc` tocados anoche; un proceso `sync_mes` corre como `delta_svc`; `Permission denied` → Treviño te da `sudo` "para lo de la impresora" (ironía). |
+| **8** | Vie 6 nov | Puertos y servicios | Redes 2 | puertos, TCP/UDP, `ss`, `nmap` (red propia, autorizado por ticket), `curl` → `ss` muestra conexiones a `{{ip_delta}}:{{puerto_api}}`; `curl` a `/api/ajustes` devuelve el JSON con los "ajustes" del lote. |
+| **TE** | Sáb 7 nov | Tiempo extra | Repaso | 3–4 favores con conceptos de T1–T8. Oficina medio vacía, radio prendido. Opcional. |
+| **9** | Lun 9 nov | Cruce de datos | SQL 3 | `INNER/LEFT JOIN`, alias, subconsultas → al cruzar `inspecciones` con `accesos`, Karla no estaba en la planta cuando "firmó"; al cruzar con `sensores_raw`, los valores originales eran FALLA. Karla se vuelve aliada. |
+| **10** | Mar 10 nov | Llaves y túneles | Redes 3 + Linux | `ssh`, llaves, `known_hosts`, `scp`, `tar` → la llave de R. en tu respaldo abre `mantto-delta`; ahí está `ajuste.sh` y el correo de Treviño: *"Que pasen los lotes, el embarque sale el sábado"*. R. te escribe por primera vez. |
+| **11** | Mié 11 nov | El reloj de las 23:59 | Linux 4 | variables, scripts, `&&`/`\|\|`/`$?`, `cron` → lees el `crontab` (`59 23 * * * /opt/delta/ajuste.sh`), entiendes el `UPDATE` del script y lo desactivas antes de que corra. |
+| **12** | Jue 12 nov | Escribir la verdad | SQL 4 | `CREATE TABLE`, `INSERT … SELECT`, `UPDATE`/`DELETE`, `BEGIN`/`COMMIT`/`ROLLBACK`, `CREATE VIEW` → armas la tabla `evidencia` desde `sensores_raw`. **Momento clave:** la tentación de "corregir" `inspecciones` con un `UPDATE` sin `WHERE`; si lo haces dentro de una transacción, `ROLLBACK` te salva. |
+| **13** | Vie 13 nov | Cierre de turno | Integración | `tar`, `sha256sum`, firewall, revocar llave, `kill` de sesión, `curl -X POST` → empaquetas y sellas la evidencia, aseguras el servidor y **decides a quién se la entregas**. |
+| **Final** | Lun 16 nov | Epílogo | — | Llegas a la planta y ves el resultado. No hay comandos. |
 
-| Turno | Título | Dominio | Herramienta → avance de la trama |
-|---|---|---|---|
-| **0** | Inducción | Linux 0 | `pwd`, `ls`, `cd`, `cat`, `man` → lees el `LEEME.txt` de R.; el manual te enseña `ls -a` y aparece la carpeta oculta `.r/`. |
-| **1** | Lo que dejó R. | Linux 1 | `ls -la`, `head`/`tail`/`less`, `mkdir`, `cp`, `mv`, comodines, `>`/`>>` → lees las notas de R., abres tu propia bitácora y **respaldas `.r/`** (R.: "hazte una copia antes de que la borren"). |
-| **2** | Los registros no mienten | Linux 2 | `grep`, `|`, `wc`, `sort`, `uniq`, `cut` → en `auth.log` aparece `delta_svc` entrando cada noche a las 23:58. **Evento:** `.r/` original desaparece; tu respaldo es lo único que queda. En él, `grep -r` encuentra "lote 4471" y `mes.db`. |
-| **3** | El MES | SQL 1 | `sqlite3`, `SELECT`, `WHERE`, `AND/OR`, `ORDER BY`, `LIMIT` → todas las inspecciones de fuga del lote 4471 dicen PASA, pero el log del Turno 2 registró alarmas de fuga a esas horas. Las últimas modificaciones las firma `kibanez`. |
-| **4** | ¿Quién está en mi red? | Redes 1 | `ip a`, subred, `ping`, `/etc/hosts`, `host`/`dig`, `traceroute` → arreglas la impresora (cable flojo: Don Chuy lo reconecta) y descubres `mantto-delta` (10.7.3.99), que no está en el inventario y entra por la VPN de proveedores. **Cierre del MVP:** `Broadcast message from delta_svc@mantto-delta: ¿Quién eres, becario?` |
-| **5** | Cuadrar números | SQL 2 | `DISTINCT`, `LIKE`/`IN`/`BETWEEN`, `NULL`, `COUNT/SUM/AVG`, `GROUP BY`, `HAVING` → el scrap del turno nocturno es 0 desde el 14 de agosto (fecha de alta de `delta_svc`); `kibanez` "inspecciona" 300 piezas por hora a las 23:59, imposible. |
-| **6** | Permisos y procesos | Linux 3 | `whoami`/`id`, `rwx`, `chmod`, `sudo`, `ps`, `kill`, `find` → `find / -user delta_svc -mmin` muestra archivos tocados anoche; un proceso `sync_mes` corre como `delta_svc`; `Permission denied` → Treviño te da `sudo` "para lo de la impresora" (ironía). |
-| **7** | Puertos y servicios | Redes 2 | puertos, TCP/UDP, `ss`, `nmap` (red propia, autorizado por ticket), `curl` → `ss` muestra conexiones a 10.7.3.99:8080; `curl` a `/api/ajustes` devuelve el JSON con los "ajustes" del lote 4471. |
-| **8** | Cruce de datos | SQL 3 | `INNER/LEFT JOIN`, alias, subconsultas → al cruzar `inspecciones` con `accesos` (torniquetes), Karla no estaba en la planta cuando "firmó"; al cruzar con `sensores_raw`, los valores originales eran FALLA. Karla queda limpia y se vuelve aliada. |
-| **9** | Llaves y túneles | Redes 3 + Linux | `ssh`, llaves, `known_hosts`, `scp`, `tar` → la llave de R. en tu respaldo abre `mantto-delta`; ahí está `ajuste.sh` y el correo de Treviño: *"Que pasen los lotes, el embarque sale el lunes"*. R. te escribe por primera vez. |
-| **10** | El reloj de las 23:59 | Linux 4 | variables, scripts, `&&`/`||`/`$?`, `cron`, `sqlite3` desde bash → lees el `crontab` (`59 23 * * * /opt/delta/ajuste.sh`), entiendes el `UPDATE` del script y lo desactivas antes de que corra. |
-| **11** | Escribir la verdad | SQL 4 | `CREATE TABLE`, `INSERT … SELECT`, `UPDATE`/`DELETE`, `BEGIN`/`COMMIT`/`ROLLBACK`, `CREATE VIEW` → armas la tabla `evidencia` desde `sensores_raw`. **Momento clave:** la tentación de "corregir" `inspecciones` con un `UPDATE` sin `WHERE`; si lo haces dentro de una transacción, `ROLLBACK` te salva. |
-| **12** | Cierre de turno | Integración | `tar`, `sha256sum`, firewall, revocar llave, `kill` de sesión, `curl -X POST` → empaquetas y firmas la evidencia, aseguras el servidor y decides a quién se la entregas. |
-
-## Eventos clave (guionizados por el motor)
+## Eventos clave
 
 | Evento | Turno | Disparador | Efecto |
 |---|---|---|---|
-| Aparece `.r/` | 0 | Primer `ls -a` en `~` | Se muestra la carpeta oculta; mensaje de R. en el archivo `.r/hola` |
-| Borrado de `.r/` | 2 | Al iniciar T2-M4 | `/home/becario/.r` deja de existir; el respaldo de T1-M4 queda intacto |
-| Alarma de fuga | 2–3 | Reloj de juego 23:59 | Línea en `linea3.log`; Don Chuy lo comenta |
-| `wall` de delta_svc | 4 | Completar T4-M4 | Mensaje de broadcast en la terminal; cierre del MVP |
-| `sudo` concedido | 6 | Ticket de Treviño | El jugador entra al grupo `sudo` |
-| Mensaje de R. | 9 | Primer `ssh` exitoso a `mantto-delta` | Hilo nuevo en Mensajes |
-| 23:59 del Turno 10 | 10 | Reloj de juego | Si el cron sigue activo, el script corre (consecuencia visible, la misión no se pierde: se repite) |
+| Escritorio de bienvenida | 0 | Inicio | Decoración; desaparece en T1 (queda la taza) |
+| Aparece `.r/` | 1 | Primer `ls -a` en `~` | Carpeta oculta visible; nota de R. en `.r/hola` |
+| Borrado de `.r/` | 3 | Inicio de T3-M4 | `/home/becario/.r` deja de existir; el respaldo queda |
+| Alarma de fuga | 3–4 | Reloj de juego 23:59 | Línea en `linea3.log`; sonido lejano; Don Chuy lo comenta |
+| `wall` de delta_svc | 5 | Completar T5-M4 | Mensaje en la terminal + sonido; cierre del MVP |
+| `sudo` concedido | 7 | Visita de Treviño | El jugador entra al grupo `sudo` |
+| Mensaje de R. | 10 | Primer `ssh` a `mantto-delta` | Llamada o correo de número desconocido |
+| 23:59 del T11 | 11 | Reloj de juego | Si el cron sigue activo, el script corre (consecuencia visible; la misión se repite) |
 
-## Finales (Turno 12)
+## Finales (decisión el viernes 13, se ven el lunes 16)
 
-El final depende de la **decisión final** y de **banderas** acumuladas. Ningún final bloquea seguir jugando: se puede repetir el Turno 12.
-
-| Final | Condición | Desenlace |
+| Final | Condición | Lunes 16 |
 |---|---|---|
-| **Línea limpia** (mejor) | Evidencia empaquetada con `sha256sum` coincidente + acceso de `delta_svc` revocado + cron desactivado + reporte enviado a Calidad Corporativa | Se retiene el lote 4471, Treviño es removido, Karla y R. limpian su nombre. Te ofrecen el puesto de R. |
-| **Embarque detenido** | Reporte a Calidad Corporativa pero sin asegurar el servidor o con evidencia incompleta | El lote se detiene, pero `delta_svc` borra rastros; la investigación queda abierta. Epílogo con gancho. |
-| **Se lo diste al gerente** | Entregas la evidencia a Treviño | Treviño "lo atiende"; al día siguiente tu usuario está deshabilitado. R. te escribe: "te dije que no confiaras". Final malo, se invita a repetir. |
+| **Línea limpia** (mejor) | Evidencia sellada con `sha256sum` coincidente + acceso de `delta_svc` revocado + cron desactivado + reporte a Calidad Corporativa | Te esperan Calidad Corporativa, Karla y R. El embarque se detuvo, Treviño fue removido. Te ofrecen el puesto de R. |
+| **Embarque detenido** | Reporte a Calidad Corporativa sin asegurar el servidor o con evidencia incompleta | Recursos Humanos te cuenta que el lote se detuvo, pero `delta_svc` borró rastros; la investigación queda abierta. Epílogo con gancho. |
+| **Se lo diste al gerente** | Entregas la evidencia a Treviño | Tu gafete no abre el torniquete. Te llama R.: "te dije que no confiaras". Se invita a repetir el viernes 13. |
 
-Banderas que modifican epílogos: `respaldo_r` (T1), `karla_aliada` (T8), `rollback_usado` (T11), `script_propio` (T10), `sin_pistas_turno_X`.
+Banderas que modifican el epílogo: `respaldo_r` (T2), `karla_aliada` (T9), `rollback_usado` (T12), `script_propio` (T11), `favores_completos`, `tiempo_extra`. Después de ver el final se puede repetir el Turno 13.
 
 ## Biblia del mundo
 
@@ -88,54 +141,62 @@ Banderas que modifican epílogos: `respaldo_r` (T1), `karla_aliada` (T8), `rollb
 
 | Segmento | CIDR | Puerta de enlace | Qué hay |
 |---|---|---|---|
-| Servidores (IT) | 10.7.1.0/24 | 10.7.1.1 | `srv-sistemas` 10.7.1.10 (tu servidor), `srv-archivos` 10.7.1.11 |
-| Piso de producción (OT) | 10.7.2.0/24 | 10.7.2.1 | `plc-l3` 10.7.2.30, `hmi-l3` 10.7.2.31, `est-fuga-l3` 10.7.2.32, `impresora-l2` 10.7.2.40 |
-| VPN de proveedores | 10.7.3.0/24 | 10.7.3.1 | `mantto-delta` 10.7.3.99 (no está en el inventario) |
-| Corporativo (externo) | — | — | `calidad.corp-ocotillo.example` (API de reportes, Turno 12) |
+| Servidores (IT) | 10.7.1.0/24 | 10.7.1.1 | `srv-sistemas` 10.7.1.10 (tu servidor), `srv-archivos` 10.7.1.11, DNS 10.7.1.2 |
+| Piso de producción (OT) | 10.7.2.0/24 | 10.7.2.1 | `plc-l3`, `hmi-l3`, `est-fuga-l3`, `impresora-l2` (últimos octetos `{{ip_ot_*}}`) |
+| VPN de proveedores | 10.7.3.0/24 | 10.7.3.1 | `mantto-delta` `{{ip_delta}}` (no está en el inventario) |
+| Corporativo (externo) | — | — | `calidad.corp-ocotillo.example` (API de reportes, T13) |
 
-Dominio interno: `ocotillo.local`. DNS interno en 10.7.1.2. Los dominios externos usan `.example` (reservado, nunca real).
+Dominio interno `ocotillo.local`. Dominios externos con `.example` (reservado, nunca real). Los segmentos y nombres son fijos; los últimos octetos de algunos equipos son variables de partida.
 
 ### Archivos clave en `srv-sistemas`
 
 | Ruta | Contenido | Turno |
 |---|---|---|
-| `/home/becario/LEEME.txt` | Nota de R. | 0 |
-| `/home/becario/tickets/` | Un ticket por archivo | 0+ |
-| `/home/becario/.r/` | Notas ocultas de R. (`notas.txt`, `hola`, `.llaves/`) | 0–2 |
-| `/srv/lineas/linea{1,2,3}/estado.txt` | Estado de líneas | 0 |
-| `/var/log/lineas/linea3.log` | Log de estaciones (alarmas FUGA) | 2 |
-| `/var/log/auth.log` | Accesos (aparece `delta_svc`) | 2 |
-| `/srv/mes/mes.db` | Base de datos SQLite del MES | 3+ |
-| `/etc/hosts` | Resolución local | 4 |
-| `/var/spool/cron/crontabs/delta_svc` | Cron del script | 10 |
+| `/home/becario/LEEME.txt` | Nota de R. | 1 |
+| `/home/becario/tickets/` | Un ticket por archivo | 1+ |
+| `/home/becario/.r/` | Notas ocultas de R. (`notas.txt`, `hola`, `.llaves/`) | 1–3 |
+| `/srv/lineas/linea{1,2,3}/estado.txt` | Estado de líneas | 1 |
+| `/var/log/lineas/linea3.log` | Log de estaciones (alarmas FUGA, generado por semilla) | 3 |
+| `/var/log/auth.log` | Accesos (aparece `delta_svc`, generado por semilla) | 3 |
+| `/srv/mes/mes.db` | Base SQLite del MES (generada por semilla) | 4+ |
+| `/etc/hosts` | Resolución local | 5 |
+| `/var/spool/cron/crontabs/delta_svc` | Cron del script | 11 |
 
 ### Base de datos `mes.db` (SQLite)
 
-| Tabla | Columnas principales | Para qué turno |
+| Tabla | Columnas principales | Turnos |
 |---|---|---|
-| `lineas` | `id`, `nombre`, `area` | 3 |
-| `lotes` | `lote`, `producto`, `linea_id`, `fecha`, `cantidad`, `cliente` | 3, 5 |
-| `inspecciones` | `id`, `lote`, `estacion`, `resultado`, `valor_medido`, `limite`, `inspector`, `turno`, `fecha_hora`, `modificado_en`, `usuario_mod` | 3, 5, 8, 11 |
-| `sensores_raw` | `id`, `estacion`, `lote`, `fecha_hora`, `valor`, `estado` | 8, 11 |
-| `scrap` | `id`, `linea_id`, `turno`, `fecha`, `piezas`, `motivo` | 5 |
-| `accesos` | `id`, `gafete`, `puerta`, `fecha_hora`, `sentido` | 8 |
-| `empleados` | `gafete`, `nombre`, `puesto`, `turno`, `usuario_sistema` | 8 |
-| `usuarios_sistema` | `usuario`, `nombre`, `tipo`, `creado_en`, `activo` | 5, 8 |
+| `lineas` | `id`, `nombre`, `area` | 4 |
+| `lotes` | `lote`, `producto`, `linea_id`, `fecha`, `cantidad`, `cliente` | 4, 6 |
+| `inspecciones` | `id`, `lote`, `estacion`, `resultado`, `valor_medido`, `limite`, `inspector`, `turno`, `fecha_hora`, `modificado_en`, `usuario_mod` | 4, 6, 9, 12 |
+| `sensores_raw` | `id`, `estacion`, `lote`, `fecha_hora`, `valor`, `estado` | 9, 12 |
+| `scrap` | `id`, `linea_id`, `turno`, `fecha`, `piezas`, `motivo` | 6 |
+| `accesos` | `id`, `gafete`, `puerta`, `fecha_hora`, `sentido` | 9 |
+| `empleados` | `gafete`, `nombre`, `puesto`, `turno`, `usuario_sistema` | 9 |
+| `usuarios_sistema` | `usuario`, `nombre`, `tipo`, `creado_en`, `activo` | 6, 9 |
 
-Los datos se generan con un script determinista (semilla fija) en `content/mundo/` para que las respuestas sean siempre las mismas.
+Las filas se generan en el navegador con la semilla de la partida (`content/mundo/db/`); la estructura y los hechos de la historia son fijos, los valores concretos no.
 
-### Calendario del juego
+### Variables de partida (ejemplos)
 
-- La planta trabaja de lunes a sábado. La historia ocurre en noviembre de 2026: **T0–T5** = lunes 2 a sábado 7, **T6–T11** = lunes 9 a sábado 14, **T12** = domingo 15 (tiempo extra por el embarque). El embarque del lote 4471 sale el **lunes 16 a las 06:00**. *(Ajustable al escribir T5+.)*
-- Cada turno = un día laboral, 15:30–00:00 en el reloj de juego.
-- `delta_svc` fue dado de alta el **14 de agosto**.
+| Variable | Rango | Usada en |
+|---|---|---|
+| `lote` | 4000–4999 | toda la historia |
+| `hora_acceso` | 23:50:00–23:58:59 | T3, T6 |
+| `ip_delta` | 10.7.3.20–10.7.3.250 | T5+ |
+| `puerto_api` | {8080, 8081, 8443, 9000} | T8 |
+| `contrasena_becario` | palabra + 2 dígitos de una lista | T0 (post-it) |
+| `n_alarmas_fuga` | 9–23 | T3 |
+| `insp_por_hora` | 240–420 | T6 |
+| `pid_sync_mes` | 1200–9800 | T7 |
 
 ## Reglas de escritura
 
-1. Cada misión avanza el misterio **un paso**; nunca dos revelaciones en la misma misión.
+1. Cada misión avanza el misterio **un paso**; nunca dos revelaciones juntas.
 2. El briefing plantea el problema, no la solución.
-3. Máximo 280 caracteres por burbuja; 2–4 burbujas por briefing.
-4. Los personajes nunca explican comandos en abstracto; los explican las notas de R., el manual (`man`) y la Bitácora.
+3. Máximo 280 caracteres por globo; 2–4 globos por diálogo.
+4. Los comandos los explican Lupita (por teléfono), las notas de R., el manual (`man`) y la libreta; los demás personajes nunca dan clases.
 5. Don Chuy conecta lo físico (ruidos, luces, cables, horarios) con los datos.
-6. Toda acusación necesita evidencia que el jugador obtuvo con una herramienta.
+6. Toda acusación necesita evidencia obtenida con una herramienta. Los rumores orientan, no resuelven.
 7. El jugador siempre está autorizado: los tickets y la historia justifican cada acción técnica.
+8. Ningún texto depende de un valor fijo que la semilla cambie: usa `{{variable}}`.

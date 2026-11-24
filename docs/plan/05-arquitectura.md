@@ -1,67 +1,85 @@
 # 05 — Arquitectura
 
-Decisiones y sus razones: `docs/decisiones/adr.md`. Versiones exactas de dependencias: se fijan en F0-04 con la última estable de ese momento (consultar Context7/npm), no aquí.
+Decisiones y razones: `docs/decisiones/adr.md`. Las versiones exactas viven en `package.json` / `package-lock.json`; al agregar o actualizar una dependencia se consulta su versión estable vigente y su changelog.
 
 ## Stack
 
 | Capa | Elección | ADR |
 |---|---|---|
-| Lenguaje | TypeScript `strict` | 007 |
-| Build / dev server | Vite | 007 |
-| UI | React | 007 |
-| Estado UI | Zustand (estado de UI) + suscripción al store del motor con `useSyncExternalStore` | 007 |
-| Estilos | CSS Modules + CSS custom properties (tokens de Claude Design) | 007 |
-| Shell / VFS / red | Motor propio en TS puro | 001, 002 |
-| SQL | SQLite en WASM vía `sql.js`, carga diferida | 003 |
+| Lenguaje | TypeScript `strict` en cliente, servidor y scripts | 007 |
+| Build / dev | Vite | 007 |
+| UI (capas DOM) | React | 007 |
+| Escena 3D | three.js + @react-three/fiber + @react-three/drei (postprocesado opcional por estilo) | 009 |
+| Audio | Web Audio vía `THREE.AudioListener` / `PositionalAudio` | 015 |
+| Estado de UI | Zustand; el motor expone un store propio consumido con `useSyncExternalStore` | 007 |
+| Shell / VFS / red | Motor propio en TS puro | 001 |
+| Terminal | Componente DOM propio sobre el monitor | 002 |
+| SQL en el juego | SQLite en WASM (`sql.js`), carga diferida, en un Web Worker | 003 |
 | Contenido | YAML → JSON en build, validado con Zod | 004 |
-| Pruebas | Vitest (motor + contenido), Playwright (E2E móvil) + `@axe-core/playwright` | 007 |
+| Aleatorización | RNG con semilla + variables de partida | 011 |
+| Servidor | Fastify (Node LTS): sirve el build estático y `/api` | 010 |
+| Base de datos del servidor | PostgreSQL (servicio de Railway) | 010 |
+| Validación compartida | Esquemas Zod en `shared/` usados por cliente y servidor | 010, 013 |
+| Pruebas | Vitest (motor, servidor, contenido) · Playwright (flujos + capturas visuales) · @axe-core/playwright | 007 |
 | Lint/format | Biome | 007 |
-| PWA | `vite-plugin-pwa` (Workbox) | 007 |
-| Persistencia | IndexedDB (`idb-keyval`) con respaldo en `localStorage` | 007 |
-| Hosting | GitHub Pages (estático), deploy por GitHub Actions | 007 |
-| Backend | Ninguno en v1 (D-07: Django en v2 para sync/modo salón) | 007 |
+| Despliegue | Railway (plan Hobby): 1 servicio web (Dockerfile) + 1 PostgreSQL | 010 |
 
 ## Estructura del repositorio
 
 ```
 /
-├─ CLAUDE.md                     # constitución para agentes
-├─ docs/                         # plan, ADR, brief de diseño
-├─ .claude/                      # harness: settings, hooks, agentes, skills
-├─ content/                      # TODO el contenido del juego, como datos
-│  ├─ curriculo.yaml             # grafo de conceptos (migrado de 03-curriculo.md)
-│  ├─ personajes.yaml
-│  ├─ mundo/
-│  │  ├─ hosts/<host>.yaml       # interfaces, servicios, usuarios, fs base
-│  │  ├─ fs/<host>/…             # archivos base (texto plano)
-│  │  └─ db/mes.seed.ts          # generador determinista de mes.db (semilla fija)
-│  ├─ misiones/turno-00/t0-m01-primer-login.yaml …
-│  └─ man/<comando>.md           # páginas man en español
+├─ CLAUDE.md · docs/ · .claude/
+├─ shared/                       # Zod: formato de partida, API, límites (cliente y servidor)
+├─ content/                      # TODO el contenido como datos
+│  ├─ curriculo.yaml · personajes.yaml · contactos.yaml · rumores/ · visitas/
+│  ├─ mundo/{hosts,fs,db}/       # mundo base + generadores con semilla
+│  ├─ misiones/turno-NN/*.yaml   # principales y favores
+│  └─ libreta/comandos/*.md      # entradas de la libreta por comando
 ├─ src/
-│  ├─ engine/                    # TS puro: sin DOM, sin React
-│  │  ├─ shell/                  # lexer, parser, expansión, ejecutor
-│  │  ├─ vfs/                    # sistema de archivos en memoria
-│  │  ├─ commands/               # un archivo por comando
-│  │  ├─ net/                    # modelo de red simulado
-│  │  ├─ sql/                    # adaptador sql.js (carga diferida)
-│  │  ├─ mission/                # runtime de misiones, predicados, eventos
-│  │  ├─ save/                   # serialización y migraciones
-│  │  ├─ clock.ts, rng.ts        # reloj de juego y RNG con semilla
-│  │  └─ index.ts                # API pública del motor
-│  ├─ ui/                        # React (implementa el diseño de Claude Design)
-│  │  ├─ tokens.css
-│  │  ├─ screens/  components/  hooks/
+│  ├─ engine/                    # TS puro: shell, vfs, commands, net, sql, mission, vars, save, clock, rng
+│  ├─ scene/                     # R3F: cubículo, objetos, cámara, luces, audio, transiciones
+│  ├─ ui/                        # DOM: terminal, apps del monitor, teléfono, libreta, diálogos, menú
+│  ├─ game/                      # orquestación: turno, eventos, visitas, paciencia, guardado/sincronización
 │  └─ main.tsx
-├─ scripts/
-│  ├─ build-content.ts           # YAML → JSON validado
-│  ├─ validate-content.ts        # harness de contenido (CLI)
-│  └─ play.ts                    # jugar headless desde la terminal (para agentes y playtests)
-└─ tests/
-   ├─ engine/                    # unitarias
-   ├─ golden/<comando>/          # salidas capturadas de Linux real
-   ├─ content/                   # harness de contenido como suite de Vitest
-   └─ e2e/                       # Playwright móvil
+├─ server/
+│  ├─ src/{index.ts, app.ts, routes/, store/, security/}
+│  └─ migrations/*.sql
+├─ public/assets/                # modelos .glb, texturas .ktx2/.webp, audio .ogg (licencias en docs/diseno/assets.md)
+├─ scripts/                      # build-content, validate-content, play, size
+├─ tests/{engine,server,content,golden,e2e}/
+├─ Dockerfile · .dockerignore
+└─ .github/workflows/ci.yml
 ```
+
+## Capas del cliente
+
+```
+            ┌──────────── src/ui (DOM) ─────────────┐
+            │ terminal · apps · teléfono · libreta   │   ← capas sobre el canvas, se activan al acercarse
+            │ diálogos · menú · subtítulos           │
+            └──────────────▲─────────────────────────┘
+┌── src/scene (R3F) ──┐    │       ┌── src/game ──────────────────┐
+│ cubículo, objetos,  │◄───┼──────►│ turno, pendientes, visitas,   │
+│ cámara, luz, audio  │    │       │ paciencia, guardado, sync     │
+└─────────────────────┘    │       └──────────────▲────────────────┘
+                           │                      │ API pública
+                    ┌──────┴──────── src/engine (TS puro) ────────────┐
+                    │ shell · vfs · net · sql · mission · vars · save │
+                    └─────────────────────────────────────────────────┘
+```
+
+- La escena 3D nunca importa del motor directamente; habla con `src/game`.
+- Una sola ruta, un solo `<Canvas>`; las interfaces de objetos son capas DOM posicionadas sobre el objeto (monitor, teléfono, libreta) o a pantalla completa con el objeto de fondo, según la vista.
+
+## Escena 3D (`src/scene`)
+
+- **Cámara:** `PerspectiveCamera` fija en la posición de los ojos (sentado). Rotación objetivo = función de la posición del cursor normalizada (`yaw = x·65°`, `pitch = y·(−30°…+15°)`), zona muerta 8 %, amortiguación exponencial. Vistas acercadas (`monitor`, `telefono`, `libreta`, `pizarron`, `calendario`) con pose predefinida e interpolación (≈ 600 ms, ease-in-out). `?test=1` desactiva amortiguación y animaciones para capturas deterministas.
+- **Objetos interactivos:** componente `Interactivo` (raycast de R3F, resaltado, etiqueta, foco por teclado, acción). Registro central para `Tab`.
+- **Modelado:** piezas sencillas (low-poly) hechas con geometrías y `.glb` con licencia libre; texturas pequeñas; luz horneada donde se pueda.
+- **Iluminación por hora del juego:** luz de ventana y lámparas interpoladas de 15:30 a 00:00.
+- **Oficina de fondo:** pocas siluetas animadas de baja resolución; visitas con un personaje que se acerca al pasillo del cubículo.
+- **Estilos visuales:** se resuelven con materiales, paleta y postprocesado (D-08); la estructura de la escena no cambia entre estilos.
+- **Sin WebGL2** → pantalla de aviso con requisitos.
 
 ## Motor (`src/engine`)
 
@@ -69,44 +87,30 @@ Decisiones y sus razones: `docs/decisiones/adr.md`. Versiones exactas de depende
 
 ```ts
 export interface Engine {
-  // ciclo de vida
+  newGame(seed: number): void;
   loadMission(id: MissionId, save?: SaveData): Promise<void>;
   resetMission(): void;
-  // entrada del jugador
-  exec(line: string): Promise<ExecResult>;          // terminal
-  runSql(sql: string): Promise<SqlResult>;          // app Datos (misma DB que sqlite3)
+  classify(line: string): Classification;        // soportado | inexistente | fuera_de_alcance | avanzado | peligroso | anomalo
+  exec(line: string): Promise<ExecResult>;       // solo si classify() = soportado o inexistente
+  runSql(sql: string): Promise<SqlResult>;
   answer(objectiveId: string, value: string): AnswerResult;
-  complete(partial: string, cursor: number): Completion[]; // autocompletado
-  // lectura de estado para la UI
-  getState(): EngineState;                          // inmutable
+  complete(partial: string, cursor: number): Completion[];
+  hint(objectiveId: string): Hint;               // siguiente nivel
+  getState(): EngineState;
   subscribe(listener: (e: EngineEvent) => void): () => void;
   serialize(): SaveData;
 }
-
-export type EngineEvent =
-  | { type: 'output'; lines: OutputLine[] }
-  | { type: 'objective-completed'; id: string }
-  | { type: 'mission-completed'; summary: MissionSummary }
-  | { type: 'message'; from: CharacterId; text: string; attachments?: string[] }
-  | { type: 'world-event'; id: string }              // ej. wall, borrado de .r/
-  | { type: 'host-discovered'; host: string }
-  | { type: 'sql-loading' | 'sql-ready' };
-
-export interface OutputLine {
-  kind: 'prompt' | 'stdout' | 'stderr' | 'gloss' | 'system' | 'story';
-  text: string;
-}
 ```
+
+Eventos: `output`, `thought` (globo de pensamiento), `objective-completed`, `mission-completed`, `notebook-entry`, `world-event`, `host-discovered`, `sql-loading`, `sql-ready`.
+
+### Clasificador de entrada (`shell/classify.ts`)
+
+Antes de ejecutar: tokeniza y decide (ver tabla en `04-mecanicas.md` §Fuera de alcance). Usa: superficie de comandos (`content/superficie.yaml`, generada de `03-curriculo.md`), lista de comandos reales de Linux (`content/comandos-linux.txt`, ≈ 400 nombres de coreutils, util-linux, procps, iproute2, etc.), patrones peligrosos y límites de longitud. Lo que no es `soportado` ni `inexistente` nunca llega al ejecutor.
 
 ### Shell
 
-Subconjunto de bash suficiente para el currículo, implementado como lexer → parser (AST) → expansión → ejecución:
-
-- Palabras, comillas simples/dobles, escapes `\`.
-- Expansiones: `~`, `$VAR`, `${VAR}`, `$?`, globs `*` `?` (contra el VFS). `$(…)` queda fuera de v1 salvo que T10 lo requiera.
-- Operadores: `|`, `>`, `>>`, `<`, `2>`, `2>&1`, `&&`, `||`, `;`.
-- Scripts (T10): `#!/bin/bash`, asignación, `if [ … ]; then … fi`, `for x in …; do … done`, `exit N`. Sin funciones en v1.
-- Entorno por sesión (`HOME`, `USER`, `PWD`, `OLDPWD`, `PATH`, `HOSTNAME`), código de salida, historial.
+Subconjunto de bash: palabras, comillas, escapes; `~`, `$VAR`, `${VAR}`, `$?`, globs contra el VFS; `|`, `>`, `>>`, `<`, `2>`, `2>&1`, `&&`, `||`, `;`. Scripts (T11): shebang, asignación, `if [ … ]`, `for … in`, `exit`. Entorno por sesión, códigos de salida, historial.
 
 ```ts
 export interface Command {
@@ -114,122 +118,120 @@ export interface Command {
   run(ctx: CommandContext): Promise<CommandResult> | CommandResult;
   complete?(ctx: CompletionContext): Completion[];
 }
-export interface CommandContext {
-  argv: string[]; stdin: string; env: Env;
-  host: HostRuntime;        // fs, procesos, usuarios del host actual
-  net: NetworkRuntime;      // para ping, ssh, curl…
-  sql: SqlService;          // para sqlite3
-  session: SessionRuntime;  // usuario, cwd, pila de ssh, sudo
-  clock: GameClock;
-  emit(e: EngineEvent): void;   // eventos de dominio (ej. host-discovered)
-}
 export interface CommandResult { stdout: string; stderr: string; code: number; gloss?: string }
 ```
 
-Cada comando registra lo que **leyó** (rutas) y lo que **cambió**, para que los predicados (`archivo_leido`, etc.) no dependan de parsear la línea.
+Cada comando registra lo que **leyó** y lo que **cambió** para los predicados.
 
-### VFS
+### VFS, red y SQL
 
-- Árbol en memoria por host: nodos `file | dir | symlink | special` (special = base SQLite, dispositivos).
-- Metadatos: dueño, grupo, modo, `mtime` (reloj de juego), tamaño.
-- Permisos aplicados de verdad (lectura/escritura/ejecución) según usuario de la sesión, `sudo` incluido.
-- Capa de **diferencias** sobre el mundo base para guardar y restaurar barato.
+- **VFS:** árbol en memoria por host, metadatos (dueño, grupo, modo, `mtime` del reloj de juego), permisos reales, capa de diferencias sobre el mundo base.
+- **Red:** grafo de hosts, interfaces, rutas, DNS (A/PTR), `/etc/hosts`, servicios por puerto con manejadores HTTP definidos en contenido, firewall, latencias deterministas. `ssh` apila sesiones.
+- **SQL:** `sql.js` en un Web Worker, cargado al entrar al T4 (precarga en segundo plano durante T3). La base se **genera** con la semilla al iniciar el turno. `sqlite3 mes.db` y la app Datos comparten conexión. Solo lectura hasta T12.
 
-### Red simulada
+### Variables de partida (`engine/vars`)
 
-- Grafo: hosts con interfaces (IP/CIDR), segmentos, rutas y puertas de enlace, DNS (registros A/PTR), `/etc/hosts` por host, servicios por puerto (TCP/UDP, banner, manejador HTTP opcional), reglas de firewall, latencias deterministas.
-- `ping`/`traceroute` recorren el grafo; `ss` lista sockets simulados del host; `ssh` empuja una sesión nueva a la pila (`exit` regresa); `curl` invoca el manejador HTTP del servicio (respuestas definidas en contenido).
-- Eventos `host-discovered` alimentan la app Red.
+```yaml
+# content/mundo/variables.yaml (ejemplo)
+lote:          { tipo: entero, min: 4000, max: 4999 }
+ip_delta:      { tipo: ip, red: 10.7.3.0/24, min: 20, max: 250 }
+hora_acceso:   { tipo: hora, desde: "23:50:00", hasta: "23:58:59" }
+puerto_api:    { tipo: elegir, de: [8080, 8081, 8443, 9000] }
+n_alarmas_fuga: { tipo: entero, min: 9, max: 23 }
+```
 
-### SQL
-
-- `sql.js` se carga **solo** al entrar a la primera misión que lo necesita (T3) y queda en caché del service worker. Mientras carga se emite `sql-loading` (la UI muestra estado).
-- `mes.db` se genera en build con un script determinista y se distribuye como binario; cada misión puede aplicar `parches_sql` (sentencias) al cargar.
-- `sqlite3 mes.db` cambia la terminal a modo `sqlite>`; la app Datos usa la misma conexión, así que lo que haces en una se ve en la otra.
-- Predicado `consulta_resultado`: el motor guarda el último result set del jugador y lo compara con el de `esperado_sql` ejecutado sobre el mismo estado.
-- Antes de T11 la base se abre en modo solo lectura para el jugador (los `UPDATE` fallan con el error real `attempt to write a readonly database` + glosa).
+- `resolve(seed) → Vars` determinista (PRNG `xoshiro128**` o `mulberry32`, semilla de 32 bits por partida + sub-semillas por generador).
+- Plantillas `{{variable}}` en textos, archivos y servicios; generadores de logs y filas reciben `(rng, vars)`.
+- `respuesta.esperado_de`: una solución de referencia (comando o SQL) que el motor ejecuta sobre una copia oculta del mundo para calcular la respuesta correcta.
 
 ### Runtime de misiones
 
-1. `loadMission`: arma el mundo = mundo base del turno + diferencias guardadas + `mundo.parches` de la misión.
-2. Después de cada `exec`/`runSql`/`answer`: evalúa predicados de objetivos pendientes y disparadores de eventos.
-3. Eventos (`al_iniciar`, `al_completar`, `al_cumplir:<objetivo>`, `reloj:<HH:MM>`, `comando:<patrón>`) aplican efectos: mensaje, flag, parche de mundo, `wall`, desbloqueo de app.
-4. Al completar: calcula calificación, XP, logros; emite `mission-completed`.
+1. `loadMission`: mundo = mundo base del turno (con variables) + diferencias guardadas + `mundo.parches`.
+2. Tras cada `exec`/`runSql`/`answer`: evalúa predicados y disparadores.
+3. Eventos (`al_iniciar`, `al_completar`, `al_cumplir:<objetivo>`, `reloj:<HH:MM>`, `comando:<patrón>`): diálogo, llamada entrante, visita, entrada de libreta, post-it, bandera, parche de mundo, `wall`.
+4. Al completar: estrellas, XP, logros; checkpoint.
 
 ### Esquema de misión
 
-Ejemplo completo y comentado: `docs/ejemplos/mision-ejemplo.yaml`. Campos:
+Ejemplo comentado: `docs/ejemplos/mision-ejemplo.yaml`.
 
 | Campo | Tipo | Obligatorio | Notas |
 |---|---|---|---|
-| `id` | string `tN-mNN-slug` | sí | único |
-| `turno`, `orden` | int | sí | define el orden curricular |
-| `tipo` | `ticket \| investigacion \| repaso \| evento \| final` | sí | |
-| `titulo` | string ≤ 40 car. | sí | |
-| `duracion_estimada_min` | int 3–8 | sí | |
-| `ensena` | concepto[] (≤ 2) | sí | vacío solo en `repaso`/`final` |
-| `requiere` | concepto[] | sí | deben estar enseñados antes |
+| `id` | `tN-mNN-slug` · `tN-fNN-slug` | sí | único |
+| `turno`, `orden` | int | sí | orden curricular |
+| `tipo` | `ticket \| investigacion \| repaso \| evento \| final \| favor` | sí | |
+| `titulo` | ≤ 40 car. | sí | |
+| `duracion_estimada_min` | 3–8 | sí | |
+| `ensena` | concepto[] (≤ 2) | sí | `[]` en `repaso`, `final`, `favor` |
+| `refuerza` | concepto[] (1–3) | solo `favor` | |
+| `disponible_desde` | id de misión | solo `favor` | 1–2 misiones después |
+| `requiere` | concepto[] | sí | |
+| `entrega` | `pizarron \| llamada \| visita \| ticket \| correo` | sí | cómo llega al jugador |
 | `host_inicial`, `usuario_inicial`, `cwd_inicial` | string | sí | |
-| `apps` | app[] | no | apps visibles |
+| `apps` | app[] | no | apps del monitor visibles |
+| `variables` | mapa | no | variables propias de la misión |
 | `mundo.parches` | parche[] | no | archivo, dir, permisos, borrar, host, servicio, sql |
 | `briefing` | `{quien, texto ≤ 280}`[] (2–4) | sí | |
-| `objetivos` | `{id, descripcion, cuando: predicado, pistas: [3]}`[] (1–3) | sí | |
-| `solucion` | paso[] | sí | paso = comando (string) \| `{responder}` \| `{sql}` |
+| `objetivos` | `{id, pendiente, cuando, pistas[3]}`[] (1–3) | sí | `pendiente` = texto del pizarrón |
+| `solucion` | paso[] | sí | comando · `{responder}` · `{sql}` |
 | `soluciones_alternativas` | paso[][] (≥ 1) | sí | |
-| `contraejemplos` | `{objetivo, pasos: paso[]}`[] (≥ 1) | sí | no deben cumplir el objetivo indicado |
-| `recompensas` | `{xp, bitacora[], logros[]}` | sí | |
+| `contraejemplos` | `{objetivo, pasos}`[] (≥ 1) | sí | |
+| `libreta` | entrada[] | no | entradas automáticas al completar |
+| `recompensas` | `{xp, logros[], adorno?}` | sí | |
 | `eventos` | mapa disparador → efecto[] | no | |
-| `finales` | solo en `tipo: final` | no | condición → id de final |
+
+## Servidor (`server/`)
+
+Único servicio de Railway. Responsabilidades: servir el build estático con cabeceras de seguridad y la API de partidas.
+
+| Método y ruta | Qué hace | Límites |
+|---|---|---|
+| `GET /healthz` | Estado (sin datos internos) | — |
+| `POST /api/partidas` | Crea partida: genera código (CSPRNG) y semilla; guarda `sha256(código)` | 10/h por IP |
+| `GET /api/partidas/:codigo` | Devuelve la partida si el código existe | 30/min por IP; respuesta uniforme si no existe |
+| `PUT /api/partidas/:codigo` | Guarda checkpoint (cuerpo validado con Zod, versión de formato, `revision` para evitar sobrescrituras viejas) | 60/min por IP; ≤ 64 KB |
+
+- **Código:** 12 caracteres del alfabeto Crockford base32 sin `I L O U` (≈ 60 bits), con dígito verificador para detectar errores de tecleo antes de llamar al servidor.
+- **Almacenamiento:** tabla `partidas(codigo_hash bytea primary key, datos jsonb, revision int, creada timestamptz, actualizada timestamptz)`. Nunca se guarda el código en claro.
+- **Retención:** partidas sin actividad en 12 meses se borran (tarea programada) *(propuesta D-18)*.
+- **Sin cookies, sin sesiones, sin CORS** (mismo origen).
+- Detalle de controles: `08-seguridad.md`.
 
 ## Persistencia y versionado
 
-- Clave `save:v1` en IndexedDB. Esquema con número de versión y migraciones (`save/migrations.ts`), probadas con partidas de ejemplo.
-- Contenido versionado por `content_version` (hash del build). Si una misión cambia, la partida en curso reinicia esa misión pero conserva el progreso previo.
+- Partida con `formato: 1` y migraciones en `shared/save/migrations.ts` (probadas con partidas de ejemplo).
+- `content_version` (hash del build de contenido). Si cambió una misión en curso, se reinicia esa misión y se conserva lo demás.
 
-## PWA y carga
+## Carga
 
-- Precarga: app shell + contenido de Turnos 0–2.
-- Diferido: `sql.js` (WASM) al llegar a T3; contenido de turnos posteriores por chunk.
-- Aviso de "actualización disponible" cuando hay nueva versión del service worker.
+- Inicial: app + escena del cubículo + contenido de T0–T1.
+- Diferido: `sql.js` (al llegar a T4), contenido de turnos posteriores por chunk, audio no esencial.
+- Assets 3D comprimidos (glTF con meshopt o Draco; texturas KTX2/WebP).
 
-## Presupuestos (se verifican en CI con `npm run size` desde F0-05)
+## Presupuestos (verificados en CI con `npm run size` y en las pruebas de rendimiento)
 
 | Recurso | Límite |
 |---|---|
-| JS inicial (gzip) sin sql.js | ≤ 150 KB |
-| CSS inicial (gzip) | ≤ 25 KB |
-| Fuentes | ≤ 2 familias, `woff2`, subconjunto latino, ≤ 120 KB total |
-| `sql.js` WASM + glue | carga diferida; medir y registrar (≈ 1 MB) |
-| LCP en Android gama media 4G (Lighthouse móvil) | ≤ 2.5 s |
-| Respuesta a `exec` de un comando simple | ≤ 16 ms en el motor (medido en Vitest bench) |
-| Memoria del mundo por turno | ≤ 10 MB |
+| JS inicial (gzip) | ≤ 450 KB (three.js incluido) |
+| Descarga hasta poder jugar (JS + modelos + texturas + audio esencial) | ≤ 8 MB |
+| Total de assets del juego | ≤ 25 MB |
+| FPS en GPU integrada (Iris Xe / UHD 620) a 1920×1080 | ≥ 60 sostenidos en el cubículo |
+| Draw calls de la escena | ≤ 150 |
+| Memoria de GPU | ≤ 256 MB |
+| `exec` de un comando simple en el motor | ≤ 16 ms |
+| Respuesta de la API (p95) | ≤ 150 ms |
 
-## Seguridad
+## Navegadores
 
-- CSP estricta (sin `unsafe-eval`; WASM con `wasm-unsafe-eval` solo si `sql.js` lo requiere).
-- La entrada del jugador nunca se evalúa como JS; el SQL corre dentro de SQLite WASM en memoria.
-- Sin cookies, sin analítica de terceros en v1.
-
-## i18n
-
-- Todo texto de UI en `src/ui/i18n/es-MX.json`; contenido ya está separado en `content/`. Salidas de comandos en inglés por diseño (ADR-006).
-
-## Navegadores soportados
-
-Chrome/Edge Android y escritorio (últimas 2), Safari iOS 16+, Firefox (últimas 2). Sin IE ni navegadores sin WASM.
+Chrome/Edge/Firefox/Safari de escritorio, últimas 2 versiones, con WebGL2. Mouse y teclado físico requeridos en v1.
 
 ## Herramienta headless `npm run play`
 
-Necesaria para agentes y para depurar contenido sin UI:
-
 ```bash
-npm run play -- --mision t0-m02-el-leeme            # interactivo en tu terminal
-npm run play -- --mision t0-m02-el-leeme --solucion # corre la solución y reporta objetivos
-npm run play -- --exec "ls -la" --fixture tests/golden/ls/ocultos   # un comando sobre un fixture
-# modo por pasos (para agentes, que no pueden usar un TTY interactivo):
-npm run play -- --mision t0-m02-el-leeme --sesion <scratchpad>/s.json --cmd "ls"      # ejecuta 1 línea y guarda estado
-npm run play -- --mision t0-m02-el-leeme --sesion <scratchpad>/s.json --cmd "?pista"  # pide pista del objetivo actual
-npm run play -- --mision t0-m02-el-leeme --sesion <scratchpad>/s.json --cmd "?responder responder-ticket R"
+npm run play -- --mision t1-m02-el-leeme --semilla 42            # interactivo
+npm run play -- --mision t1-m02-el-leeme --semilla 42 --solucion # corre la solución
+npm run play -- --mision t1-m02-el-leeme --sesion <scratchpad>/s.json --cmd "ls"   # un paso (para agentes)
+npm run play -- --exec "ls -la" --fixture tests/golden/ls/ocultos
 ```
 
-Sin `--cmd` y con stdin que no es TTY, lee una línea por renglón (`printf 'ls\ncat LEEME.txt\n' | npm run play -- --mision …`).
+`?pista` pide la siguiente pista; `?responder <objetivo> <valor>` responde. Sin `--cmd` y con stdin que no es TTY, lee una línea por renglón.
