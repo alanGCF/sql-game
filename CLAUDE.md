@@ -53,6 +53,8 @@ npm run build && npm run size   # build + presupuestos
 npm start                # servidor de producción (sirve el build y /api)
 ```
 
+Versiones clave fijadas en F0-04 (2026-11-24): TypeScript 7.0, Vite 8, React 19.3, three 0.187, @react-three/fiber 9.8, drei 10.7, Fastify 5.12, Zod 4, Vitest 5, Biome 2.6, @playwright/test 1.63 (igual a la versión preinstalada en el sandbox).
+
 Si un script imprime "no implementado: <tarea>", esa parte aún no existe; dilo, no lo cuentes como aprobado.
 
 ## Reglas de código

@@ -34,12 +34,22 @@ const fail = (msg) => {
 const ext = extname(abs).toLowerCase();
 
 if ([".ts", ".tsx", ".js", ".mjs", ".json", ".css"].includes(ext) && existsSync(bin("biome"))) {
-  const r = run(bin("biome"), ["check", "--write", "--no-errors-on-unmatched", "--files-ignore-unknown=true", abs]);
+  const r = run(bin("biome"), [
+    "check",
+    "--write",
+    "--no-errors-on-unmatched",
+    "--files-ignore-unknown=true",
+    abs,
+  ]);
   if (r.status !== 0) fail(`biome check falló en ${rel}:\n${r.stdout ?? ""}${r.stderr ?? ""}`);
 }
 
 const inContent = rel.split(sep)[0] === "content";
-if (inContent && [".yaml", ".yml"].includes(ext) && existsSync(join(root, "scripts", "validate-content.ts"))) {
+if (
+  inContent &&
+  [".yaml", ".yml"].includes(ext) &&
+  existsSync(join(root, "scripts", "validate-content.ts"))
+) {
   const r = run(isWin ? "npm.cmd" : "npm", ["run", "-s", "validate:content", "--", rel]);
   if (r.status !== 0) fail(`validate:content falló para ${rel}:\n${r.stdout ?? ""}${r.stderr ?? ""}`);
 }

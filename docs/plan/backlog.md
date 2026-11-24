@@ -17,7 +17,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 ### F0-03 · Replanteo: escritorio 3D, calendario, compañera, libreta, código, aleatorización, seguridad, Railway · `hecha (2026-11-24)`
 - Docs, ADR, decisiones y harness actualizados a las respuestas del usuario.
 
-### F0-04 · Scaffold del proyecto · `pendiente` · depende: F0-03
+### F0-04 · Scaffold del proyecto · `hecha (2026-11-24)`
 - **Hacer:** Vite + React + TS strict; three.js + @react-three/fiber + drei; Zustand; Zod; Biome; Vitest; Playwright (versión igual a la preinstalada) con proyectos `desktop-1080` y `desktop-720`; servidor Fastify mínimo (`/healthz`, estáticos, helmet); `shared/`; scripts `dev typecheck lint test validate:content play e2e build size start` (los no implementados imprimen "no implementado: <tarea>" y salen con código 1); estructura de `05-arquitectura.md`.
 - **Listo cuando:** `npm run typecheck && npm run lint && npm run test && npm run build` pasan; `npm start` sirve el build y `/healthz`; un e2e de humo abre la página con WebGL.
 - **Verificar:** `/verificar`.
