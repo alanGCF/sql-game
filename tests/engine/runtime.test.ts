@@ -104,4 +104,40 @@ describe("misión en curso (ejemplo T1-M02)", () => {
     expect(b.estrellas()).toBe(2);
     expect(JSON.stringify(g).length).toBeLessThan(64 * 1024);
   });
+
+  it("los archivos leídos sobreviven a guardar y cargar (objetivos de varias lecturas)", async () => {
+    const m = mision();
+    const [primero] = m.objetivos;
+    if (!primero) throw new Error("el ejemplo no tiene objetivos");
+    m.objetivos = [
+      {
+        ...primero,
+        id: "leer-dos",
+        cuando: {
+          todos: [
+            { archivo_leido: { host: "srv-sistemas", ruta: "/home/becario/LEEME.txt" } },
+            { archivo_leido: { host: "srv-sistemas", ruta: "/home/becario/notas.txt" } },
+          ],
+        },
+      },
+    ];
+    const nueva = () => {
+      const reloj = GameClock.desde("2026-10-28T15:40:00Z");
+      const vfs = vfsDesde(
+        [
+          { ruta: "/home/becario/", dueno: "becario" },
+          { ruta: "/home/becario/notas.txt", dueno: "becario", contenido: "x\n" },
+        ],
+        reloj.now(),
+      );
+      const usuario = { name: "becario", groups: ["becario"], home: "/home/becario" };
+      return new MisionEnCurso(m, Shell.crear(vfs, reloj, usuario, "srv-sistemas"), 1, {}, new Set());
+    };
+    const a = nueva();
+    await a.ejecutar("cat LEEME.txt");
+    const b = nueva();
+    b.cargar(JSON.parse(JSON.stringify(a.guardar())));
+    const r = await b.ejecutar("cat notas.txt");
+    expect(r.completada).toBe(true);
+  });
 });

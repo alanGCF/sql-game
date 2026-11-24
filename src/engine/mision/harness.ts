@@ -1,5 +1,6 @@
+import { inicioTurno } from "../calendario";
 import { GameClock, Shell } from "../index";
-import { crearShellBase, type MundoBase } from "../mundo-base";
+import type { MundoBase } from "../mundo-base";
 import { clasificar } from "../shell/classify";
 import { textoPlano } from "../shell/lexer";
 import { plantilla } from "../vars";
@@ -27,18 +28,9 @@ export interface OpcionesHarness {
   mundo?: MundoBase;
 }
 
-const AHORA = "2026-10-28T15:40:00Z";
-
 function iniciar(m: Mision, semilla: number, o: OpcionesHarness): MisionEnCurso {
-  if (o.mundo) {
-    const { shell, vars } = crearShellBase(o.mundo, semilla, {
-      host: m.host_inicial,
-      usuario: m.usuario_inicial,
-      ahora: AHORA,
-    });
-    return new MisionEnCurso(m, shell, semilla, vars, new Set());
-  }
-  const reloj = GameClock.desde(AHORA);
+  if (o.mundo) return MisionEnCurso.sobreMundo(m, o.mundo, semilla);
+  const reloj = GameClock.desde(inicioTurno(m.turno));
   const home = `/home/${m.usuario_inicial}`;
   const shell = Shell.crear(
     vfsDesde([{ ruta: `${home}/`, dueno: m.usuario_inicial }], reloj.now()),
@@ -50,7 +42,7 @@ function iniciar(m: Mision, semilla: number, o: OpcionesHarness): MisionEnCurso 
 }
 
 /** Valor que debe teclear el jugador para un objetivo de respuesta, en el mundo actual. */
-async function respuestaEsperada(mc: MisionEnCurso, objetivo: string): Promise<string> {
+export async function respuestaEsperada(mc: MisionEnCurso, objetivo: string): Promise<string> {
   const o = mc.mision.objetivos.find((x) => x.id === objetivo);
   if (!o || !("respuesta" in o.cuando)) return "";
   const r = o.cuando.respuesta;

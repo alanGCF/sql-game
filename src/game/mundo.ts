@@ -1,4 +1,5 @@
 import type { Shell } from "../engine";
+import { inicioTurno } from "../engine/calendario";
 import { crearShellBase, type MundoBase } from "../engine/mundo-base";
 
 // Generado por `npm run build:content` y ya validado con Zod; viaja en el bundle inicial (es chico).
@@ -14,6 +15,6 @@ export function crearShellInicial(semilla: number): Shell {
   return crearShellBase(c.mundo, semilla, {
     host: "srv-sistemas",
     usuario: "becario",
-    ahora: "2026-10-28T15:40:00Z",
+    ahora: inicioTurno(1),
   }).shell;
 }

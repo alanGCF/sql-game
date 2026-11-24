@@ -33,6 +33,7 @@ const GuardadoMision = z.strictObject({
   }),
   historial: z.array(Texto(500)).max(500),
   cwd: Texto(500).startsWith("/"),
+  leidos: z.array(Texto(500).startsWith("/")).max(500),
 });
 
 export const PartidaEsquema = z.strictObject({

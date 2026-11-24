@@ -2,15 +2,21 @@
 //   npm run play [-- --semilla N]                     → shell interactivo sobre el mundo base (content/mundo)
 //   npm run play -- --exec "ls -la" [--semilla N]     → un comando sobre el mundo base
 //   npm run play -- --exec "ls" --fixture tests/golden/ls/basico [--tty]
-//   npm run play -- --mision <id> ...                 → llega en F2-06
-import { readFileSync } from "node:fs";
+//   npm run play -- --mision <id> [--semilla N]       → jugar una misión (interactivo o por stdin)
+//   npm run play -- --mision <id> --solucion          → correr la solución de referencia
+//   npm run play -- --mision <id> --sesion s.json [--cmd "ls"]  → un paso por llamada (agentes)
+// En una misión: ?pista [objetivo], ?responder <objetivo> <valor>, ?pendientes.
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";
 import { type Fragmento, GameClock, Shell } from "../src/engine";
+import { inicioTurno } from "../src/engine/calendario";
+import { type GuardadoMision, MisionEnCurso } from "../src/engine/mision/runtime";
 import { crearShellBase } from "../src/engine/mundo-base";
 import { type Entrada, vfsDesde } from "../src/engine/vfs";
-import { cargarMundo } from "./lib/contenido";
+import { buscarMision, cargarMundo } from "./lib/contenido";
+import { correrSolucion, presentar, procesar, sinAnsi } from "./lib/jugar";
 
 const { values } = parseArgs({
   options: {
@@ -19,12 +25,76 @@ const { values } = parseArgs({
     tty: { type: "boolean", default: false },
     mision: { type: "string" },
     semilla: { type: "string", default: "1" },
+    solucion: { type: "boolean", default: false },
+    sesion: { type: "string" },
+    cmd: { type: "string" },
   },
 });
 
+const escribir = (t: string) => process.stdout.write(process.stdout.isTTY ? t : sinAnsi(t));
+
+interface SesionGuardada {
+  mision: string;
+  semilla: number;
+  guardado: GuardadoMision;
+  flags: string[];
+}
+
+async function jugarMision(id: string): Promise<number> {
+  let semilla = Number(values.semilla);
+  let previa: SesionGuardada | undefined;
+  if (values.sesion && existsSync(values.sesion)) {
+    const s = JSON.parse(readFileSync(values.sesion, "utf8")) as SesionGuardada;
+    if (s.mision === id) {
+      previa = s;
+      semilla = s.semilla;
+    }
+  }
+  const mc = MisionEnCurso.sobreMundo(buscarMision(id), cargarMundo(), semilla, new Set(previa?.flags));
+  if (previa) mc.cargar(previa.guardado);
+  const guardar = () => {
+    if (!values.sesion) return;
+    const s: SesionGuardada = { mision: id, semilla, guardado: mc.guardar(), flags: [...mc.flags] };
+    writeFileSync(values.sesion, JSON.stringify(s));
+  };
+
+  if (values.solucion) {
+    const r = await correrSolucion(mc);
+    escribir(r.texto);
+    return r.completada ? 0 : 1;
+  }
+  if (values.cmd !== undefined) {
+    escribir(`${mc.shell.prompt()} ${values.cmd}\n${await procesar(mc, values.cmd)}`);
+    guardar();
+    return 0;
+  }
+  escribir(presentar(mc));
+  if (values.sesion) {
+    guardar();
+    return 0;
+  }
+  const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: process.stdin.isTTY });
+  const preguntar = () => {
+    if (!process.stdin.isTTY) return;
+    rl.setPrompt(`${mc.shell.prompt()} `);
+    rl.prompt();
+  };
+  preguntar();
+  for await (const linea of rl) {
+    if (!process.stdin.isTTY) escribir(`${mc.shell.prompt()} ${linea}\n`);
+    escribir(await procesar(mc, linea));
+    preguntar();
+  }
+  return 0;
+}
+
 if (values.mision) {
-  console.error("no implementado: F2-06 (npm run play --mision)");
-  process.exit(1);
+  try {
+    process.exit(await jugarMision(values.mision));
+  } catch (e) {
+    console.error(`play: ${e instanceof Error ? e.message : String(e)}`);
+    process.exit(1);
+  }
 }
 
 function desdeFixture(dir: string): Shell {
@@ -59,7 +129,7 @@ const shell = values.fixture
   : crearShellBase(cargarMundo(), Number(values.semilla), {
       host: "srv-sistemas",
       usuario: "becario",
-      ahora: "2026-10-28T15:40:00Z",
+      ahora: inicioTurno(1),
     }).shell;
 
 if (values.exec !== undefined) {

@@ -20,6 +20,7 @@ const valida = (): Partida => ({
     diff: { cambiados: [], borrados: [] },
     historial: ["cat LEEME.txt"],
     cwd: "/home/becario",
+    leidos: ["/home/becario/LEEME.txt"],
   },
 });
 

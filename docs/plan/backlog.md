@@ -80,7 +80,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F1-10 · Autocompletado · `hecha (2026-11-24)` *(comandos y rutas, `~`, ocultos con prefijo `.`, doble Tab lista opciones)*
 
-### F1-11 · `npm run play --exec` · `hecha (2026-11-24)` *(también shell interactivo y por stdin sobre el mundo de demostración; `--mision` en F2-06)*
+### F1-11 · `npm run play --exec` · `hecha (2026-11-24)` *(también shell interactivo y por stdin sobre el mundo base; `--mision` en F2-06)*
 
 ---
 
@@ -105,7 +105,9 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** C12 cuando exista contenido del Turno 13 (hoy no hay finales que revisar); C14 con `cspell` y diccionario es-MX del proyecto (dependencia nueva con ADR) al empezar a escribir contenido real (F2-08).
 - **Listo cuando:** un fixture con un final inalcanzable y otro con una falta de ortografía disparan su regla.
 
-### F2-06 · `npm run play --mision` (interactivo, `--solucion`, `--sesion/--cmd`) · `pendiente` · depende: F2-03, F1-11
+### F2-06 · `npm run play --mision` (interactivo, `--solucion`, `--sesion/--cmd`) · `hecha (2026-11-24)` · depende: F2-03, F1-11
+- **Hacer:** jugar una misión sobre el mundo base sin interfaz: briefing con nombres, pizarrón, comandos, `?pista`, `?responder`, `?pendientes`, efectos (llamadas, visitas, `wall`) y estrellas; `--solucion` corre la solución de referencia; `--sesion/--cmd` da un paso por llamada para agentes. Calendario de turnos en el motor (`inicioTurno`). El guardado de misión conserva los archivos leídos (objetivos de varias lecturas).
+- **Verificar:** `tests/content/jugar.test.ts`, `tests/engine/calendario.test.ts`, `tests/engine/runtime.test.ts`.
 
 ### F2-07 · Mundo base de T1 con variables · `hecha (2026-11-24)` *(el post-it de la escena aún muestra una contraseña fija; pasa a `{{contrasena_becario}}` con los post-its en F4)*
 - **Hacer:** `content/mundo/variables.yaml` (variables de partida) y `content/mundo/hosts/srv-sistemas.yaml` (usuarios, grupos y archivos al iniciar T1); `MundoEsquema` (Zod) y `crearShellBase(mundo, semilla, sesión)` en el motor; el harness, `npm run play` y la terminal del juego usan ese mundo (se retira `mundoDemo.ts`); `comun.json` lleva el mundo; C10 revisa que `host_inicial` y `usuario_inicial` existan.

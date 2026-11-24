@@ -236,4 +236,4 @@ npm run play -- --mision t1-m02-el-leeme --sesion <scratchpad>/s.json --cmd "ls"
 npm run play -- --exec "ls -la" --fixture tests/golden/ls/ocultos
 ```
 
-`?pista` pide la siguiente pista; `?responder <objetivo> <valor>` responde. Sin `--cmd` y con stdin que no es TTY, lee una línea por renglón.
+`?pista [objetivo]` pide la siguiente pista (por omisión, del primer pendiente); `?responder <objetivo> <valor>` responde; `?pendientes` muestra el pizarrón. Sin `--cmd` y con stdin que no es TTY, lee una línea por renglón. Con `--sesion`, la semilla y el avance (incluidos los archivos leídos) se guardan en ese archivo entre llamadas.

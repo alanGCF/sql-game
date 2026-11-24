@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
 import { CurriculoEsquema, PersonajesEsquema } from "../../src/engine/mision/curriculo";
+import { type Mision, validarMision } from "../../src/engine/mision/esquema";
 import { type MundoBase, MundoEsquema } from "../../src/engine/mundo-esquema";
 
 /** Archivos .yaml/.yml bajo `dir`, recursivo y ordenado; [] si no existe. */
@@ -52,4 +53,16 @@ export function cargarMundo(dir = "content/mundo"): MundoBase {
       r.error.issues.map((i) => `${dir}: ${i.path.join(".") || "(raíz)"}: ${i.message}`).join("\n"),
     );
   return r.data;
+}
+
+/** Busca una misión o favor por id en content/misiones/ y en el ejemplo canónico; la valida. */
+export function buscarMision(id: string): Mision {
+  for (const ruta of [...archivosYaml("content/misiones"), "docs/ejemplos/mision-ejemplo.yaml"]) {
+    const y = leerYaml(ruta);
+    if (!y.ok || (y.datos as { id?: unknown } | null)?.id !== id) continue;
+    const v = validarMision(y.datos);
+    if (!v.ok) throw new Error(`${ruta} no es válida:\n${v.errores.join("\n")}`);
+    return v.mision;
+  }
+  throw new Error(`no existe la misión ${id}`);
 }

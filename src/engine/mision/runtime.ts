@@ -1,4 +1,6 @@
+import { inicioTurno } from "../calendario";
 import type { ResultadoLinea, Shell } from "../index";
+import { crearShellBase, type MundoBase } from "../mundo-base";
 import { crearRng, subSemilla } from "../rng";
 import { plantilla, resolverVariables, type Variables } from "../vars";
 import { agregarEntradas, type Entrada, normalizar, type Vfs } from "../vfs";
@@ -29,6 +31,8 @@ export interface GuardadoMision {
   diff: DiffVfs;
   historial: string[];
   cwd: string;
+  /** Archivos leídos en la misión (predicado archivo_leido); los últimos 500. */
+  leidos: string[];
 }
 
 /**
@@ -36,6 +40,21 @@ export interface GuardadoMision {
  * después de cada acción, dispara eventos, da pistas por nivel, califica y se puede restaurar o guardar.
  */
 export class MisionEnCurso {
+  /** Misión sobre el mundo base, con la sesión inicial y el reloj al inicio de su turno. */
+  static sobreMundo(
+    mision: Mision,
+    mundo: MundoBase,
+    semilla: number,
+    flags = new Set<string>(),
+  ): MisionEnCurso {
+    const { shell, vars } = crearShellBase(mundo, semilla, {
+      host: mision.host_inicial,
+      usuario: mision.usuario_inicial,
+      ahora: inicioTurno(mision.turno),
+    });
+    return new MisionEnCurso(mision, shell, semilla, vars, flags);
+  }
+
   readonly cumplidos = new Set<string>();
   readonly respuestas = new Map<string, string>();
   readonly pistasUsadas = new Map<string, number>();
@@ -192,6 +211,7 @@ export class MisionEnCurso {
       diff: diferencias(this.base, this.shell.mundo.vfs),
       historial: [...this.shell.sesion.historial],
       cwd: this.shell.sesion.cwd,
+      leidos: [...this.shell.registro.leidos].slice(-500),
     };
   }
 
@@ -203,6 +223,7 @@ export class MisionEnCurso {
     for (const c of g.cumplidos) this.cumplidos.add(c);
     for (const [k, v] of Object.entries(g.respuestas)) this.respuestas.set(k, v);
     for (const [k, v] of Object.entries(g.pistas)) this.pistasUsadas.set(k, v);
+    for (const r of g.leidos) this.shell.registro.leidos.add(r);
     this.completada = this.cumplidos.size === this.mision.objetivos.length;
     this.shell.sesion.historial.splice(0, Infinity, ...g.historial);
     this.shell.sesion.cwd = normalizar("/", g.cwd);
