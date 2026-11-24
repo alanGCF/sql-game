@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
 import { CurriculoEsquema, PersonajesEsquema } from "../../src/engine/mision/curriculo";
+import { type MundoBase, MundoEsquema } from "../../src/engine/mundo-esquema";
 
 /** Archivos .yaml/.yml bajo `dir`, recursivo y ordenado; [] si no existe. */
 export function archivosYaml(dir: string): string[] {
@@ -31,3 +32,24 @@ export const cargarCurriculo = () =>
   CurriculoEsquema.parse(parse(readFileSync("content/curriculo.yaml", "utf8")));
 export const cargarPersonajes = () =>
   PersonajesEsquema.parse(parse(readFileSync("content/personajes.yaml", "utf8")));
+
+/** content/mundo/: variables de partida + un archivo por host en hosts/ (el nombre debe ser el host). */
+export function cargarMundo(dir = "content/mundo"): MundoBase {
+  const hosts = archivosYaml(join(dir, "hosts")).map((ruta) => {
+    const y = leerYaml(ruta);
+    if (!y.ok) throw new Error(y.error);
+    const nombre = ruta.replace(/^.*\//, "").replace(/\.ya?ml$/, "");
+    const host = (y.datos as { host?: unknown } | null)?.host;
+    if (host !== nombre)
+      throw new Error(`${ruta}: el campo host (${String(host)}) debe llamarse como el archivo`);
+    return y.datos;
+  });
+  const variables = leerYaml(join(dir, "variables.yaml"));
+  if (!variables.ok) throw new Error(variables.error);
+  const r = MundoEsquema.safeParse({ variables: variables.datos ?? {}, hosts });
+  if (!r.success)
+    throw new Error(
+      r.error.issues.map((i) => `${dir}: ${i.path.join(".") || "(raíz)"}: ${i.message}`).join("\n"),
+    );
+  return r.data;
+}

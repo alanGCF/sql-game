@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Shell } from "../engine";
 import { LIMPIAR_PANTALLA } from "../ui/ansi";
-import { crearShellDemo } from "./mundoDemo";
+import { crearShellInicial } from "./mundo";
 
 export type TipoLinea = "prompt" | "stdout" | "stderr" | "glosa";
 export interface LineaTerminal {
@@ -26,7 +26,8 @@ let siguienteId = 1;
 const MAX_LINEAS = 2000;
 
 export const useTerminal = create<EstadoTerminal>()((set, get) => ({
-  shell: crearShellDemo(),
+  // shortcut: semilla fija hasta que exista la partida con su semilla (F4).
+  shell: crearShellInicial(1),
   lineas: [],
   ocupada: false,
   async enviar(linea) {

@@ -102,7 +102,10 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ### F2-06 · `npm run play --mision` (interactivo, `--solucion`, `--sesion/--cmd`) · `pendiente` · depende: F2-03, F1-11
 
-### F2-07 · Mundo base de T1 con variables · `pendiente` · depende: F2-01
+### F2-07 · Mundo base de T1 con variables · `hecha (2026-11-24)` *(el post-it de la escena aún muestra una contraseña fija; pasa a `{{contrasena_becario}}` con los post-its en F4)*
+- **Hacer:** `content/mundo/variables.yaml` (variables de partida) y `content/mundo/hosts/srv-sistemas.yaml` (usuarios, grupos y archivos al iniciar T1); `MundoEsquema` (Zod) y `crearShellBase(mundo, semilla, sesión)` en el motor; el harness, `npm run play` y la terminal del juego usan ese mundo (se retira `mundoDemo.ts`); `comun.json` lleva el mundo; C10 revisa que `host_inicial` y `usuario_inicial` existan.
+- **Listo cuando:** el ejemplo pasa el harness sobre el mundo real; las variables se resuelven con 25 semillas; la terminal del juego muestra el mundo del contenido.
+- **Verificar:** `tests/engine/mundo-base.test.ts`, `tests/content/mundo.test.ts`, e2e de la terminal.
 
 ### F2-08 · Misiones T1-M1 a T1-M4 + favor T1-F1 · `pendiente` · depende: F2-05, F2-07, F1-06
 - **Listo cuando:** harness verde; revisores sin bloqueantes; `playtester-novato` completa T1.

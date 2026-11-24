@@ -32,7 +32,9 @@ Decisiones y razones: `docs/decisiones/adr.md`. Las versiones exactas viven en `
 ├─ shared/                       # Zod: formato de partida, API, límites (cliente y servidor)
 ├─ content/                      # TODO el contenido como datos
 │  ├─ curriculo.yaml · personajes.yaml · contactos.yaml · rumores/ · visitas/
-│  ├─ mundo/{hosts,fs,db}/       # mundo base + generadores con semilla
+│  ├─ mundo/variables.yaml       # variables de partida (generadores con semilla)
+│  ├─ mundo/hosts/<host>.yaml    # mundo base por host: usuarios, grupos y archivos
+│  ├─ mundo/db/                  # generadores de mes.db (F5)
 │  ├─ misiones/turno-NN/*.yaml   # principales y favores
 │  └─ libreta/comandos/*.md      # entradas de la libreta por comando
 ├─ src/

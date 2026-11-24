@@ -1,5 +1,4 @@
-# Personajes y contactos del teléfono (docs/plan/02-trama.md). Los ids son estables; los nombres que
-# dependen de decisiones abiertas se marcan como propuesta.
+# Personajes y contactos del teléfono (docs/plan/02-trama.md). Los ids son estables.
 personajes:
   jugador: { nombre: "{{nombre}}", rol: "Técnico de sistemas, turno vespertino", extension: 210, usuario: becario }
   companero: { nombre: Eduardo Téllez, rol: Sistemas Sr.; da las pistas, extension: 214, usuario: etellez, paciencia: 2 }

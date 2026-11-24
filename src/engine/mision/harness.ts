@@ -1,8 +1,9 @@
 import { GameClock, Shell } from "../index";
+import { crearShellBase, type MundoBase } from "../mundo-base";
 import { clasificar } from "../shell/classify";
 import { textoPlano } from "../shell/lexer";
 import { plantilla } from "../vars";
-import { type Entrada, vfsDesde } from "../vfs";
+import { vfsDesde } from "../vfs";
 import { diferencias } from "../vfs-diff";
 import type { Curriculo, Personajes } from "./curriculo";
 import { type Mision, type Paso, validarMision } from "./esquema";
@@ -22,18 +23,25 @@ export interface OpcionesHarness {
   semillas: number;
   curriculo?: Curriculo;
   personajes?: Personajes;
-  /** Mundo base del turno; por omisión, solo la carpeta personal del usuario inicial. */
-  mundoBase?: (m: Mision) => Entrada[];
+  /** Mundo base (content/mundo/); por omisión, solo la carpeta personal del usuario inicial. */
+  mundo?: MundoBase;
 }
 
 const AHORA = "2026-10-28T15:40:00Z";
 
 function iniciar(m: Mision, semilla: number, o: OpcionesHarness): MisionEnCurso {
+  if (o.mundo) {
+    const { shell, vars } = crearShellBase(o.mundo, semilla, {
+      host: m.host_inicial,
+      usuario: m.usuario_inicial,
+      ahora: AHORA,
+    });
+    return new MisionEnCurso(m, shell, semilla, vars, new Set());
+  }
   const reloj = GameClock.desde(AHORA);
   const home = `/home/${m.usuario_inicial}`;
-  const entradas = o.mundoBase?.(m) ?? [{ ruta: `${home}/`, dueno: m.usuario_inicial }];
   const shell = Shell.crear(
-    vfsDesde(entradas, reloj.now()),
+    vfsDesde([{ ruta: `${home}/`, dueno: m.usuario_inicial }], reloj.now()),
     reloj,
     { name: m.usuario_inicial, groups: [m.usuario_inicial, "sistemas"], home },
     m.host_inicial,
@@ -84,6 +92,15 @@ export async function revisarMision(datos: unknown, o: OpcionesHarness): Promise
   }
   const m = v.mision;
   if (o.curriculo) h.push(...revisarConCurriculo(m, o.curriculo, o.personajes));
+
+  // C10: la sesión inicial existe en el mundo base.
+  if (o.mundo) {
+    const host = o.mundo.hosts.find((x) => x.host === m.host_inicial);
+    if (!host) error("C10", `host_inicial desconocido: ${m.host_inicial}`);
+    else if (!host.usuarios[m.usuario_inicial])
+      error("C10", `usuario_inicial ${m.usuario_inicial} no existe en ${m.host_inicial}`);
+    if (h.some((x) => x.severidad === "error")) return h;
+  }
 
   // C8 (parcial): cada comando de la solución se ejecuta en el motor y existe en la superficie.
   for (const p of m.solucion) {

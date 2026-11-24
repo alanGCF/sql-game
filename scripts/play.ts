@@ -1,6 +1,6 @@
 // Shell del juego sin interfaz (para agentes, playtests y depuración).
-//   npm run play                                      → shell interactivo sobre el mundo de demostración
-//   npm run play -- --exec "ls -la"                   → un comando sobre el mundo de demostración
+//   npm run play [-- --semilla N]                     → shell interactivo sobre el mundo base (content/mundo)
+//   npm run play -- --exec "ls -la" [--semilla N]     → un comando sobre el mundo base
 //   npm run play -- --exec "ls" --fixture tests/golden/ls/basico [--tty]
 //   npm run play -- --mision <id> ...                 → llega en F2-06
 import { readFileSync } from "node:fs";
@@ -8,8 +8,9 @@ import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { parseArgs } from "node:util";
 import { type Fragmento, GameClock, Shell } from "../src/engine";
+import { crearShellBase } from "../src/engine/mundo-base";
 import { type Entrada, vfsDesde } from "../src/engine/vfs";
-import { crearShellDemo } from "../src/game/mundoDemo";
+import { cargarMundo } from "./lib/contenido";
 
 const { values } = parseArgs({
   options: {
@@ -17,6 +18,7 @@ const { values } = parseArgs({
     fixture: { type: "string" },
     tty: { type: "boolean", default: false },
     mision: { type: "string" },
+    semilla: { type: "string", default: "1" },
   },
 });
 
@@ -52,7 +54,13 @@ function imprimir(fragmentos: Fragmento[], pensamiento?: string) {
   if (pensamiento) process.stdout.write(`(pensamiento) ${pensamiento}\n`);
 }
 
-const shell = values.fixture ? desdeFixture(values.fixture) : crearShellDemo();
+const shell = values.fixture
+  ? desdeFixture(values.fixture)
+  : crearShellBase(cargarMundo(), Number(values.semilla), {
+      host: "srv-sistemas",
+      usuario: "becario",
+      ahora: "2026-10-28T15:40:00Z",
+    }).shell;
 
 if (values.exec !== undefined) {
   const r = await shell.ejecutar(values.exec, { sinTerminal: !values.tty });

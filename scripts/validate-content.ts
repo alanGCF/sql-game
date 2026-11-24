@@ -4,7 +4,7 @@ import { parseArgs } from "node:util";
 import { type Mision, validarMision } from "../src/engine/mision/esquema";
 import { revisarMision } from "../src/engine/mision/harness";
 import { revisarRepasos } from "../src/engine/mision/harness-curriculo";
-import { archivosYaml, cargarCurriculo, cargarPersonajes, leerYaml } from "./lib/contenido";
+import { archivosYaml, cargarCurriculo, cargarMundo, cargarPersonajes, leerYaml } from "./lib/contenido";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -13,6 +13,7 @@ const { values, positionals } = parseArgs({
 
 const curriculo = cargarCurriculo();
 const personajes = cargarPersonajes();
+const mundo = cargarMundo();
 const validas: Mision[] = [];
 
 const archivos = positionals.length
@@ -27,7 +28,7 @@ for (const f of archivos) {
     continue;
   }
   const datos = y.datos;
-  const h = await revisarMision(datos, { semillas: Number(values.semillas), curriculo, personajes });
+  const h = await revisarMision(datos, { semillas: Number(values.semillas), curriculo, personajes, mundo });
   const v = validarMision(datos);
   if (v.ok) validas.push(v.mision);
   const e = h.filter((x) => x.severidad === "error");

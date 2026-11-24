@@ -11,7 +11,6 @@
     "tests/content",
     "src/engine",
     "scripts/play.ts",
-    "src/game/mundoDemo.ts",
     "shared",
     "scripts/validate-content.ts",
     "scripts/build-content.ts",
