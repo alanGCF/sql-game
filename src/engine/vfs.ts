@@ -235,6 +235,12 @@ export interface Entrada {
 
 export function vfsDesde(entradas: readonly Entrada[], mtimeBase: number): Vfs {
   const vfs = Vfs.vacio(mtimeBase);
+  agregarEntradas(vfs, entradas, mtimeBase);
+  return vfs;
+}
+
+/** Agrega o reemplaza entradas declarativas en un VFS existente (mundos base y parches de misión). */
+export function agregarEntradas(vfs: Vfs, entradas: readonly Entrada[], mtimeBase: number): void {
   const asegurarDir = (abs: string, e?: Entrada): DirNode => {
     let nodo = vfs.root;
     for (const parte of abs.split("/").filter(Boolean)) {
@@ -250,7 +256,7 @@ export function vfsDesde(entradas: readonly Entrada[], mtimeBase: number): Vfs {
         };
         nodo.children.set(parte, hijo);
       }
-      if (hijo.type !== "dir") throw new Error(`vfsDesde: ${abs} no es directorio`);
+      if (hijo.type !== "dir") throw new Error(`agregarEntradas: ${abs} no es directorio`);
       nodo = hijo;
     }
     if (e) aplicarMeta(nodo, e, mtimeBase);
@@ -273,7 +279,6 @@ export function vfsDesde(entradas: readonly Entrada[], mtimeBase: number): Vfs {
     aplicarMeta(archivo, e, mtimeBase);
     p.children.set(nombreBase(e.ruta), archivo);
   }
-  return vfs;
 }
 
 function aplicarMeta(n: Meta, e: Entrada, mtimeBase: number): void {
