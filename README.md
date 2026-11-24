@@ -2,7 +2,7 @@
 
 Juego web **de escritorio** para aprender **Linux, SQL y redes desde cero**. Estás sentado en tu cubículo en 3D, en una planta de manufactura ficticia del desierto fronterizo: con la computadora, el teléfono y tu libreta descubres quién altera cada noche los datos de calidad. Cada comando que aprendes hace avanzar la historia.
 
-**Estado:** Fase 0 — base del proyecto. Ramas: `develop` (trabajo) y `main` (producción en Railway).
+**Estado:** F0 casi completa (falta elegir estilo visual y desplegar en Railway); F1 (motor del shell) en curso: comandos de T1 y T2 idénticos al sistema real. Ramas: `develop` (trabajo) y `main` (producción en Railway).
 
 | Qué | Dónde |
 |---|---|
