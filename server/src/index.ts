@@ -1,13 +1,16 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildApp } from "./app.js";
+import { leerEntorno } from "./entorno.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const staticDir = process.env.STATIC_DIR ?? join(here, "../../../client");
-const port = Number(process.env.PORT ?? 3000);
-const hops = Number(process.env.TRUST_PROXY_HOPS ?? 1);
+const config = leerEntorno(process.env);
 
-const app = await buildApp({ staticDir, logger: true, trustProxyHops: hops });
+const app = await buildApp({
+  staticDir: config.staticDir ?? join(here, "../../../client"),
+  logger: true,
+  trustProxyHops: config.trustProxyHops,
+});
 
 for (const signal of ["SIGTERM", "SIGINT"] as const) {
   process.once(signal, () => {
@@ -18,4 +21,4 @@ for (const signal of ["SIGTERM", "SIGINT"] as const) {
   });
 }
 
-await app.listen({ host: "0.0.0.0", port });
+await app.listen({ host: "0.0.0.0", port: config.port });

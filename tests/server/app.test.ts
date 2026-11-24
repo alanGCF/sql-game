@@ -1,8 +1,9 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../../server/src/app.js";
+import { leerEntorno } from "../../server/src/entorno.js";
 
 function staticFixture(): string {
   const dir = mkdtempSync(join(tmpdir(), "planta7-static-"));
@@ -57,5 +58,71 @@ describe("servidor", () => {
     expect(bloqueada.statusCode).toBe(429);
     expect(bloqueada.json()).toEqual({ error: "demasiadas_solicitudes" });
     expect((await pedir("203.0.113.8")).statusCode).toBe(200);
+  });
+
+  it("una URL malformada responde 400 uniforme y con cabeceras de seguridad", async () => {
+    const app = await buildApp();
+    const res = await app.inject({ method: "GET", url: "/%E0%A4%A" });
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toEqual({ error: "solicitud_invalida" });
+    expect(res.body).not.toMatch(/FST_|Fastify|%E0/);
+    expect(res.headers["content-security-policy"]).toContain("default-src 'none'");
+    expect(res.headers["x-content-type-options"]).toBe("nosniff");
+    expect(res.headers["x-frame-options"]).toBe("DENY");
+    expect(res.headers["strict-transport-security"]).toContain("max-age=31536000");
+  });
+
+  it("los 404 también gastan límite de tasa", async () => {
+    const app = await buildApp({ rateLimitMax: 2 });
+    const codigos = [];
+    for (let i = 0; i < 3; i++)
+      codigos.push((await app.inject({ method: "GET", url: `/nada${i}` })).statusCode);
+    expect(codigos).toEqual([404, 404, 429]);
+  });
+
+  it("los archivos con hash de /assets/ tienen su propio límite, más alto", async () => {
+    const dir = staticFixture();
+    mkdirSync(join(dir, "assets"));
+    writeFileSync(join(dir, "assets", "app-abc123.js"), "1");
+    const app = await buildApp({ staticDir: dir, rateLimitMax: 2, rateLimitAssetsMax: 5 });
+    for (let i = 0; i < 5; i++)
+      expect((await app.inject({ method: "GET", url: "/assets/app-abc123.js" })).statusCode).toBe(200);
+    expect((await app.inject({ method: "GET", url: "/assets/app-abc123.js" })).statusCode).toBe(429);
+    // La página y la API conservan su propio contador.
+    expect((await app.inject({ method: "GET", url: "/healthz" })).statusCode).toBe(200);
+  });
+
+  it("el log de solicitudes registra la ruta declarada, no la URL real", async () => {
+    const lineas: string[] = [];
+    const app = await buildApp({ logStream: { write: (l: string) => void lineas.push(l) } });
+    app.get("/api/partidas/:codigo", async () => ({ ok: true }));
+    await app.inject({ method: "GET", url: "/api/partidas/ABCD-SECRETO-1234?x=1" });
+    const log = lineas.join("");
+    expect(log).toContain("/api/partidas/:codigo");
+    expect(log).not.toContain("SECRETO");
+  });
+});
+
+describe("variables de entorno del servidor", () => {
+  it("usa valores por omisión seguros", () => {
+    expect(leerEntorno({})).toEqual({ port: 3000, trustProxyHops: 1 });
+  });
+
+  it("acepta valores válidos", () => {
+    expect(leerEntorno({ PORT: "8080", TRUST_PROXY_HOPS: "2", STATIC_DIR: "/app/x" })).toEqual({
+      port: 8080,
+      trustProxyHops: 2,
+      staticDir: "/app/x",
+    });
+  });
+
+  it.each([
+    [{ PORT: "abc" }, /PORT/],
+    [{ PORT: "70000" }, /PORT/],
+    [{ TRUST_PROXY_HOPS: "Infinity" }, /TRUST_PROXY_HOPS/],
+    [{ TRUST_PROXY_HOPS: "" }, /TRUST_PROXY_HOPS/],
+    [{ TRUST_PROXY_HOPS: "9" }, /TRUST_PROXY_HOPS/],
+  ])("rechaza %o", (env, error) => {
+    expect(() => leerEntorno(env)).toThrow(error);
   });
 });

@@ -26,27 +26,27 @@
     "@fastify/helmet": "^13.2.0",
     "@fastify/rate-limit": "^11.3.0",
     "@fastify/static": "^10.1.12",
-    "@react-three/drei": "^10.7.9",
-    "@react-three/fiber": "^9.8.2",
     "fastify": "^5.12.8",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "three": "^0.187.0",
-    "zod": "^4.6.7",
-    "zustand": "^5.1.0"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",
     "@playwright/test": "^1.63.0",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "three": "^0.187.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.8",
     "vitest": "^5.1.1",
-    "yaml": "^2.9.1"
+    "yaml": "^2.9.1",
+    "zustand": "^5.1.0"
   }
 }

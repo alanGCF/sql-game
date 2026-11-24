@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
@@ -37,7 +37,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
       - if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: playwright-report
           path: |
@@ -52,7 +52,7 @@ jobs:
     container: debian:stable
     steps:
       - run: apt-get update && apt-get install -y --no-install-recommends git nodejs ca-certificates
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -65,10 +65,29 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
       - run: npm audit --audit-level=high
+
+  imagen:
+    name: Imagen Docker de producción
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - run: docker build -t planta7 .
+      - name: Arranca como usuario sin privilegios y responde /healthz
+        run: |
+          docker run -d --name planta7 -p 3000:3000 planta7
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:3000/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:3000/healthz | grep -q '"ok":true'
+          curl -fsSI http://127.0.0.1:3000/ | grep -qi "content-security-policy"
+          test "$(docker exec planta7 id -un)" = node
+          # El código es de root: el proceso solo puede leerlo.
+          ! docker exec planta7 touch /app/dist/escritura

@@ -91,8 +91,9 @@ En cada push a `develop` y `main` y en PRs:
 3. `npm run test` (motor, servidor, contenido con 25 semillas)
 4. `npm run build` + `npm run size`
 5. `npm run e2e` (flujos + capturas)
-6. `npm audit --audit-level=high` · CodeQL · escaneo de secretos
+6. `npm audit --audit-level=high` · CodeQL (solo con el repo público) · escaneo de secretos
 7. Job `goldens` (`debian:stable`): recaptura y compara goldens (falla si el sistema real cambió)
+8. Job `imagen`: construye el Dockerfile, arranca el contenedor, comprueba `/healthz`, cabeceras, usuario `node` y que no pueda escribir su código
 
 Nocturno: contenido con 500 semillas, goldens, auditoría de dependencias.
 Despliegue: Railway despliega `main` (configurado en el panel de Railway: rama `main`, "esperar a CI").

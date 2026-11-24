@@ -36,6 +36,11 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Listo cuando:** capturas de Playwright de los 3 estilos (vista general, mirando a los lados, monitor acercado) enviadas al usuario.
 - **Verificar:** `/revision-visual`; el usuario elige estilo (D-08).
 
+### F0-08 · Endurecimiento tras la auditoría de seguridad (2026-11-24) · `hecha (2026-11-24)` · depende: F0-04
+- **Hacer:** respuesta uniforme con cabeceras para URL malformada; los 404 gastan límite; contador aparte para `/assets/`; validar `PORT` y `TRUST_PROXY_HOPS`; log con ruta declarada en vez de URL; dependencias del cliente a desarrollo; imagen `trixie` con código de root; Dependabot para Docker; Actions por SHA; `npm ci --ignore-scripts`; job `imagen` en CI; CodeQL solo con repo público; prueba de IP real documentada en `docs/despliegue.md`.
+- **Pendiente fuera de esta tarea:** fijar imágenes por digest y comprobar `TRUST_PROXY_HOPS` en el primer despliegue (F0-06); escaneo de secretos de GitHub (lo activa el usuario si su plan lo permite); IPv6 agrupadas por /64 y no reenviar mensajes de Zod (F4).
+- **Verificar:** `tests/server/app.test.ts`; job `imagen` en verde.
+
 ---
 
 ## F1 — Motor: shell, VFS, clasificador, comandos T1–T3

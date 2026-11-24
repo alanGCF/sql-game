@@ -18,7 +18,7 @@ Un servicio web (imagen del `Dockerfile` en la raíz) y, desde F4, una base Post
 |---|---|---|
 | `PORT` | (la pone Railway) | Puerto donde escucha el servidor |
 | `NODE_ENV` | `production` | Ya viene en la imagen |
-| `TRUST_PROXY_HOPS` | `1` | Saltos de proxy confiables para obtener la IP real (límite de tasa). No lo subas sin revisar los logs |
+| `TRUST_PROXY_HOPS` | `1` | Saltos de proxy confiables para obtener la IP real (límite de tasa). Entero de 0 a 3; un valor inválido detiene el arranque. No lo cambies sin hacer la prueba del paso 4 |
 | `DATABASE_URL` | referencia a la variable de la base (desde F4) | Conexión a PostgreSQL |
 
 Nunca pongas secretos en el repositorio ni en el código del cliente.
@@ -41,6 +41,14 @@ curl -sI https://TU-DOMINIO.up.railway.app/
 
 Debe responder `{"ok":true}` y, en las cabeceras de la segunda, `content-security-policy`, `strict-transport-security`, `x-frame-options: DENY` y `x-content-type-options: nosniff`.
 
+**IP real del cliente (obligatorio en el primer despliegue, antes de anunciar el sitio).** El límite de tasa usa la IP que calcula el servidor con `TRUST_PROXY_HOPS`. Si el número de saltos no coincide con los proxies reales de Railway, o todos los jugadores comparten una IP interna (y un solo límite), o la IP se puede falsificar.
+
+```bash
+curl -s -H 'X-Forwarded-For: 1.2.3.4' https://TU-DOMINIO.up.railway.app/healthz
+```
+
+Hazlo desde dos redes distintas (por ejemplo, Wi-Fi de casa y datos del celular). En **Deploy Logs**, el campo `remoteAddress` de cada solicitud debe ser la IP pública de cada red: nunca `1.2.3.4` ni una IP interna (`10.x`, `100.64.x`, `fd…`). Si sale una IP interna, sube `TRUST_PROXY_HOPS` en 1 y repite; si sale `1.2.3.4`, bájalo.
+
 ## 5. Flujo de releases
 
 1. El trabajo se sube a `develop`; el CI corre ahí.
@@ -50,3 +58,5 @@ Debe responder `{"ok":true}` y, en las cabeceras de la segunda, `content-securit
 ## 6. Costos (plan Hobby)
 
 El plan incluye un crédito mensual de uso. Para no pasarte: un solo servicio web, una base pequeña, límites de tasa activos (ya configurados) y revisar el uso en el panel. Configura una alerta de uso en Railway.
+
+El tráfico de salida (descargas del juego) también cuenta. El límite por IP frena a un solo abusador, no a muchos a la vez. Si el sitio se vuelve popular, conviene poner un CDN o proxy con caché delante (por ejemplo, el plan gratuito de Cloudflare) para que los archivos de `/assets/`, que nunca cambian, no salgan de Railway en cada visita.
