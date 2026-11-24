@@ -81,7 +81,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ## F2 — Runtime de misiones + harness de contenido + T1 headless
 
-### F2-01 · Esquemas (misión, favor, personajes, contactos, currículo, partida) · `pendiente` · depende: F1-02
+### F2-01 · Esquemas (misión, favor, personajes, contactos, currículo, partida) · `en-progreso` (esquema de misión/favor con predicados hecho y probado; faltan currículo en YAML, personajes, contactos y partida)
 - **Listo cuando:** `docs/ejemplos/mision-ejemplo.yaml` valida; errores legibles con ruta del campo.
 
 ### F2-02 · Pipeline de contenido (YAML → JSON por turno) · `pendiente` · depende: F2-01

@@ -77,3 +77,9 @@ Solo dos ramas. Se trabaja en `develop` (un commit por tarea). `main` recibe `de
 **Contexto.** El usuario preguntó si diseñar en Claude Design o seguir en Claude Code. Claude Design trabaja interfaces 2D (pantallas, componentes, prototipos HTML). Este juego es una escena 3D en una sola pantalla con interfaz diegética.
 **Decisión.** Todo el desarrollo visual en Claude Code: escena en R3F, estilos como código, iteración con capturas de Playwright que se envían al usuario para decidir. Skills de apoyo: R3F/three.js, `frontend-design`, `emil-design-eng`. Claude Design queda como opcional para explorar el look de las capas 2D (terminal, libreta, teléfono) si el usuario quiere.
 **Consecuencias.** (+) Sin traspasos entre herramientas; lo que se ve en las capturas es el juego real. (−) La exploración visual cuesta código; se mitiga con el spike de 3 estilos sobre la misma escena.
+
+## ADR-017 · `yaml` para leer el contenido en build y pruebas · aceptada
+
+**Contexto.** El contenido se escribe en YAML (ADR-004) y debe convertirse a JSON validado.
+**Decisión.** Paquete `yaml` (eemeli/yaml, licencia ISC, sin dependencias, mantenido activamente) como dependencia de desarrollo: solo se usa en `scripts/` y pruebas; el cliente recibe JSON ya validado.
+**Consecuencias.** (+) Parser completo y estricto con buenos mensajes de error. (−) Ninguna en tiempo de ejecución.
