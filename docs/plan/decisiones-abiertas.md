@@ -37,6 +37,7 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
 | D-21 | Look de la app Tickets | **A · mesa de ayuda corporativa** (clara, lista a la izquierda y detalle con respuesta a la derecha) |
 | D-22 | Diálogos, llamadas y visitas | **Llamadas: tarjeta a un lado (C)** con iniciales, nombre y extensión. **Todo lo demás: subtítulo abajo (A)** con el nombre y el **departamento** de quien habla (nunca la palabra "visita") |
+| D-23 | Menú de inicio | **C · tu gafete de empleado** sobre la escena desenfocada: "Primer día de trabajo", "Checar entrada con mi número" (el número de empleado es el código de partida, D-15), ajustes y créditos |
 
 ## Abiertas
 

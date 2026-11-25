@@ -275,3 +275,26 @@ test("T1 completo se juega en el navegador: terminal + Tickets hasta terminar el
   expect(await mision()).toBeNull();
   expect((await page.evaluate(() => window.__planta7?.partida?.()))?.eventos).toContain("turno_completado");
 });
+
+test("menú (gafete): primer día pide el nombre tecleado y empieza el turno", async ({ page }) => {
+  await page.goto("/?test=1&estilo=c&menu=1");
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const menu = page.getByTestId("menu");
+  await expect(menu.getByRole("heading", { name: "Rastro en el Log" })).toBeVisible();
+  await expect(page.getByTestId("dialogo")).toBeHidden();
+  await expect(menu.getByRole("button", { name: "Checar entrada con mi número" })).toBeDisabled();
+
+  await menu.getByRole("button", { name: "Primer día de trabajo" }).click();
+  const nombre = page.getByLabel("¿Cómo te llamas? (o un apodo)");
+  await expect(nombre).toBeFocused();
+  await expect(menu.getByRole("button", { name: "Empezar mi turno" })).toBeDisabled();
+  await nombre.dispatchEvent("paste");
+  await expect(page.getByTestId("pensamiento")).toContainText("Mejor lo escribo yo");
+  await nombre.fill("Ale");
+  await expect(menu).toContainText("Ale");
+  await menu.getByRole("button", { name: "Empezar mi turno" }).click();
+
+  await expect(menu).toBeHidden();
+  await expect(page.getByTestId("dialogo")).toContainText("Eduardo Téllez · Sistemas");
+  expect((await page.evaluate(() => window.__planta7?.partida?.()))?.nombre).toBe("Ale");
+});

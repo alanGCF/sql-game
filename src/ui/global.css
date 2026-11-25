@@ -446,3 +446,107 @@ body,
   border-color: #b9ad9b;
   color: #4a4038;
 }
+
+/* Menú (D-23): tu gafete sobre la escena desenfocada. */
+.menu {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(6px) brightness(0.6);
+  background: rgb(10 12 14 / 25%);
+  z-index: 20;
+}
+.gafete {
+  width: min(560px, 90vw);
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fbfaf6;
+  color: #2b2622;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 45%);
+  transform: rotate(-1.5deg);
+  font-size: clamp(15px, 2vh, 20px);
+}
+.gafete-franja {
+  padding: 1em 1.3em;
+  background: #23665a;
+  color: #fff;
+}
+.gafete-franja h1 {
+  margin: 0;
+  font-size: 1.7em;
+}
+.gafete-franja p {
+  margin: 0.2em 0 0;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.gafete-cuerpo {
+  padding: 1.2em 1.3em 1.4em;
+}
+.gafete-datos {
+  display: flex;
+  gap: 1.1em;
+}
+.gafete-foto {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 5.5em;
+  height: 6.5em;
+  border-radius: 10px;
+  background: #d9d2c3;
+  color: #5c4d3b;
+  font-size: 1.3em;
+  font-weight: 800;
+}
+.gafete-datos dl {
+  margin: 0;
+}
+.gafete-datos dt {
+  font-size: 0.8em;
+  color: #5c4d3b;
+}
+.gafete-datos dd {
+  margin: 0 0 0.5em;
+  font-weight: 700;
+}
+.gafete-numero {
+  letter-spacing: 0.1em;
+}
+.gafete-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  margin-top: 1.1em;
+}
+.gafete-acciones button,
+.gafete-acciones input {
+  font: inherit;
+  padding: 0.7em;
+  border-radius: 10px;
+  border: 1px solid #c9b89b;
+  background: #fff;
+  color: #2b2622;
+}
+.gafete-acciones button {
+  cursor: pointer;
+}
+.gafete-acciones button.primario {
+  background: #e0702b;
+  border-color: #e0702b;
+  color: #1a0e05;
+  font-weight: 700;
+}
+.gafete-acciones button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.gafete-acciones label {
+  font-weight: 600;
+}
+.gafete-creditos p {
+  margin: 0;
+  line-height: 1.45;
+}

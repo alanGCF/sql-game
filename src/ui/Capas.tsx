@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useEscena } from "../game/store";
 import { Dialogos } from "./Dialogos";
+import { Menu } from "./Menu";
 import { Monitor } from "./Monitor";
 
 function EtiquetaHover() {
@@ -69,6 +70,7 @@ export function Capas() {
         </button>
       )}
       <Dialogos />
+      <Menu />
       <Pensamiento />
     </>
   );

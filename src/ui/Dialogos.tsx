@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { usePartida } from "../game/partidaStore";
+import { useEscena } from "../game/store";
 
 /** Iniciales para la tarjeta de llamada: sin títulos (Ing., Lic.) ni apodos entre comillas. */
 function iniciales(nombre: string): string {
@@ -19,9 +20,10 @@ export function Dialogos() {
   const actual = usePartida((s) => s.dialogos[0]);
   const ultimo = usePartida((s) => s.dialogos.length === 1);
   const avanzar = usePartida((s) => s.avanzarDialogo);
+  const enMenu = useEscena((s) => s.enMenu);
 
   useEffect(() => {
-    if (!actual) return;
+    if (!actual || enMenu) return;
     // En captura, antes que la terminal o Tickets: Enter cierra el diálogo si no estás escribiendo
     // (campo vacío; en bash, Enter con la línea vacía no hace nada).
     const tecla = (e: KeyboardEvent) => {
@@ -36,9 +38,9 @@ export function Dialogos() {
     };
     window.addEventListener("keydown", tecla, true);
     return () => window.removeEventListener("keydown", tecla, true);
-  }, [actual, avanzar]);
+  }, [actual, avanzar, enMenu]);
 
-  if (!actual) return null;
+  if (!actual || enMenu) return null;
   const boton = (
     <button type="button" className="dialogo-siguiente" onClick={avanzar}>
       {ultimo ? "Cerrar" : "Siguiente"} <kbd>Enter</kbd>

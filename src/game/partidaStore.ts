@@ -41,6 +41,9 @@ function pendientesDe(j: Jornada): Pendiente[] {
 }
 
 interface EstadoPartida {
+  /** Nombre que el jugador teclea en su gafete (se guarda con la partida en F4). */
+  nombre: string;
+  setNombre: (n: string) => void;
   jornada: Jornada;
   pendientes: Pendiente[];
   /** Tickets de la app Tickets (incluye los ya resueltos del turno). */
@@ -71,6 +74,8 @@ function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
 const inicial = Jornada.iniciar(turnoInicial(), contenidoComun().mundo, semillaNueva());
 
 export const usePartida = create<EstadoPartida>()((set, get) => ({
+  nombre: "",
+  setNombre: (nombre) => set({ nombre: nombre.trim().slice(0, 40) }),
   jornada: inicial,
   pendientes: pendientesDe(inicial),
   tickets: ticketsDe(activas(inicial), personajes),

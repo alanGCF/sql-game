@@ -160,7 +160,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** materiales, luces y formas del estilo C según `direccion-arte.md`; ventana que cambia de tarde a noche con el reloj de juego; se retiran los estilos A y B; presupuesto de 150 draw calls.
 - **Listo cuando:** capturas de referencia nuevas sin regresiones de encuadre; presupuesto cumplido.
 
-### F3-07 · Menú sobre la escena (consultar) · `pendiente` · depende: F3-06
+### F3-07 · Menú sobre la escena (consultar) · `hecha (2026-11-25)` *(D-23: gafete; "Checar entrada" se activa con el código de partida en F4)* · depende: F3-06
 - **Hacer:** Nueva partida, Continuar (el código llega en F4), Ajustes, Créditos; sobre la escena desenfocada.
 - **Listo cuando:** e2e de nueva partida hasta T1-M1; capturas aprobadas.
 
