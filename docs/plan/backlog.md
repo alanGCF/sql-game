@@ -174,9 +174,76 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 
 ---
 
-## F4 en adelante (resumen)
+## F4 — Sistemas del escritorio + partidas en el servidor + Turno 0 → v0.1
 
-- **F4** Teléfono · pistas de Eduardo · paciencia · libreta · pizarrón · post-its · calendario · gafete · visitas · audio y subtítulos · API de partidas y código · sincronización · Turno 0 · release v0.1.
+Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código en otra computadora; playtest ronda 1; release interno v0.1 en Railway. Toda animación por cuadro pide sus cuadros con `invalidate` (ADR-018). Las tareas **(consultar)** llevan decisiones de estética o funcionalidad: se proponen 2–3 opciones con capturas antes de cerrarlas.
+
+### F4-01 · Teléfono: vista con directorio y teclado numérico (consultar) · `pendiente` · depende: F3-06
+- **Hacer:** capa DOM al acercarse al teléfono: pantallita, teclado numérico (clic o teclas), directorio de extensiones de `02-trama.md`; marcar una extensión inicia la llamada; colgar con Esc.
+- **Listo cuando:** e2e marca 214 con teclado y con clic; capturas aprobadas.
+
+### F4-02 · Llamadas salientes y paciencia por turno · `pendiente` · depende: F4-01
+- **Hacer:** contenido `content/llamadas/` (por contacto: charla, rumores, avisos, "ponte a trabajar", no contesta) con esquema Zod y harness; paciencia por contacto y turno (Gerencia al doble); diálogos en tarjeta de llamada (D-22) con opciones de respuesta.
+- **Listo cuando:** pruebas de paciencia (1–2 charla, 3 aviso, 4+ no contesta) y e2e de una llamada con opción de respuesta.
+
+### F4-03 · Pistas de Eduardo por teléfono · `pendiente` · depende: F4-02
+- **Hacer:** "Necesito una pista" en la llamada a Eduardo; elige el pendiente si hay varios; empujón → concepto → comando exacto (uno por llamada, `MisionEnCurso.pista`); no gasta paciencia (D-14); se anota en la libreta (Pistas); 3 fallos seguidos del mismo objetivo → pensamiento "Igual y le marco a Eduardo…"; las estrellas lo reflejan.
+- **Listo cuando:** e2e pide las tres pistas de T1-M1 y las ve en la libreta; prueba de que no gasta paciencia.
+
+### F4-04 · Llamadas entrantes y buzón · `pendiente` · depende: F4-02
+- **Hacer:** efecto `llamada` del motor hace sonar el teléfono (vibra y parpadea, con `invalidate`); contestar con clic o tecla; sin contestar → luz de buzón y mensaje para después. Respeta "reducir movimiento".
+- **Listo cuando:** e2e de una llamada entrante contestada y otra perdida que queda en el buzón.
+
+### F4-05 · Libreta: pestañas Historia, Comandos, Pistas y Mis notas (consultar) · `pendiente` · depende: F2-10
+- **Hacer:** capa de libreta de espiral con pestañas; entradas automáticas con letra manuscrita (fuente OFL registrada en `assets.md`) y animación de escritura; Comandos desde `content/libreta/comandos/` al aprenderlos; Mis notas tecleadas (sin pegar, 200 × 500 caracteres); texto no seleccionable ni copiable.
+- **Listo cuando:** e2e: pegar bloqueado, copiar bloqueado, nota guardada; capturas aprobadas.
+
+### F4-06 · Varios globos por evento y efecto `pensamiento` · `pendiente` · depende: F3-05
+- **Hacer:** ampliar el esquema de efectos (pedido de la revisión narrativa de T1) y mostrar el pensamiento en la nube de `direccion-arte.md`.
+- **Listo cuando:** harness con los efectos nuevos y e2e del pensamiento disparado por un evento.
+
+### F4-07 · Pizarrón y post-its animados · `pendiente` · depende: F3-04
+- **Hacer:** tachado con trazo de plumón al cumplir un pendiente; el post-it del favor se arruga y cae al bote al completarse; post-its informativos por efecto.
+- **Listo cuando:** capturas antes/después y animaciones que respetan "reducir movimiento".
+
+### F4-08 · Calendario con estrellas y resumen del día · `pendiente` · depende: F4-12
+- **Hacer:** estrellas de cada turno terminado y marca de favores; clic en un día pasado → resumen (misiones, estrellas, hallazgos). Repetir misiones queda para F7.
+- **Listo cuando:** e2e con una partida que terminó T0 y T1 muestra sus estrellas y el resumen.
+
+### F4-09 · Visitas por el pasillo con opciones (consultar) · `pendiente` · depende: F4-06
+- **Hacer:** un personaje llega por el pasillo de la derecha (silueta sencilla), diálogo en subtítulo con departamento (D-22) y opciones de respuesta; se va al terminar.
+- **Listo cuando:** e2e de la visita de Don Chuy en T0; capturas aprobadas.
+
+### F4-10 · Audio escaso y subtítulos (D-19) · `pendiente` · depende: F4-04
+- **Hacer:** Web Audio sintetizado para interacción y murmullo de voces; ambientales a lo lejos (uno cada 2–4 min con la semilla, nunca durante diálogos); volúmenes y "modo silencio" en Ajustes; subtítulo para todo audio.
+- **Listo cuando:** pruebas del planificador de ambientales (frecuencia, sin simultaneidad) y e2e de subtítulos.
+
+### F4-11 · API de partidas en el servidor (Postgres) · `pendiente` · depende: F0-08
+- **Hacer:** tabla de partidas por código (12 caracteres sin ambiguos, `K7QF-29XM-PL4D`), crear/guardar/cargar con `PartidaEsquema` de `shared/`, consultas parametrizadas, 64 KB máximo, límites de tasa por IP y por código, migraciones; driver de Postgres justificado en un ADR. Nada de correos ni contraseñas.
+- **Listo cuando:** pruebas del servidor (código inválido, tamaño, tasa, versión de formato) y `auditor-seguridad` sin hallazgos altos.
+
+### F4-12 · Guardado local, checkpoints y "Checar entrada" · `pendiente` · depende: F4-11
+- **Hacer:** IndexedDB tras cada comando que cambia el estado; checkpoint al servidor al completar misión, favor o turno; menú "Checar entrada con mi número"; sin conexión sigue local y sincroniza al volver; el mundo se guarda como diferencias (`vfs-diff`).
+- **Listo cuando:** e2e: terminar T1-M1, recargar en otro contexto del navegador, checar entrada con el código y seguir en T1-M2.
+
+### F4-13 · Gafete con el código de partida (D-15) · `pendiente` · depende: F4-12
+- **Hacer:** al empezar el primer día se genera el código, se muestra grande con "anótalo" y queda en el gafete (menú y objeto del escritorio).
+- **Listo cuando:** e2e del primer día muestra el código y el gafete del escritorio lo tiene.
+
+### F4-14 · Turno 0: bienvenida y tutorial · `pendiente` · depende: F4-01, F4-05, F4-09, F4-13
+- **Hacer:** misiones de T0 según `02-trama.md` (mirar alrededor, post-it, libreta, calendario, marcar a Eduardo, iniciar sesión); decoración del escritorio (globos, letrero con el nombre, concha y taza); visita de Don Chuy; cierre de Eduardo.
+- **Listo cuando:** harness con 25 semillas, `revisor-curricular` y `disenador-narrativo` sin pendientes, e2e de T0 completo.
+
+### F4-15 · Oficina viva básica · `pendiente` · depende: F4-10
+- **Hacer:** alguien pasa a lo lejos de vez en cuando (con la semilla), con `invalidate` solo mientras camina; nada durante diálogos.
+- **Listo cuando:** captura con la persona caminando y prueba de que la escena quieta no pide cuadros.
+
+### F4-16 · Playtest ronda 1 y release v0.1 · `pendiente` · depende: F4-14
+- **Hacer:** `playtester-novato` en T0–T1, playtest con personas, correcciones; revisión de seguridad y visual; `develop` → `main` con aprobación del usuario.
+- **Listo cuando:** T0–T1 de punta a punta en producción y continuar con código en otra computadora.
+
+## F5 en adelante (resumen)
+
 - **F5** `sql.js` · generador `mes.db` · `sqlite3` · app Datos · T2–T4 · favores T1–T3.
 - **F6** Red · app Red · `wall` · T5 · favores T4–T5 · auditoría de seguridad · **v0.2**.
 - **F7** T6–T8 · tiempo extra · logros · repetir misiones.
