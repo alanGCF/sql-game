@@ -84,3 +84,9 @@ Solo dos ramas. Se trabaja en `develop` (un commit por tarea). `main` recibe `de
 **Contexto.** El contenido se escribe en YAML (ADR-004) y debe convertirse a JSON validado.
 **Decisión.** Paquete `yaml` (eemeli/yaml, licencia ISC, sin dependencias, mantenido activamente) como dependencia de desarrollo: solo se usa en `scripts/` y pruebas; el cliente recibe JSON ya validado.
 **Consecuencias.** (+) Parser completo y estricto con buenos mensajes de error. (−) Ninguna en tiempo de ejecución.
+
+## ADR-018 · La escena se dibuja a demanda (`frameloop="demand"`) · aceptada
+
+**Contexto.** El escritorio está quieto casi todo el tiempo. Con el estilo C (sombras suaves, reflejos, luz por hora) dibujar a 60 fps gasta GPU y batería sin cambiar nada; en CI con WebGL por software (SwiftShader) daba 2–7 fps a 720p y cada captura tardaba 4–15 s, con pruebas intermitentes.
+**Decisión.** El `Canvas` usa `frameloop="demand"`: se dibuja un cuadro cuando cambia algo de React/three (luces por hora, resaltado, texturas: `useTexturaCanvas` llama `invalidate`), al mover el cursor o cambiar la vista (`CamaraSentada` se suscribe al store y a `pointermove`), y mientras la cámara amortiguada o una transición no terminan (piden el siguiente cuadro). El `dt` se acota a 1/30 s para que la primera animación tras un rato quieta no salte.
+**Consecuencias.** (+) Sin consumo con la escena quieta (laptops con Iris Xe/UHD 620); capturas en ~100 ms; e2e de 7.9 a 4.4 min. (−) Toda animación nueva por cuadro (teléfono sonando, ambientales) debe pedir sus cuadros con `invalidate` mientras dure; si no, se congela.

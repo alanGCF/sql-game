@@ -1,3 +1,4 @@
+import { useThree } from "@react-three/fiber";
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ESTILO } from "./estilos";
@@ -52,6 +53,7 @@ export function useTexturaCanvas(
   dibujar: (ctx: CanvasRenderingContext2D, w: number, h: number) => void,
   clave?: string,
 ): THREE.CanvasTexture {
+  const invalidate = useThree((s) => s.invalidate);
   const [textura] = useState(() => {
     const canvas = document.createElement("canvas");
     canvas.width = ancho;
@@ -76,6 +78,7 @@ export function useTexturaCanvas(
     ctx.clearRect(0, 0, ancho, alto);
     dibujar(ctx, ancho, alto);
     textura.needsUpdate = true;
+    invalidate();
   }, [clave]);
   return textura;
 }

@@ -14,6 +14,10 @@ const ARRIBA_MAX = THREE.MathUtils.degToRad(22);
 const ABAJO_MAX = THREE.MathUtils.degToRad(28);
 const ZONA_MUERTA = 0.08;
 const DURACION_TRANSICION = 0.6;
+/** La escena se dibuja a demanda: tras un rato quieta, el primer `dt` es enorme y se acota. */
+const DT_MAX = 1 / 30;
+/** Diferencia de ángulo bajo la cual la cámara ya llegó y se deja de pedir cuadros. */
+const LLEGO = 1e-4;
 
 type Pose = { pos: THREE.Vector3; mira: THREE.Vector3 };
 
@@ -49,7 +53,7 @@ function quaternionMirando(desde: THREE.Vector3, hacia: THREE.Vector3): THREE.Qu
 const sinMovimiento = () => isTestMode || useAjustes.getState().reducirMovimiento;
 
 export function CamaraSentada() {
-  const { camera, pointer } = useThree();
+  const { camera, pointer, invalidate } = useThree();
   const vista = useEscena((s) => s.vista);
   const setTransicionando = useEscena((s) => s.setTransicionando);
   const euler = useRef(new THREE.Euler(0, 0, 0, "YXZ"));
@@ -60,6 +64,17 @@ export function CamaraSentada() {
     haciaPos: THREE.Vector3;
     haciaRot: THREE.Quaternion;
   } | null>(null);
+
+  // Render a demanda (Escena: frameloop="demand"): se pide cuadro al mover el cursor o cambiar la vista.
+  useEffect(() => {
+    const pedir = () => invalidate();
+    window.addEventListener("pointermove", pedir);
+    const quitar = useEscena.subscribe(pedir);
+    return () => {
+      window.removeEventListener("pointermove", pedir);
+      quitar();
+    };
+  }, [invalidate]);
 
   // Cada cambio de vista arranca una transición desde la pose actual.
   useEffect(() => {
@@ -76,11 +91,14 @@ export function CamaraSentada() {
       haciaRot,
     };
     setTransicionando(true);
-  }, [vista, camera, setTransicionando]);
+    invalidate();
+  }, [vista, camera, setTransicionando, invalidate]);
 
-  useFrame((_state, dt) => {
+  useFrame((state, delta) => {
+    const dt = Math.min(delta, DT_MAX);
     const tr = transicion.current;
     if (tr) {
+      state.invalidate();
       tr.t = Math.min(DURACION_TRANSICION, tr.t + dt);
       const k = suavizar(tr.t / DURACION_TRANSICION);
       camera.position.lerpVectors(tr.desdePos, tr.haciaPos, k);
@@ -103,6 +121,9 @@ export function CamaraSentada() {
     euler.current.x += (pitch - euler.current.x) * k;
     camera.position.copy(OJOS);
     camera.quaternion.setFromEuler(euler.current);
+    // Mientras la cámara amortiguada no llega a donde apunta el cursor, se siguen pidiendo cuadros.
+    if (Math.abs(yaw - euler.current.y) > LLEGO || Math.abs(pitch - euler.current.x) > LLEGO)
+      state.invalidate();
   });
 
   return null;

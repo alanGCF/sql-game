@@ -70,6 +70,8 @@ export function Escena() {
   const setVista = useEscena((s) => s.setVista);
   return (
     <Canvas
+      // Escena casi quieta: se dibuja solo cuando algo cambia (cursor, vista, hora, texturas), no a 60 fps.
+      frameloop="demand"
       dpr={[1, 1.5]}
       shadows="soft"
       camera={{ position: [0, 1.18, 0.45], fov: 55, near: 0.02, far: 40 }}
