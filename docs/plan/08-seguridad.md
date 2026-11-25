@@ -20,12 +20,12 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 | **Adivinar códigos ajenos** | Fuerza bruta sobre `GET`/`PUT /api/partida` | 55 bits de entropía (11 símbolos CSPRNG + verificador), un solo presupuesto de 60/min por origen (IPv4 o /64 de IPv6) para leer y guardar, 20 códigos inexistentes por hora por origen y luego 429, sin `HEAD`, validación de formato antes de tocar la base, respuesta uniforme para inexistente, advertencia en el log al llegar al tope |
 | **Sobrescribir partidas ajenas** | `PUT` con un código adivinado | Mismo control anterior; además `revision` monotónica |
 | **Robo de la base** | Fuga de datos | Solo se guarda HMAC-SHA256(código) con una clave que vive fuera de la base (`PARTIDAS_PEPPER`); no hay datos personales salvo el nombre elegido; respaldos de Railway |
-| **Usar el servidor como almacenamiento gratis** | Partidas de 10 MB con basura | Cuerpo ≤ 64 KB, esquema Zod estricto (rechaza claves desconocidas), límites por campo (notas ≤ 200 × 500 car.), límite de creación 10/h por IP, retención de 60 días (D-18) |
-| **Denegación de servicio** | Ráfagas de peticiones | `@fastify/rate-limit` con dos contadores por IP (página/API 300/min; `/assets/` 1200/min para salones detrás de un NAT), los 404 también cuentan, límites de cuerpo y tiempo de conexión, sin operaciones costosas por petición; protección del proxy de Railway; CDN delante si crece el tráfico |
+| **Usar el servidor como almacenamiento gratis** | Partidas de 10 MB con basura | Cuerpo ≤ 64 KB, esquema Zod estricto (rechaza claves desconocidas), límites por campo (notas ≤ 200 × 500 car.), límite de creación 10/h por origen (IPv6 por /56) y 500/h en total, tope de 2 GB de la tabla (crear y guardar contestan 503 al pasarlo), retención de 60 días (D-18) |
+| **Denegación de servicio** | Ráfagas de peticiones | `@fastify/rate-limit` con dos contadores por origen, IPv4 o /64 de IPv6 (página/API 300/min; `/assets/` 1200/min para salones detrás de un NAT), los 404 también cuentan, límites de cuerpo y tiempo de conexión, sin operaciones costosas por petición; protección del proxy de Railway; CDN delante si crece el tráfico |
 | **XSS** | Nombre o notas con `<script>` | React escapa por defecto; prohibido `dangerouslySetInnerHTML` (regla de lint); contenido Markdown de la libreta se compila en build, no del usuario; CSP estricta |
 | **Clickjacking** | Juego embebido en otro sitio | `frame-ancestors 'none'`, `X-Frame-Options: DENY` |
 | **Cadena de suministro** | Dependencia comprometida | `package-lock.json` comprometido en git, `npm ci`, `npm audit --audit-level=high` en CI, Dependabot, pocas dependencias y revisadas (ADR por dependencia), sin scripts de instalación innecesarios |
-| **Secretos expuestos** | `DATABASE_URL` en el repo | Variables de entorno en Railway; `.env` ignorado y negado a los agentes; escaneo de secretos de GitHub; nada sensible en el bundle del cliente |
+| **Secretos expuestos** | `DATABASE_URL` o `PARTIDAS_PEPPER` en el repo | Variables de entorno en Railway; `.env` ignorado y negado a los agentes; escaneo de secretos de GitHub; nada sensible en el bundle del cliente |
 | **Abuso de la ficción** | Aprender técnicas ofensivas | El shell es simulado; comandos fuera de la superficie no se ejecutan (globo de pensamiento); la historia solo enseña administración y defensa |
 
 ## Controles del servidor (checklist obligatorio)
@@ -36,8 +36,8 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 - [ ] Validación Zod de parámetros y cuerpo en cada ruta (esquemas en `shared/`); formato del código validado con regex y dígito verificador antes de consultar.
 - [ ] Consultas parametrizadas; usuario de base con permisos mínimos (solo la tabla `partidas`).
 - [ ] Límite de tasa por ruta (ver `05-arquitectura.md` §Servidor).
-- [ ] Errores sin trazas ni detalles internos hacia el cliente, incluida la URL malformada (`frameworkErrors`); logs con `pino` que registran solo método, **ruta declarada** (`/api/partidas/:codigo`, nunca la URL real) e IP, sin cabeceras ni cuerpos.
-- [ ] Variables de entorno validadas al arrancar (`PORT`, `TRUST_PROXY_HOPS` 0–3); un valor inválido detiene el proceso.
+- [ ] Errores sin trazas ni detalles internos hacia el cliente, incluida la URL malformada (`frameworkErrors`); logs con `pino` que registran solo método, **ruta declarada** (`/api/partida`; el código va en una cabecera que no se registra) e IP, sin cabeceras ni cuerpos; errores de la base solo con su código (SQLSTATE/errno).
+- [ ] Variables de entorno validadas al arrancar (`PORT`, `TRUST_PROXY_HOPS` 0–3, `DATABASE_URL`, `PARTIDAS_PEPPER` de 64 hex, `PARTIDAS_EN_MEMORIA` solo fuera de producción); un valor inválido detiene el proceso, sin repetir el valor en el error.
 - [ ] `TRUST_PROXY_HOPS` comprobado contra el proxy real en el primer despliegue (`docs/despliegue.md` §4).
 - [ ] Contenedor como usuario no root que no es dueño de su código (archivos de root, solo lectura para el proceso), imagen Debian stable (`node:24-trixie-slim`), solo `dist/` y dependencias del servidor (las del cliente son de desarrollo: Vite ya las empaqueta). El job `imagen` de CI lo comprueba.
 - [ ] Sin endpoints de administración expuestos.
@@ -56,7 +56,7 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 2. **Antes de llevar `develop` a `main`:** subagente `auditor-seguridad` sobre el diff + `/security-review`; ningún hallazgo alto o crítico abierto.
 3. **Antes del primer release público:** escaneo OWASP ZAP baseline contra el despliegue de prueba y revisión manual con la lista OWASP ASVS nivel 1.
 4. **Mensual:** revisar alertas de Dependabot y actualizar dependencias.
-5. **Incidente:** rotar `DATABASE_URL`, revisar logs, restaurar respaldo, publicar nota si afecta a jugadores.
+5. **Incidente:** rotar `DATABASE_URL`, revisar logs, restaurar respaldo, publicar nota si afecta a jugadores. Si se filtra `PARTIDAS_PEPPER` **sin** la base, no hay riesgo inmediato. Si se filtran las dos, los códigos se pueden recuperar por fuerza bruta: se avisa a los jugadores y se rota la clave. Rotarla exige aceptar la anterior al leer y recalcular el hash al guardar (`PARTIDAS_PEPPER_ANTERIOR`, aún sin implementar: es la forma de rotar sin perder partidas).
 
 ## Privacidad
 

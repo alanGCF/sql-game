@@ -10,10 +10,13 @@ const PEPPER = Buffer.alloc(32, 7);
 let app: FastifyInstance;
 let log: string[];
 
-async function crearApp(repo: RepositorioPartidas | null = repositorioEnMemoria()) {
+async function crearApp(
+  repo: RepositorioPartidas | null = repositorioEnMemoria(),
+  extra: { topeCreacionGlobalPorHora?: number; limiteAlmacenBytes?: number } = {},
+) {
   log = [];
   app = await buildApp({
-    partidas: repo ? { repo, pepper: PEPPER } : null,
+    partidas: repo ? { repo, pepper: PEPPER, ...extra } : null,
     logStream: { write: (l) => log.push(l) },
   });
   return app;
@@ -47,7 +50,8 @@ describe("API de partidas", () => {
     await crearApp();
     const r = await crear();
     expect(r.statusCode).toBe(201);
-    expect(r.headers["cache-control"]).toBe("no-store");
+    expect(r.headers["cache-control"]).toBe("private, no-store");
+    expect(r.headers.vary).toBe("x-codigo-partida");
     const cuerpo = r.json();
     expect(normalizarCodigo(cuerpo.codigo)).toBe(cuerpo.codigo);
     expect(cuerpo.revision).toBe(1);
@@ -61,7 +65,8 @@ describe("API de partidas", () => {
     const { codigo, partida } = (await crear()).json();
     const r = await leer(formatearCodigo(codigo).toLowerCase());
     expect(r.statusCode).toBe(200);
-    expect(r.headers["cache-control"]).toBe("no-store");
+    expect(r.headers["cache-control"]).toBe("private, no-store");
+    expect(r.headers.vary).toBe("x-codigo-partida");
     expect(r.json()).toEqual({ revision: 1, partida });
   });
 
@@ -166,9 +171,49 @@ describe("API de partidas", () => {
     const { codigo } = (await crear()).json();
     for (let i = 0; i < 20; i++) expect((await leer(generarCodigo(), "2001:db8:9::1")).statusCode).toBe(404);
     expect((await leer(codigo, "2001:db8:9::2")).statusCode).toBe(429);
-    expect((await guardar(codigo, {}, "2001:db8:9::3")).statusCode).toBe(429);
+    const { partida } = (await leer(codigo, "2001:db8:8::9")).json();
+    expect((await guardar(codigo, { revision: 1, partida }, "2001:db8:9::3")).statusCode).toBe(429);
     expect((await leer(codigo, "2001:db8:8::1")).statusCode).toBe(200);
     expect(log.join("\n")).toContain("demasiados códigos inexistentes");
+  });
+
+  it("tras el bloqueo, quien ya abrió su código en ese origen sigue jugando (NAT de un salón)", async () => {
+    await crearApp();
+    const creado = (await crear(undefined, "2001:db8:7::1")).json();
+    const otro = (await crear(undefined, "2001:db8:6::1")).json();
+    expect((await leer(otro.codigo, "2001:db8:7::2")).statusCode).toBe(200);
+    for (let i = 0; i < 20; i++) await leer(generarCodigo(), "2001:db8:7::3");
+    expect((await leer(generarCodigo(), "2001:db8:7::4")).statusCode).toBe(429);
+    expect((await leer(creado.codigo, "2001:db8:7::5")).statusCode).toBe(200);
+    expect((await leer(otro.codigo, "2001:db8:7::6")).statusCode).toBe(200);
+    const nuevo = (await crear(undefined, "2001:db8:5::1")).json();
+    expect((await leer(nuevo.codigo, "2001:db8:7::7")).statusCode).toBe(429);
+  });
+
+  it("peticiones en paralelo no se saltan el tope de códigos inexistentes", async () => {
+    await crearApp();
+    const r = await Promise.all(Array.from({ length: 60 }, () => leer(generarCodigo(), "203.0.113.50")));
+    expect(r.filter((x) => x.statusCode === 404).length).toBeLessThanOrEqual(20);
+    expect(r.filter((x) => x.statusCode === 429).length).toBeGreaterThanOrEqual(40);
+  });
+
+  it("tope global de partidas nuevas por hora (abuso repartido entre muchas IP)", async () => {
+    await crearApp(repositorioEnMemoria(), { topeCreacionGlobalPorHora: 3 });
+    for (let i = 1; i <= 3; i++) expect((await crear(undefined, `192.0.2.${i}`)).statusCode).toBe(201);
+    expect((await crear(undefined, "192.0.2.99")).statusCode).toBe(429);
+    expect(log.join("\n")).toContain("tope global de partidas nuevas");
+  });
+
+  it("con el almacén lleno no se crean ni guardan partidas, pero se pueden leer", async () => {
+    const repo = repositorioEnMemoria();
+    await crearApp(repo);
+    const { codigo, partida } = (await crear()).json();
+    await app.close();
+    await crearApp(repo, { limiteAlmacenBytes: 10 });
+    expect((await crear()).statusCode).toBe(503);
+    expect((await guardar(codigo, { revision: 1, partida })).statusCode).toBe(503);
+    expect((await leer(codigo)).statusCode).toBe(200);
+    expect(log.join("\n")).toContain("almacén de partidas lleno");
   });
 
   it("en la base va HMAC(código) con la clave del servidor, no sha256 sin sal", async () => {

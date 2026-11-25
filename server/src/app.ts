@@ -72,8 +72,8 @@ export async function buildApp(opts: AppOptions = {}): Promise<FastifyInstance> 
       ? {
           ...(opts.logStream ? { stream: opts.logStream } : {}),
           serializers: {
-            // Solo la ruta declarada (/api/partidas/:codigo), nunca la URL real: el código de partida
-            // no debe quedar en los logs. Sin cabeceras ni cuerpo.
+            // Solo método, ruta declarada e IP: nunca la URL real, las cabeceras (el código de partida viaja
+            // en una) ni el cuerpo.
             req: (req: FastifyRequest) => ({
               method: req.method,
               ruta: req.routeOptions?.url ?? "(sin ruta)",
@@ -110,7 +110,7 @@ export async function buildApp(opts: AppOptions = {}): Promise<FastifyInstance> 
   const maxAssets = opts.rateLimitAssetsMax ?? LIMITE_TASA_ASSETS_POR_MINUTO;
   await app.register(fastifyRateLimit, {
     global: true,
-    // Dos contadores por IP: archivos con hash de /assets/ y todo lo demás (página y API).
+    // Dos contadores por origen: archivos con hash de /assets/ y todo lo demás (página y API).
     // IPv6 agrupado por /64: si no, una sola conexión con millones de direcciones no tendría límite.
     keyGenerator: (req) => `${normalizeIP(req.ip, 64)}|${esAsset(req) ? "assets" : "general"}`,
     max: (req) => (esAsset(req) ? maxAssets : maxGeneral),

@@ -26,6 +26,8 @@ export interface RepositorioPartidas {
   guardar(hash: Buffer, datos: Partida, revision: number): Promise<ResultadoGuardar>;
   /** Borra las partidas sin actividad en `dias` días (D-18); devuelve cuántas. */
   borrarInactivas(dias: number): Promise<number>;
+  /** Espacio que ocupan las partidas (tope de almacenamiento). */
+  tamanoBytes(): Promise<number>;
   cerrar(): Promise<void>;
 }
 
@@ -72,6 +74,11 @@ export function repositorioEnMemoria(ahora: () => number = Date.now): Repositori
           n++;
         }
       return n;
+    },
+    async tamanoBytes() {
+      let total = 0;
+      for (const f of filas.values()) total += f.datos.length;
+      return total;
     },
     async cerrar() {},
   };
@@ -173,6 +180,11 @@ export function repositorioPostgres(
         if ((r.rowCount ?? 0) < LOTE_RETENCION) break;
       }
       return total;
+    },
+    async tamanoBytes() {
+      await lista();
+      const r = await pool.query<{ b: string }>("SELECT pg_total_relation_size('partidas') AS b");
+      return Number(r.rows[0]?.b ?? 0);
     },
     async cerrar() {
       await pool.end();

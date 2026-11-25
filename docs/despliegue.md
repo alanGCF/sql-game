@@ -64,7 +64,7 @@ El tráfico de salida (descargas del juego) también cuenta. El límite por IP f
 
 ## Usuario de base con permisos mínimos (F4-11, antes de anunciar el sitio)
 
-La app puede funcionar con el usuario dueño que da Railway, pero lo recomendado es que use uno que solo pueda leer y escribir la tabla `partidas`. Después del primer despliegue con la API (la tabla ya existe), en la consola de datos del servicio PostgreSQL:
+La app puede funcionar con el usuario dueño que da Railway, pero lo recomendado es que use uno que solo pueda leer y escribir la tabla `partidas`. La tabla se crea con la **primera petición** a la API (no con el despliegue): después de crear la primera partida (o de una primera llamada a la API), en la consola de datos del servicio PostgreSQL:
 
 ```sql
 CREATE ROLE rastro_app LOGIN PASSWORD '<contraseña generada con openssl rand -hex 24>';
@@ -74,3 +74,5 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON partidas TO rastro_app;
 ```
 
 Luego cambia `DATABASE_URL` del servicio web para que use `rastro_app` (misma host y base, otro usuario y contraseña). Con ese usuario la app no crea tablas: solo DML.
+
+Opcional, endurecimiento: `REVOKE TEMP ON DATABASE railway FROM PUBLIC;`. Recomendado: una alerta de uso del volumen de Postgres en Railway (la app deja de crear y guardar partidas al pasar 2 GB de tabla).

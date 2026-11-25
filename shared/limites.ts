@@ -14,3 +14,8 @@ export const LIMITE_PETICIONES_CON_CODIGO_POR_MINUTO = 60;
 export const LIMITE_CODIGOS_INEXISTENTES_POR_HORA = 20;
 /** El código de partida viaja en esta cabecera, nunca en la URL (los logs del borde registran la ruta). */
 export const CABECERA_CODIGO = "x-codigo-partida";
+/** Topes globales (todos los orígenes juntos) contra quien reparte el abuso entre muchas IP. */
+export const LIMITE_CREAR_PARTIDAS_GLOBAL_POR_HORA = 500;
+export const LIMITE_CODIGOS_INEXISTENTES_GLOBAL_POR_HORA = 500;
+/** Al pasar este tamaño de la tabla de partidas, crear y guardar contestan 503 (el volumen es de 5 GB). */
+export const LIMITE_ALMACEN_PARTIDAS_BYTES = 2 * 1024 ** 3;

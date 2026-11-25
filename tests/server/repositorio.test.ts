@@ -71,6 +71,12 @@ function contrato(nombre: string, preparar: () => Promise<Banco>, terminar: () =
       expect(await b.repo.leer(reciente)).not.toBeNull();
     });
 
+    it("informa cuánto espacio ocupan las partidas", async () => {
+      const h = hashCodigo(generarCodigo(), PEPPER);
+      await b.repo.crear(h, partida());
+      expect(await b.repo.tamanoBytes()).toBeGreaterThan(0);
+    });
+
     it("guarda texto hostil como dato, sin interpretarlo", async () => {
       const h = hashCodigo(generarCodigo(), PEPPER);
       const raro = partida("'); DROP TABLE partidas; --");
