@@ -1,25 +1,69 @@
 import { type ClipboardEvent, type DragEvent, type FormEvent, useEffect, useRef, useState } from "react";
-import { usePartida } from "../game/partidaStore";
+import { formatearCodigo } from "../../shared/codigo";
+import type { Motivo } from "../game/api";
+import { guardian, usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
 import { ControlesAjustes } from "./Ajustes";
 
-type Paso = "inicio" | "nombre" | "ajustes" | "creditos";
+type Paso = "inicio" | "nombre" | "codigo" | "ajustes" | "creditos";
+
+const MENSAJES: Record<Motivo, string> = {
+  invalido: "Ese número no es válido. Revisa que tenga los 12 caracteres, como K7QF-29XM-PL4D.",
+  no_encontrado: "No encontramos ese número. Revisa que esté bien escrito.",
+  demasiadas: "Demasiados intentos. Espera un rato y vuelve a intentarlo.",
+  sin_servicio: "El reloj checador no responde. Intenta de nuevo en unos minutos.",
+  sin_conexion: "No hay conexión con la planta. Revisa tu internet e intenta de nuevo.",
+  conflicto: "No se pudo checar entrada. Intenta de nuevo.",
+};
+
+/** Partida guardada en este navegador (se muestra en el gafete). */
+interface Previa {
+  nombre: string;
+  codigo: string | null;
+}
 
 /** Menú de inicio (D-23): tu gafete de empleado sobre la escena desenfocada. */
 export function Menu() {
   const enMenu = useEscena((s) => s.enMenu);
   const setEnMenu = useEscena((s) => s.setEnMenu);
   const pensar = useEscena((s) => s.pensar);
-  const setNombre = usePartida((s) => s.setNombre);
+  const empezarPartida = usePartida((s) => s.empezar);
+  const checarEntrada = usePartida((s) => s.checarEntrada);
+  const continuar = usePartida((s) => s.continuar);
   const [paso, setPaso] = useState<Paso>("inicio");
   const [nombre, setNombreLocal] = useState("");
+  const [codigo, setCodigo] = useState("");
+  const [error, setError] = useState("");
+  const [ocupado, setOcupado] = useState(false);
+  const [previa, setPrevia] = useState<Previa | null>(null);
   const nombreRef = useRef<HTMLInputElement>(null);
+  const codigoRef = useRef<HTMLInputElement>(null);
   const primerBoton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (paso === "nombre") nombreRef.current?.focus();
+    if (paso === "codigo") codigoRef.current?.focus();
     if (paso === "inicio") primerBoton.current?.focus();
+    setError("");
   }, [paso]);
+
+  // Cuando aparece la partida guardada cambia el botón principal: el foco va a él.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: solo al cambiar la partida guardada.
+  useEffect(() => {
+    if (paso === "inicio") primerBoton.current?.focus();
+  }, [previa]);
+
+  // ¿Hay una partida en este navegador? Entonces el gafete ya trae nombre y número.
+  useEffect(() => {
+    if (!enMenu) return;
+    let vigente = true;
+    guardian.cargarLocal().then((g) => {
+      if (vigente && g) setPrevia({ nombre: g.partida.nombre, codigo: g.codigo });
+    });
+    return () => {
+      vigente = false;
+    };
+  }, [enMenu]);
 
   if (!enMenu) return null;
 
@@ -27,12 +71,35 @@ export function Menu() {
     e.preventDefault();
     pensar("Mejor lo escribo yo, así se me queda.");
   };
-  const empezar = (e: FormEvent) => {
+  const empezar = async (e: FormEvent) => {
     e.preventDefault();
-    if (!nombre.trim()) return;
-    setNombre(nombre);
+    if (!nombre.trim() || ocupado) return;
+    setOcupado(true);
+    const r = await empezarPartida(nombre);
+    setOcupado(false);
     setEnMenu(false);
+    if (r.sinServidor) pensar("Sin conexión con la planta: mi avance se guarda solo en esta computadora.");
   };
+  const entrarConCodigo = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!codigo.trim() || ocupado) return;
+    setOcupado(true);
+    setError("");
+    const r = await checarEntrada(codigo);
+    setOcupado(false);
+    if (r.ok) setEnMenu(false);
+    else setError(MENSAJES[r.motivo]);
+  };
+  const seguir = async () => {
+    if (ocupado) return;
+    setOcupado(true);
+    const ok = await continuar();
+    setOcupado(false);
+    if (ok) setEnMenu(false);
+    else setPaso("codigo");
+  };
+  const nombreVisible = paso === "nombre" ? nombre.trim() : (previa?.nombre ?? nombre.trim());
+  const numeroVisible = paso !== "nombre" && previa?.codigo ? formatearCodigo(previa.codigo) : "——-——-——";
 
   return (
     <div className="menu" data-testid="menu">
@@ -44,30 +111,54 @@ export function Menu() {
         <div className="gafete-cuerpo">
           <div className="gafete-datos">
             <div className="gafete-foto" aria-hidden="true">
-              {nombre.trim() ? nombre.trim()[0]?.toUpperCase() : ""}
+              {nombreVisible ? nombreVisible[0]?.toUpperCase() : ""}
             </div>
             <dl>
               <dt>Nombre</dt>
-              <dd>{nombre.trim() || "— (nuevo ingreso)"}</dd>
+              <dd>{nombreVisible || "— (nuevo ingreso)"}</dd>
               <dt>Puesto</dt>
               <dd>Técnico de sistemas · turno vespertino</dd>
               <dt>No. de empleado</dt>
-              <dd className="gafete-numero">——-——-——</dd>
+              <dd className="gafete-numero">{numeroVisible}</dd>
             </dl>
           </div>
 
           {paso === "inicio" && (
             <div className="gafete-acciones">
-              <button ref={primerBoton} type="button" className="primario" onClick={() => setPaso("nombre")}>
-                Primer día de trabajo
-              </button>
-              <button
-                type="button"
-                disabled
-                title="Tu número de empleado llega cuando puedas guardar la partida"
-              >
-                Checar entrada con mi número
-              </button>
+              {previa ? (
+                <>
+                  {/* Con partida en este navegador, lo principal es seguirla. */}
+                  <button
+                    ref={primerBoton}
+                    type="button"
+                    className="primario"
+                    disabled={ocupado}
+                    onClick={seguir}
+                  >
+                    {ocupado ? "Checando…" : `Checar entrada como ${previa.nombre}`}
+                  </button>
+                  <button type="button" onClick={() => setPaso("codigo")}>
+                    Checar entrada con otro número
+                  </button>
+                  <button type="button" onClick={() => setPaso("nombre")}>
+                    Primer día de trabajo
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    ref={primerBoton}
+                    type="button"
+                    className="primario"
+                    onClick={() => setPaso("nombre")}
+                  >
+                    Primer día de trabajo
+                  </button>
+                  <button type="button" onClick={() => setPaso("codigo")}>
+                    Checar entrada con mi número
+                  </button>
+                </>
+              )}
               <button type="button" onClick={() => setPaso("ajustes")}>
                 Ajustes
               </button>
@@ -100,8 +191,43 @@ export function Menu() {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <button type="submit" className="primario" disabled={!nombre.trim()}>
-                Empezar mi turno
+              {previa?.codigo && (
+                <p className="gafete-aviso">
+                  Esto empieza una partida nueva. La que tienes sigue guardada con el número{" "}
+                  <strong>{formatearCodigo(previa.codigo)}</strong>.
+                </p>
+              )}
+              <button type="submit" className="primario" disabled={!nombre.trim() || ocupado}>
+                {ocupado ? "Checando…" : "Empezar mi turno"}
+              </button>
+              <button type="button" onClick={() => setPaso("inicio")}>
+                Regresar
+              </button>
+            </form>
+          )}
+
+          {paso === "codigo" && (
+            <form className="gafete-acciones" onSubmit={entrarConCodigo}>
+              <label htmlFor="gafete-codigo">Tu número de empleado</label>
+              <input
+                id="gafete-codigo"
+                ref={codigoRef}
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
+                placeholder="K7QF-29XM-PL4D"
+                maxLength={20}
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                aria-describedby={error ? "gafete-error" : undefined}
+              />
+              {error && (
+                <p id="gafete-error" className="gafete-error" role="alert">
+                  {error}
+                </p>
+              )}
+              <button type="submit" className="primario" disabled={!codigo.trim() || ocupado}>
+                {ocupado ? "Checando…" : "Checar entrada"}
               </button>
               <button type="button" onClick={() => setPaso("inicio")}>
                 Regresar

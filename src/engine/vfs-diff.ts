@@ -58,6 +58,14 @@ export function diferencias(base: Vfs, actual: Vfs): DiffVfs {
 /** Reconstruye el mundo actual a partir del base y sus diferencias (el base no se modifica). */
 export function aplicarDiferencias(base: Vfs, diff: DiffVfs): Vfs {
   const v = base.clone();
+  // Segunda defensa (el esquema ya exige rutas canónicas): nada de nombres vacíos, "." ni "..".
+  const nombreDe = (ruta: string): string => {
+    const partes = ruta.split("/");
+    const nombre = partes[partes.length - 1];
+    if (partes[0] !== "" || partes.slice(1).some((p) => p === "" || p === "." || p === "..") || !nombre)
+      throw new Error(`diff inválido: ruta no canónica ${JSON.stringify(ruta)}`);
+    return nombre;
+  };
   const buscarPadre = (ruta: string): DirNode => {
     const partes = ruta.split("/").filter(Boolean);
     partes.pop();
@@ -70,7 +78,8 @@ export function aplicarDiferencias(base: Vfs, diff: DiffVfs): Vfs {
     return n as DirNode;
   };
   for (const ruta of [...diff.borrados].sort((a, b) => b.length - a.length)) {
-    buscarPadre(ruta).children.delete(ruta.split("/").filter(Boolean).pop() as string);
+    const nombre = nombreDe(ruta);
+    buscarPadre(ruta).children.delete(nombre);
   }
   for (const e of [...diff.cambiados].sort((a, b) => a.ruta.split("/").length - b.ruta.split("/").length)) {
     const metaN = { mode: e.mode, owner: e.owner, group: e.group, mtime: e.mtime };
@@ -78,8 +87,8 @@ export function aplicarDiferencias(base: Vfs, diff: DiffVfs): Vfs {
       Object.assign(v.root, metaN);
       continue;
     }
+    const nombre = nombreDe(e.ruta);
     const padre = buscarPadre(e.ruta);
-    const nombre = e.ruta.split("/").filter(Boolean).pop() as string;
     const existente = padre.children.get(nombre);
     if (e.tipo === "dir") {
       if (existente?.type === "dir") Object.assign(existente, metaN);

@@ -27,6 +27,8 @@ setTestHook("partida", () => {
     pendientes: s.pendientes.map((p) => `${p.cumplido ? "x" : " "} ${p.mision}/${p.id}`),
     eventos: s.eventos.map((e) => e.tipo),
     nombre: s.nombre,
+    codigo: s.codigo,
+    guardado: s.guardado,
   };
 });
 

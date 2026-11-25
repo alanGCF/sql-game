@@ -14,9 +14,13 @@ const Id = z
 const SURROGATE_SUELTO = /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/;
 export const textoSeguro = (s: string) => !s.includes("\u0000") && !SURROGATE_SUELTO.test(s);
 const Texto = (max: number) => z.string().max(max).refine(textoSeguro, "texto con caracteres inválidos");
+/** Ruta absoluta canónica: "/" o "/a/b" sin segmentos vacíos, "." ni "..". Una ruta rara rompía el VFS. */
+const Ruta = Texto(500)
+  .regex(/^\/(?:[^/]+(?:\/[^/]+)*)?$/, "ruta no canónica")
+  .refine((r) => !r.split("/").some((s) => s === "." || s === ".."), "ruta no canónica");
 
 const EntradaDiff = z.strictObject({
-  ruta: Texto(500).startsWith("/"),
+  ruta: Ruta,
   tipo: z.enum(["file", "dir"]),
   contenido: Texto(32_768).optional(),
   mode: z.number().int().min(0).max(0o7777),
@@ -25,18 +29,21 @@ const EntradaDiff = z.strictObject({
   mtime: z.number().int(),
 });
 
-const GuardadoMision = z.strictObject({
+/** El mundo de la partida: diferencias contra el mundo base (content/mundo) con la semilla. */
+const MundoDiff = z.strictObject({
+  cambiados: z.array(EntradaDiff).max(2000),
+  borrados: z.array(Ruta).max(2000),
+});
+
+/** Avance de la misión principal en curso (el mundo va aparte, en `mundo`). */
+const AvanceMision = z.strictObject({
   id: Id,
   cumplidos: z.array(Id).max(3),
   respuestas: z.record(Id, Texto(200)),
   pistas: z.record(Id, z.number().int().min(1).max(3)),
-  diff: z.strictObject({
-    cambiados: z.array(EntradaDiff).max(2000),
-    borrados: z.array(Texto(500)).max(2000),
-  }),
   historial: z.array(Texto(500)).max(500),
-  cwd: Texto(500).startsWith("/"),
-  leidos: z.array(Texto(500).startsWith("/")).max(500),
+  cwd: Ruta,
+  leidos: z.array(Ruta).max(500),
 });
 
 export const PartidaEsquema = z.strictObject({
@@ -50,10 +57,37 @@ export const PartidaEsquema = z.strictObject({
   flags: z.array(Id).max(200),
   xp: z.number().int().min(0).max(1_000_000),
   notas: z.array(Texto(500)).max(200),
-  mision: GuardadoMision.nullable(),
+  /** Reloj de juego (ms, hora de la planta con sufijo Z). */
+  reloj: z.number().int().min(0).max(8_640_000_000_000),
+  mundo: MundoDiff,
+  /** Misión principal en curso; null con el turno terminado. */
+  mision: AvanceMision.nullable(),
 });
 
 export type Partida = z.infer<typeof PartidaEsquema>;
+
+/** Partida recién creada: sin mundo ni misión todavía (el cliente arranca el primer turno con la semilla). */
+export function partidaNueva(semilla: number, nombre: string, contenido: string): Partida {
+  return {
+    formato: 1,
+    semilla,
+    nombre,
+    contenido,
+    turno: 0,
+    completadas: {},
+    favores: [],
+    flags: [],
+    xp: 0,
+    notas: [],
+    reloj: 0,
+    mundo: { cambiados: [], borrados: [] },
+    mision: null,
+  };
+}
+
+/** Una partida que todavía no empieza (la acaba de crear el servidor o el modo sin conexión). */
+export const esPartidaNueva = (p: Partida): boolean =>
+  p.mision === null && p.reloj === 0 && Object.keys(p.completadas).length === 0;
 
 /**
  * Migra una partida de un formato anterior al actual. Hoy solo existe el formato 1. Cada migración nueva va

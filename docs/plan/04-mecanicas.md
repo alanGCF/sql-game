@@ -192,7 +192,9 @@ Objetivo: que nadie pase el juego memorizando respuestas, sin cambiar la histori
 
 ## Guardado
 
-- Local (IndexedDB) tras cada comando que cambia el estado; servidor en cada checkpoint.
+- Local (IndexedDB) tras cada comando que cambia el estado (agrupado cada 400 ms); servidor en cada checkpoint (misión, favor o turno terminados). Sin conexión se sigue en local y se sube al volver. Si otra computadora guardó después (revisión vieja), gana el último checkpoint.
+- Al cargar se reconstruye el mundo desde las diferencias, el reloj y el avance de la misión en curso, sin repetir sus diálogos; un favor a medias empieza de nuevo.
+- En el menú, si hay partida en el navegador, el gafete muestra su nombre y número y lo principal es "Checar entrada como …"; con "Checar entrada con otro número" se teclea un código (se aceptan guiones y minúsculas; el verificador detecta errores de tecleo antes de llamar al servidor).
 - Contenido: semilla, progreso (misiones, estrellas, XP, logros, banderas, favores), estado del mundo como diferencias respecto al mundo base, notas del jugador, paciencia de contactos del turno.
 - Formato versionado con migraciones. Tamaño máximo de una partida: 64 KB.
 

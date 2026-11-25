@@ -43,4 +43,6 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.
+| # | Decisión | Opciones | Recomendación | Bloquea |
+|---|---|---|---|---|
+| D-26 | Computadoras compartidas (salones, D-24): la partida y su número quedan guardados en el navegador y el gafete los muestra completos | A) Dejarlo así. B) Botón "No soy yo: olvidar esta partida en esta computadora" en el gafete (la partida sigue en el servidor con su número). C) B + mostrar en el gafete solo los últimos 4 caracteres del número salvo al pedirlo | B: barato y evita que el siguiente alumno siga o pise la partida de otro | Nada urgente; conviene antes de playtests en salones (F4-16) |

@@ -22,6 +22,8 @@ const partida = (nombre = "Ale"): Partida => ({
   flags: [],
   xp: 0,
   notas: [],
+  reloj: 0,
+  mundo: { cambiados: [], borrados: [] },
   mision: null,
 });
 

@@ -31,3 +31,14 @@ export function turnoInicial(): TurnoCompilado {
   if (!t) throw new Error(`falta .generated/contenido/turno-01.json: ${FALTA}`);
   return t;
 }
+
+/** Huella corta del contenido (FNV-1a de 32 bits): se guarda en la partida para saber con qué versión se jugó. */
+export function versionContenido(): string {
+  const texto = JSON.stringify([turnoInicial(), contenidoComun().mundo]);
+  let h = 0x811c9dc5;
+  for (let i = 0; i < texto.length; i++) {
+    h ^= texto.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}

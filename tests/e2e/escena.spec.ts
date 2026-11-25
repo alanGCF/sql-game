@@ -285,7 +285,7 @@ test("menú (gafete): primer día pide el nombre tecleado y empieza el turno", a
   const menu = page.getByTestId("menu");
   await expect(menu.getByRole("heading", { name: "Rastro en el Log" })).toBeVisible();
   await expect(page.getByTestId("dialogo")).toBeHidden();
-  await expect(menu.getByRole("button", { name: "Checar entrada con mi número" })).toBeDisabled();
+  await expect(menu.getByRole("button", { name: "Checar entrada con mi número" })).toBeEnabled();
 
   await menu.getByRole("button", { name: "Primer día de trabajo" }).click();
   const nombre = page.getByLabel("¿Cómo te llamas? (o un apodo)");
@@ -299,7 +299,9 @@ test("menú (gafete): primer día pide el nombre tecleado y empieza el turno", a
 
   await expect(menu).toBeHidden();
   await expect(page.getByTestId("dialogo")).toContainText("Eduardo Téllez · Sistemas");
-  expect((await page.evaluate(() => window.__planta7?.partida?.()))?.nombre).toBe("Ale");
+  const partida = await page.evaluate(() => window.__planta7?.partida?.());
+  expect(partida?.nombre).toBe("Ale");
+  expect(partida?.codigo).toMatch(/^[0-9A-HJKMNP-TV-Z]{12}$/);
 });
 
 test("ajustes: letra, contraste y reducir movimiento se aplican y se conservan al recargar", async ({
@@ -322,4 +324,94 @@ test("ajustes: letra, contraste y reducir movimiento se aplican y se conservan a
   expect(await raiz()).toEqual(["muy-grande", "alto"]);
   await page.getByRole("button", { name: "Ajustes" }).click();
   await expect(page.getByRole("region", { name: "Ajustes" }).getByLabel(/Reducir movimiento/)).toBeChecked();
+});
+
+/** Termina T1-M1 desde la terminal y los ganchos de prueba (como el jugador en Tickets). */
+async function terminarT1M1(page: Page) {
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  await input.fill("ls tickets | wc -l");
+  await input.press("Enter");
+  const ultima = page.getByTestId("terminal").locator(".terminal-linea").last();
+  await expect(ultima).toHaveText(/^\d+$/);
+  const n = (await ultima.textContent())?.trim() ?? "";
+  await page.evaluate(
+    (v) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v),
+      ]),
+    n,
+  );
+  await expect
+    .poll(() => page.evaluate(() => window.__planta7?.partida?.()))
+    .toMatchObject({ mision: "t1-m02-el-leeme", guardado: "sincronizado" });
+}
+
+async function empezarPrimerDia(page: Page, nombre: string) {
+  await page.goto("/?test=1&menu=1");
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const menu = page.getByTestId("menu");
+  await menu.getByRole("button", { name: "Primer día de trabajo" }).click();
+  await page.getByLabel("¿Cómo te llamas? (o un apodo)").fill(nombre);
+  await menu.getByRole("button", { name: "Empezar mi turno" }).click();
+  await expect(menu).toBeHidden();
+  while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
+}
+
+test("guardado (F4-12): termina T1-M1 y en otra computadora checa entrada con su número y sigue en T1-M2", async ({
+  page,
+  browser,
+}, info) => {
+  test.setTimeout(120_000);
+  await empezarPrimerDia(page, "Ale");
+  await terminarT1M1(page);
+  const codigo = (await page.evaluate(() => window.__planta7?.partida?.()))?.codigo ?? "";
+  expect(codigo).toMatch(/^[0-9A-HJKMNP-TV-Z]{12}$/);
+
+  // Otra computadora: navegador limpio, sin nada guardado.
+  const otra = await browser.newContext({
+    baseURL: info.project.use.baseURL ?? "http://127.0.0.1:4173",
+    viewport: info.project.use.viewport ?? { width: 1280, height: 720 },
+  });
+  const p2 = await otra.newPage();
+  await p2.goto("/?test=1&menu=1");
+  await p2.waitForFunction(() => window.__planta7?.ready === true);
+  const menu = p2.getByTestId("menu");
+  await menu.getByRole("button", { name: "Checar entrada con mi número" }).click();
+  const campo = p2.getByLabel("Tu número de empleado");
+  await expect(campo).toBeFocused();
+  // Un número mal tecleado se detecta sin llamar al servidor.
+  await campo.fill(`${codigo.slice(0, 11)}${codigo[11] === "0" ? "1" : "0"}`);
+  await menu.getByRole("button", { name: "Checar entrada", exact: true }).click();
+  await expect(menu.getByRole("alert")).toContainText("no es válido");
+  // Tecleado con guiones y en minúsculas.
+  await campo.fill(`${codigo.slice(0, 4)}-${codigo.slice(4, 8)}-${codigo.slice(8)}`.toLowerCase());
+  await menu.getByRole("button", { name: "Checar entrada", exact: true }).click();
+  await expect(menu).toBeHidden();
+  const cargada = await p2.evaluate(() => window.__planta7?.partida?.());
+  expect(cargada).toMatchObject({ mision: "t1-m02-el-leeme", nombre: "Ale", codigo });
+  // Sin repetir el briefing de la misión ya empezada.
+  await expect(p2.getByTestId("dialogo")).toBeHidden();
+  await otra.close();
+});
+
+test("guardado (F4-12): al recargar, el gafete ofrece seguir la partida de este navegador", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await empezarPrimerDia(page, "Mar");
+  await terminarT1M1(page);
+  const codigo = (await page.evaluate(() => window.__planta7?.partida?.()))?.codigo ?? "";
+  await page.reload();
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const menu = page.getByTestId("menu");
+  await expect(menu).toContainText("Mar");
+  await expect(menu).toContainText(`${codigo.slice(0, 4)}-${codigo.slice(4, 8)}-${codigo.slice(8)}`);
+  await menu.getByRole("button", { name: "Checar entrada como Mar" }).click();
+  await expect(menu).toBeHidden();
+  expect(await page.evaluate(() => window.__planta7?.partida?.())).toMatchObject({
+    mision: "t1-m02-el-leeme",
+    nombre: "Mar",
+  });
 });

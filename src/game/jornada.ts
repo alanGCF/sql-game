@@ -2,9 +2,11 @@ import type { ResultadoLinea, Shell } from "../engine";
 import { inicioTurno } from "../engine/calendario";
 import type { TurnoCompilado } from "../engine/mision/compilar";
 import type { Mision } from "../engine/mision/esquema";
-import { type Avance, type Efecto, MisionEnCurso } from "../engine/mision/runtime";
+import { type Avance, type AvanceMision, type Efecto, MisionEnCurso } from "../engine/mision/runtime";
 import { crearShellBase, type MundoBase } from "../engine/mundo-base";
 import type { Variables } from "../engine/vars";
+import type { Vfs } from "../engine/vfs";
+import { aplicarDiferencias, type DiffVfs, diferencias } from "../engine/vfs-diff";
 
 /** Lo que la interfaz tiene que mostrar, en orden. */
 export type EventoJornada =
@@ -20,6 +22,18 @@ export type EventoJornada =
  * principales en orden, favores que se activan al iniciar la misión de su `disponible_desde`, y una
  * cola de eventos para la interfaz. Sin DOM ni React.
  */
+/** Lo que se guarda de un turno a medias (F4-12): el mundo como diferencias contra el mundo base. */
+export interface EstadoJornada {
+  reloj: number;
+  mundo: DiffVfs;
+  /** Misión principal en curso; null con el turno terminado. */
+  mision: AvanceMision | null;
+  completadas: Record<string, 1 | 2 | 3>;
+  /** Favores terminados (los que van a medias se reinician al cargar). */
+  favores: string[];
+  flags: string[];
+}
+
 /** Minuto del día en que entra el turno vespertino (15:30). */
 const ENTRADA = 15 * 60 + 30;
 /** Cerrar todas las misiones principales lleva el reloj hasta las 23:30 (deja aire para el cierre). */
@@ -30,6 +44,10 @@ export class Jornada {
   private principal: MisionEnCurso | null = null;
   private readonly favores: MisionEnCurso[] = [];
   private readonly cola: EventoJornada[] = [];
+  private readonly hechas = new Map<string, 1 | 2 | 3>();
+  private readonly favoresHechos: string[] = [];
+  /** El mundo base con la semilla, antes de cualquier misión: contra él se guardan las diferencias. */
+  private readonly mundoInicial: Vfs;
 
   private constructor(
     readonly turno: TurnoCompilado,
@@ -37,7 +55,9 @@ export class Jornada {
     private readonly semilla: number,
     private readonly vars: Variables,
     readonly flags: Set<string>,
-  ) {}
+  ) {
+    this.mundoInicial = shell.mundo.vfs.clone();
+  }
 
   static iniciar(
     turno: TurnoCompilado,
@@ -55,6 +75,59 @@ export class Jornada {
     const j = new Jornada(turno, shell, semilla, vars, flags);
     j.siguiente();
     return j;
+  }
+
+  /**
+   * Retoma un turno guardado: reconstruye el mundo, el reloj, la misión en curso y su avance, y los favores
+   * pendientes (desde cero). No vuelve a encolar briefings ni diálogos.
+   */
+  static restaurar(turno: TurnoCompilado, mundo: MundoBase, semilla: number, e: EstadoJornada): Jornada {
+    const indice = e.mision ? turno.misiones.findIndex((m) => m.id === e.mision?.id) : turno.misiones.length;
+    if (indice < 0) throw new Error(`la partida va en una misión que ya no existe: ${e.mision?.id}`);
+    const ref = turno.misiones[Math.min(indice, turno.misiones.length - 1)];
+    if (!ref) throw new Error(`el turno ${turno.turno} no tiene misiones`);
+    const { shell, vars } = crearShellBase(mundo, semilla, {
+      host: ref.host_inicial,
+      usuario: ref.usuario_inicial,
+      ahora: inicioTurno(turno.turno),
+    });
+    const j = new Jornada(turno, shell, semilla, vars, new Set(e.flags));
+    shell.mundo.vfs.root.children = aplicarDiferencias(j.mundoInicial, e.mundo).root.children;
+    const falta = e.reloj - shell.mundo.reloj.now();
+    if (falta > 0) shell.mundo.reloj.avanzar(falta / 1000);
+    for (const [id, estrellas] of Object.entries(e.completadas)) j.hechas.set(id, estrellas);
+    j.favoresHechos.push(...e.favores);
+    j.indice = indice;
+    if (e.mision) {
+      j.principal = new MisionEnCurso(ref, shell, semilla, vars, j.flags, { restaurando: true });
+      j.principal.cargarAvance(e.mision);
+    }
+    // Favores ya ofrecidos (su misión de arranque ya empezó) y sin terminar: sus parches ya están en el mundo.
+    const inicioDe = (id: string) => turno.misiones.findIndex((m) => m.id === id);
+    for (const f of turno.favores) {
+      const desde = f.disponible_desde ? inicioDe(f.disponible_desde) : -1;
+      if (desde >= 0 && desde <= indice && !j.favoresHechos.includes(f.id))
+        j.favores.push(
+          new MisionEnCurso(f, shell, semilla, vars, j.flags, { colocarSesion: false, restaurando: true }),
+        );
+    }
+    return j;
+  }
+
+  guardar(): EstadoJornada {
+    return {
+      reloj: this.shell.mundo.reloj.now(),
+      mundo: diferencias(this.mundoInicial, this.shell.mundo.vfs),
+      mision: this.principal?.avance() ?? null,
+      completadas: Object.fromEntries(this.hechas),
+      favores: [...this.favoresHechos],
+      flags: [...this.flags],
+    };
+  }
+
+  /** Misiones y favores terminados en el turno, con sus estrellas. */
+  completadas(): Record<string, 1 | 2 | 3> {
+    return Object.fromEntries(this.hechas);
   }
 
   actual(): MisionEnCurso | null {
@@ -146,9 +219,13 @@ export class Jornada {
     for (const efecto of a.efectos) this.cola.push({ tipo: "efecto", mision: id, efecto });
     if (!a.completada || !a.cumplidos.length) return;
     const favor = mc !== this.principal;
-    this.cola.push({ tipo: "mision_completada", mision: id, estrellas: mc.estrellas(), favor });
-    if (favor) this.favores.splice(this.favores.indexOf(mc), 1);
-    else {
+    const estrellas = mc.estrellas();
+    this.hechas.set(id, estrellas);
+    this.cola.push({ tipo: "mision_completada", mision: id, estrellas, favor });
+    if (favor) {
+      this.favores.splice(this.favores.indexOf(mc), 1);
+      this.favoresHechos.push(id);
+    } else {
       this.adelantarReloj();
       this.siguiente();
     }

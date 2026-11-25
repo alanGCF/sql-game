@@ -204,7 +204,7 @@ Origen = IPv4, o el /64 de una IPv6 (para crear, el /56). Topes globales: 500 pa
 
 ## Persistencia y versionado
 
-- Partida con `formato: 1` y migraciones en `shared/save/migrations.ts` (probadas con partidas de ejemplo).
+- Partida con `formato: 1` (`shared/partida.ts`): semilla, nombre, versión del contenido, turno, misiones y favores terminados con estrellas, banderas, XP, notas, **reloj de juego**, **mundo** (diferencias del VFS contra el mundo base con la semilla) y el avance de la misión en curso. Migraciones con despacho estático (un `case` por formato).
 - `content_version` (hash del build de contenido). Si cambió una misión en curso, se reinicia esa misión y se conserva lo demás.
 
 ## Carga

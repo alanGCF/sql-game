@@ -31,3 +31,16 @@ describe("diferencias del mundo (guardado compacto)", () => {
     expect(base.exists("/home/becario/viejo/x.txt")).toBe(true);
   });
 });
+
+describe("aplicarDiferencias con rutas hostiles (segunda defensa)", () => {
+  it("rechaza nombres vacíos, '.' y '..' en vez de romper el árbol", async () => {
+    const base = vfsDesde([{ ruta: "/home/" }], 0);
+    const entrada = { tipo: "dir" as const, mode: 0o755, owner: "root", group: "root", mtime: 0 };
+    for (const ruta of ["//", "/a/..", "/."]) {
+      expect(() => aplicarDiferencias(base, { cambiados: [{ ruta, ...entrada }], borrados: [] })).toThrow(
+        /diff inválido/,
+      );
+      expect(() => aplicarDiferencias(base, { cambiados: [], borrados: [ruta] })).toThrow(/diff inválido/);
+    }
+  });
+});

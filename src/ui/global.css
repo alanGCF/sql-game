@@ -545,6 +545,16 @@ body,
 .gafete-acciones label {
   font-weight: 600;
 }
+.gafete-error {
+  margin: 0;
+  color: #9b1c1c;
+  font-weight: 600;
+}
+.gafete-aviso {
+  margin: 0;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
 .gafete-creditos p {
   margin: 0;
   line-height: 1.45;

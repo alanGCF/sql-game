@@ -35,6 +35,9 @@ export interface GuardadoMision {
   leidos: string[];
 }
 
+/** El avance de la misión sin el mundo (la jornada guarda el mundo completo aparte). */
+export type AvanceMision = Omit<GuardadoMision, "diff">;
+
 /**
  * Una misión en curso sobre el mundo de la partida: aplica parches, evalúa objetivos por resultado
  * después de cada acción, dispara eventos, da pistas por nivel, califica y se puede restaurar o guardar.
@@ -68,13 +71,17 @@ export class MisionEnCurso {
     semilla: number,
     varsPartida: Variables,
     readonly flags: Set<string>,
-    /** `colocarSesion: false` para un favor que empieza a mitad de otra misión (no mueve al jugador). */
-    opciones: { colocarSesion?: boolean } = {},
+    /**
+     * `colocarSesion: false` para un favor que empieza a mitad de otra misión (no mueve al jugador).
+     * `restaurando: true` al cargar una partida: el mundo guardado ya trae los parches y la sesión.
+     */
+    opciones: { colocarSesion?: boolean; restaurando?: boolean } = {},
   ) {
     this.vars = { ...varsPartida, ...resolverVariables(semilla, mision.variables ?? {}) };
-    this.aplicarParches(semilla);
+    if (!opciones.restaurando) this.aplicarParches(semilla);
+    // shortcut: restaurando, el "inicio de la misión" (restaurar()) es el momento de cargar la partida.
     this.base = shell.mundo.vfs.clone();
-    if (opciones.colocarSesion !== false) this.colocarSesion();
+    if (opciones.colocarSesion !== false && !opciones.restaurando) this.colocarSesion();
   }
 
   private texto(t: string): string {
@@ -221,12 +228,15 @@ export class MisionEnCurso {
   }
 
   guardar(): GuardadoMision {
+    return { ...this.avance(), diff: diferencias(this.base, this.shell.mundo.vfs) };
+  }
+
+  avance(): AvanceMision {
     return {
       id: this.mision.id,
       cumplidos: [...this.cumplidos],
       respuestas: Object.fromEntries(this.respuestas),
       pistas: Object.fromEntries(this.pistasUsadas),
-      diff: diferencias(this.base, this.shell.mundo.vfs),
       historial: [...this.shell.sesion.historial],
       cwd: this.shell.sesion.cwd,
       leidos: [...this.shell.registro.leidos].slice(-500),
@@ -238,6 +248,12 @@ export class MisionEnCurso {
     if (g.id !== this.mision.id) throw new Error(`el guardado es de otra misión: ${g.id}`);
     const reconstruido = aplicarDiferencias(this.base, g.diff);
     this.shell.mundo.vfs.root.children = reconstruido.root.children;
+    this.cargarAvance(g);
+  }
+
+  /** Aplica el avance (sin mundo) sobre una misión creada con `restaurando`. */
+  cargarAvance(g: AvanceMision): void {
+    if (g.id !== this.mision.id) throw new Error(`el guardado es de otra misión: ${g.id}`);
     for (const c of g.cumplidos) this.cumplidos.add(c);
     for (const [k, v] of Object.entries(g.respuestas)) this.respuestas.set(k, v);
     for (const [k, v] of Object.entries(g.pistas)) this.pistasUsadas.set(k, v);

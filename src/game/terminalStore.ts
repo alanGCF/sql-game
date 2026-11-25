@@ -34,7 +34,25 @@ export const useTerminal = create<EstadoTerminal>()((set, get) => ({
     const { shell } = get();
     const prompt = shell.prompt();
     set({ ocupada: true });
-    const r = await usePartida.getState().ejecutar(linea);
+    let r: Awaited<ReturnType<ReturnType<typeof usePartida.getState>["ejecutar"]>>;
+    try {
+      r = await usePartida.getState().ejecutar(linea);
+    } catch {
+      // Un error inesperado del motor no debe dejar la terminal bloqueada.
+      set({
+        ocupada: false,
+        lineas: [
+          ...get().lineas,
+          { id: siguienteId++, tipo: "prompt" as const, texto: linea, prompt },
+          {
+            id: siguienteId++,
+            tipo: "stderr" as const,
+            texto: "bash: error interno del simulador; intenta otro comando",
+          },
+        ],
+      });
+      return { ejecutada: true };
+    }
     if (!r.ejecutada) {
       set({ ocupada: false });
       return { ejecutada: false, ...(r.pensamiento ? { pensamiento: r.pensamiento } : {}) };
@@ -75,3 +93,8 @@ export const useTerminal = create<EstadoTerminal>()((set, get) => ({
     });
   },
 }));
+
+// Al empezar o cargar otra partida, la terminal se conecta a su shell y se limpia.
+usePartida.subscribe((s, previo) => {
+  if (s.jornada !== previo.jornada) useTerminal.setState({ shell: s.jornada.shell, lineas: [] });
+});

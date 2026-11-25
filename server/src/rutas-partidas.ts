@@ -17,7 +17,7 @@ import {
   LIMITE_CUERPO_BYTES,
   LIMITE_PETICIONES_CON_CODIGO_POR_MINUTO,
 } from "../../shared/limites.js";
-import { leerPartida, type Partida } from "../../shared/partida.js";
+import { leerPartida, partidaNueva } from "../../shared/partida.js";
 import { codigoDeError, hashCodigo, type RepositorioPartidas } from "./partidas.js";
 
 export interface OpcionesPartidas {
@@ -233,19 +233,7 @@ export function rutasPartidas(app: FastifyInstance, opts: OpcionesPartidas | nul
       if (global === "tope") req.log.warn("tope global de partidas nuevas por hora alcanzado");
       if (global !== "ok" && global !== "tope") return demasiadas(reply);
       const semilla = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
-      const partida: Partida = {
-        formato: 1,
-        semilla,
-        nombre: cuerpo.data.nombre,
-        contenido: cuerpo.data.contenido,
-        turno: 0,
-        completadas: {},
-        favores: [],
-        flags: [],
-        xp: 0,
-        notas: [],
-        mision: null,
-      };
+      const partida = partidaNueva(semilla, cuerpo.data.nombre, cuerpo.data.contenido);
       try {
         if (await almacenLleno(req, opts.repo)) return sinServicio(req, reply);
         // Una colisión de 55 bits es casi imposible; si pasa, se genera otro código.

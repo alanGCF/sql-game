@@ -25,7 +25,8 @@ export default defineConfig({
   webServer: {
     command: `npm run build && PARTIDAS_EN_MEMORIA=1 PORT=${PORT} node dist/node/server/src/index.js`,
     url: `http://127.0.0.1:${PORT}/healthz`,
-    reuseExistingServer: !process.env.CI,
+    // Siempre un servidor nuevo: las partidas en memoria y los límites de tasa empiezan de cero.
+    reuseExistingServer: false,
     timeout: 180_000,
   },
 });

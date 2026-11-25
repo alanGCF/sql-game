@@ -222,7 +222,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** tabla de partidas por código (12 caracteres sin ambiguos, `K7QF-29XM-PL4D`), crear/guardar/cargar con `PartidaEsquema` de `shared/`, consultas parametrizadas, 64 KB máximo, límites de tasa por origen y de códigos inexistentes, migraciones; driver de Postgres justificado en un ADR. Nada de correos ni contraseñas.
 - **Listo cuando:** pruebas del servidor (código inválido, tamaño, tasa, versión de formato) y `auditor-seguridad` sin hallazgos altos.
 
-### F4-12 · Guardado local, checkpoints y "Checar entrada" · `pendiente` · depende: F4-11
+### F4-12 · Guardado local, checkpoints y "Checar entrada" · `hecha (2026-11-25)` *(la partida guarda el mundo como diferencias contra el mundo base, el reloj y el avance de la misión; `Jornada.restaurar` la retoma sin repetir diálogos; IndexedDB tras cada acción (agrupado) y checkpoint al servidor al cerrar misión, favor o turno; sin conexión queda pendiente y se sube al volver (evento `online`); en un conflicto de revisión gana el último checkpoint; el gafete ofrece seguir la partida del navegador o checar entrada con otro número; un favor a medias se reinicia al cargar (shortcut))* · depende: F4-11
 - **Hacer:** IndexedDB tras cada comando que cambia el estado; checkpoint al servidor al completar misión, favor o turno; menú "Checar entrada con mi número"; sin conexión sigue local y sincroniza al volver; el mundo se guarda como diferencias (`vfs-diff`).
 - **Listo cuando:** e2e: terminar T1-M1, recargar en otro contexto del navegador, checar entrada con el código y seguir en T1-M2.
 

@@ -12,12 +12,13 @@ const valida = (): Partida => ({
   flags: ["leyo_leeme"],
   xp: 50,
   notas: ["ls -a muestra ocultos"],
+  reloj: Date.parse("2026-10-28T17:45:00Z"),
+  mundo: { cambiados: [], borrados: [] },
   mision: {
     id: "t1-m02-el-leeme",
     cumplidos: ["leer-leeme"],
     respuestas: { "responder-firma": "R" },
     pistas: { "leer-leeme": 1 },
-    diff: { cambiados: [], borrados: [] },
     historial: ["cat LEEME.txt"],
     cwd: "/home/becario",
     leidos: ["/home/becario/LEEME.txt"],
@@ -46,6 +47,21 @@ describe("formato de partida (cliente y servidor)", () => {
     mutar(p);
     const r = leerPartida(p);
     expect(r.ok).toBe(false);
+  });
+
+  it("solo acepta rutas canónicas en el mundo, el cwd y los leídos (una ruta rara rompía la terminal)", () => {
+    const entrada = { tipo: "dir", mode: 0o755, owner: "x", group: "x", mtime: 0 };
+    for (const ruta of ["//", "///", "/a//b", "/a/", "/..", "/a/../b", "/a/./b", "relativa"]) {
+      expect(
+        leerPartida({ ...valida(), mundo: { cambiados: [{ ruta, ...entrada }], borrados: [] } }).ok,
+      ).toBe(false);
+      expect(leerPartida({ ...valida(), mundo: { cambiados: [], borrados: [ruta] } }).ok).toBe(false);
+    }
+    expect(leerPartida({ ...valida(), mision: { ...valida().mision, cwd: "//" } }).ok).toBe(false);
+    for (const ruta of ["/", "/home/becario/.r", "/srv/lineas/linea1.log"])
+      expect(
+        leerPartida({ ...valida(), mundo: { cambiados: [{ ruta, ...entrada }], borrados: [] } }).ok,
+      ).toBe(true);
   });
 
   it("rechaza NUL y surrogates sueltos en cualquier texto (Postgres jsonb no los acepta)", () => {
