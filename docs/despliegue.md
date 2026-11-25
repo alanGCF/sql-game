@@ -41,7 +41,7 @@ curl -sI https://TU-DOMINIO.up.railway.app/
 
 Debe responder `{"ok":true}` y, en las cabeceras de la segunda, `content-security-policy`, `strict-transport-security`, `x-frame-options: DENY` y `x-content-type-options: nosniff`.
 
-**IP real del cliente (obligatorio en el primer despliegue, antes de anunciar el sitio).** El límite de tasa usa la IP que calcula el servidor con `TRUST_PROXY_HOPS`. Si el número de saltos no coincide con los proxies reales de Railway, o todos los jugadores comparten una IP interna (y un solo límite), o la IP se puede falsificar.
+**IP real del cliente (obligatorio en el primer despliegue, antes de anunciar el sitio; verificado el 2026-11-25 con `TRUST_PROXY_HOPS=1`).** El límite de tasa usa la IP que calcula el servidor con `TRUST_PROXY_HOPS`. Si el número de saltos no coincide con los proxies reales de Railway, o todos los jugadores comparten una IP interna (y un solo límite), o la IP se puede falsificar.
 
 ```bash
 curl -s -H 'X-Forwarded-For: 1.2.3.4' https://TU-DOMINIO.up.railway.app/healthz
