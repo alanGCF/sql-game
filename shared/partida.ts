@@ -55,9 +55,18 @@ export const PartidaEsquema = z.strictObject({
 
 export type Partida = z.infer<typeof PartidaEsquema>;
 
-/** Migraciones de formatos anteriores al actual (índice = formato de origen). */
-// Map y no objeto: un `formato` hostil nunca alcanza métodos del prototipo (constructor, toString…).
-const MIGRACIONES = new Map<number, (d: Record<string, unknown>) => Record<string, unknown>>();
+/**
+ * Migra una partida de un formato anterior al actual. Hoy solo existe el formato 1. Cada migración nueva va
+ * como un `case` explícito (despacho estático: un `formato` hostil no elige qué función se llama).
+ */
+function migrar(d: Record<string, unknown>): Record<string, unknown> | null {
+  switch (d.formato) {
+    case 1:
+      return d;
+    default:
+      return null;
+  }
+}
 
 export type ResultadoPartida = { ok: true; partida: Partida } | { ok: false; error: string };
 
@@ -71,16 +80,10 @@ export function leerPartida(datos: unknown): ResultadoPartida {
   }
   if (tamano > LIMITE_CUERPO_BYTES)
     return { ok: false, error: `partida de ${tamano} bytes; límite ${LIMITE_CUERPO_BYTES}` };
-  let d = datos as Record<string, unknown>;
-  for (
-    let guarda = 0;
-    d && typeof d === "object" && Number.isInteger(d.formato) && (d.formato as number) < 1 && guarda < 10;
-    guarda++
-  ) {
-    const migrar = MIGRACIONES.get(d.formato as number);
-    if (!migrar) return { ok: false, error: `formato ${String(d.formato)} sin migración` };
-    d = migrar(d);
-  }
+  const crudo = datos as Record<string, unknown> | null;
+  const d = crudo && typeof crudo === "object" && "formato" in crudo ? migrar(crudo) : crudo;
+  if (d === null && crudo && typeof crudo === "object" && "formato" in crudo)
+    return { ok: false, error: `formato ${String(crudo.formato)} sin migración` };
   const r = PartidaEsquema.safeParse(d);
   if (r.success) return { ok: true, partida: r.data };
   const i = r.error.issues[0];
