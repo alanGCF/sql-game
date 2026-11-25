@@ -545,6 +545,19 @@ body,
 .gafete-acciones label {
   font-weight: 600;
 }
+.gafete-ver {
+  margin-left: 0.6em;
+  font: inherit;
+  font-size: 0.75em;
+  font-weight: 600;
+  letter-spacing: normal;
+  padding: 0.15em 0.5em;
+  border-radius: 6px;
+  border: 1px solid #c9b89b;
+  background: #fff;
+  color: #2b2622;
+  cursor: pointer;
+}
 .gafete-error {
   margin: 0;
   color: #9b1c1c;

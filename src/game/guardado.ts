@@ -123,6 +123,18 @@ export class Guardian {
     return this.estado;
   }
 
+  /** "No soy yo" (D-26): esta computadora olvida la partida; en el servidor sigue con su número. */
+  olvidar(): Promise<void> {
+    return this.enFila(async () => {
+      this.estado = null;
+      try {
+        await this.almacen.borrar();
+      } catch {
+        // Sin almacenamiento no había nada que borrar.
+      }
+    });
+  }
+
   /** Primer día: la partida se crea en el servidor (código y semilla); sin servidor, solo en local. */
   async empezar(
     nombre: string,

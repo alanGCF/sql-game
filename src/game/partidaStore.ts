@@ -78,6 +78,8 @@ interface EstadoPartida {
   checarEntrada: (codigo: string) => Promise<{ ok: true } | { ok: false; motivo: Motivo }>;
   /** Sigue la partida guardada en este navegador (y sube lo pendiente). */
   continuar: () => Promise<boolean>;
+  /** "No soy yo" (D-26): olvida la partida en este navegador y deja una jornada sin guardar. */
+  olvidar: () => Promise<void>;
 }
 
 const MAX_EVENTOS = 200;
@@ -199,6 +201,13 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       if (!r.ok) return r;
       cargar(r.partida, r.codigo);
       return { ok: true };
+    },
+    async olvidar() {
+      if (guardadoProgramado) clearTimeout(guardadoProgramado);
+      guardadoProgramado = null;
+      await guardian.olvidar();
+      const j = Jornada.iniciar(turnoInicial(), mundo, isTestMode ? 1 : semillaAleatoria());
+      set({ ...desdeJornada(j), nombre: "", codigo: null, semilla: 0, guardado: "sin_partida" });
     },
     async continuar() {
       const local = await guardian.cargarLocal();

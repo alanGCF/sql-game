@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { ALFABETO, formatearCodigo, generarCodigo, normalizarCodigo } from "../../shared/codigo.js";
+import {
+  ALFABETO,
+  enmascararCodigo,
+  formatearCodigo,
+  generarCodigo,
+  normalizarCodigo,
+} from "../../shared/codigo.js";
 
 describe("código de partida (D-15)", () => {
   it("genera 12 símbolos del alfabeto sin I, L, O ni U, con verificador válido", () => {
@@ -60,6 +66,11 @@ describe("código de partida (D-15)", () => {
     expect(normalizarCodigo(c)).toBe(c);
     expect(normalizarCodigo(c.replace("1", "ı"))).toBeNull();
     expect(normalizarCodigo(`${c}\u200b`)).toBeNull();
+  });
+
+  it("en el gafete se muestran solo los últimos 4 caracteres (D-26)", () => {
+    const c = generarCodigo();
+    expect(enmascararCodigo(c)).toBe(`••••-••••-${c.slice(8)}`);
   });
 
   it("rechaza lo que no es un código antes de tocar la base", () => {

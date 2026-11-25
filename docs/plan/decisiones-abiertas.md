@@ -37,12 +37,11 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
 | D-21 | Look de la app Tickets | **A · mesa de ayuda corporativa** (clara, lista a la izquierda y detalle con respuesta a la derecha) |
 | D-22 | Diálogos, llamadas y visitas | **Llamadas: tarjeta a un lado (C)** con iniciales, nombre y extensión. **Todo lo demás: subtítulo abajo (A)** con el nombre y el **departamento** de quien habla (nunca la palabra "visita") |
+| D-26 | Computadoras compartidas (salones) | **C**: botón "No soy yo: olvidar esta partida en esta computadora" (con confirmación; la partida sigue en el servidor con su número) y el gafete muestra solo los últimos 4 caracteres del número, salvo con "Mostrar mi número" |
 | D-25 | Fuentes empaquetadas (OFL) | **JetBrains Mono** para la terminal y **Atkinson Hyperlegible** para la interfaz y las texturas, empaquetadas (elegidas viendo las muestras) |
 | D-24 | Límites de la API para un salón detrás de una sola IP | **Se quedan como están**: 10 partidas nuevas por hora por IP (o /56 de IPv6), 60 lecturas/guardados por minuto, 20 códigos inexistentes por hora |
 | D-23 | Menú de inicio | **C · tu gafete de empleado** sobre la escena desenfocada: "Primer día de trabajo", "Checar entrada con mi número" (el número de empleado es el código de partida, D-15), ajustes y créditos |
 
 ## Abiertas
 
-| # | Decisión | Opciones | Recomendación | Bloquea |
-|---|---|---|---|---|
-| D-26 | Computadoras compartidas (salones, D-24): la partida y su número quedan guardados en el navegador y el gafete los muestra completos | A) Dejarlo así. B) Botón "No soy yo: olvidar esta partida en esta computadora" en el gafete (la partida sigue en el servidor con su número). C) B + mostrar en el gafete solo los últimos 4 caracteres del número salvo al pedirlo | B: barato y evita que el siguiente alumno siga o pise la partida de otro | Nada urgente; conviene antes de playtests en salones (F4-16) |
+Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.

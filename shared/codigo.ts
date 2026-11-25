@@ -44,3 +44,8 @@ export function normalizarCodigo(entrada: string): string | null {
 export function formatearCodigo(codigo: string): string {
   return `${codigo.slice(0, 4)}-${codigo.slice(4, 8)}-${codigo.slice(8, 12)}`;
 }
+
+/** Para el gafete en computadoras compartidas (D-26): solo los últimos 4 caracteres. */
+export function enmascararCodigo(codigo: string): string {
+  return `••••-••••-${codigo.slice(8, 12)}`;
+}

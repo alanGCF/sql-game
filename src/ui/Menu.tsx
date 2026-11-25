@@ -1,11 +1,11 @@
 import { type ClipboardEvent, type DragEvent, type FormEvent, useEffect, useRef, useState } from "react";
-import { formatearCodigo } from "../../shared/codigo";
+import { enmascararCodigo, formatearCodigo } from "../../shared/codigo";
 import type { Motivo } from "../game/api";
 import { guardian, usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
 import { ControlesAjustes } from "./Ajustes";
 
-type Paso = "inicio" | "nombre" | "codigo" | "ajustes" | "creditos";
+type Paso = "inicio" | "nombre" | "codigo" | "olvidar" | "ajustes" | "creditos";
 
 const MENSAJES: Record<Motivo, string> = {
   invalido: "Ese número no es válido. Revisa que tenga los 12 caracteres, como K7QF-29XM-PL4D.",
@@ -30,6 +30,8 @@ export function Menu() {
   const empezarPartida = usePartida((s) => s.empezar);
   const checarEntrada = usePartida((s) => s.checarEntrada);
   const continuar = usePartida((s) => s.continuar);
+  const olvidarPartida = usePartida((s) => s.olvidar);
+  const [verNumero, setVerNumero] = useState(false);
   const [paso, setPaso] = useState<Paso>("inicio");
   const [nombre, setNombreLocal] = useState("");
   const [codigo, setCodigo] = useState("");
@@ -98,8 +100,23 @@ export function Menu() {
     if (ok) setEnMenu(false);
     else setPaso("codigo");
   };
+  const olvidar = async () => {
+    if (ocupado) return;
+    setOcupado(true);
+    await olvidarPartida();
+    setOcupado(false);
+    setPrevia(null);
+    setVerNumero(false);
+    setPaso("inicio");
+  };
   const nombreVisible = paso === "nombre" ? nombre.trim() : (previa?.nombre ?? nombre.trim());
-  const numeroVisible = paso !== "nombre" && previa?.codigo ? formatearCodigo(previa.codigo) : "——-——-——";
+  // D-26: en computadoras compartidas el gafete enseña solo los últimos 4 caracteres, salvo al pedirlo.
+  const numeroVisible =
+    paso !== "nombre" && previa?.codigo
+      ? verNumero
+        ? formatearCodigo(previa.codigo)
+        : enmascararCodigo(previa.codigo)
+      : "——-——-——";
 
   return (
     <div className="menu" data-testid="menu">
@@ -119,7 +136,19 @@ export function Menu() {
               <dt>Puesto</dt>
               <dd>Técnico de sistemas · turno vespertino</dd>
               <dt>No. de empleado</dt>
-              <dd className="gafete-numero">{numeroVisible}</dd>
+              <dd className="gafete-numero">
+                {numeroVisible}
+                {paso !== "nombre" && previa?.codigo && (
+                  <button
+                    type="button"
+                    className="gafete-ver"
+                    aria-pressed={verNumero}
+                    onClick={() => setVerNumero(!verNumero)}
+                  >
+                    {verNumero ? "Ocultar mi número" : "Mostrar mi número"}
+                  </button>
+                )}
+              </dd>
             </dl>
           </div>
 
@@ -142,6 +171,9 @@ export function Menu() {
                   </button>
                   <button type="button" onClick={() => setPaso("nombre")}>
                     Primer día de trabajo
+                  </button>
+                  <button type="button" onClick={() => setPaso("olvidar")}>
+                    No soy yo: olvidar esta partida en esta computadora
                   </button>
                 </>
               ) : (
@@ -194,7 +226,7 @@ export function Menu() {
               {previa?.codigo && (
                 <p className="gafete-aviso">
                   Esto empieza una partida nueva. La que tienes sigue guardada con el número{" "}
-                  <strong>{formatearCodigo(previa.codigo)}</strong>.
+                  <strong>{numeroVisible}</strong>.
                 </p>
               )}
               <button type="submit" className="primario" disabled={!nombre.trim() || ocupado}>
@@ -233,6 +265,23 @@ export function Menu() {
                 Regresar
               </button>
             </form>
+          )}
+
+          {paso === "olvidar" && previa && (
+            <div className="gafete-acciones">
+              <p className="gafete-aviso">
+                Esta computadora olvidará la partida de <strong>{previa.nombre}</strong>.{" "}
+                {previa.codigo
+                  ? "Se puede seguir en cualquier computadora con su número de empleado."
+                  : "Esta partida no tiene número: si la olvidas, se pierde."}
+              </p>
+              <button type="button" className="primario" disabled={ocupado} onClick={olvidar}>
+                Sí, olvidarla
+              </button>
+              <button type="button" onClick={() => setPaso("inicio")}>
+                Regresar
+              </button>
+            </div>
           )}
 
           {paso === "creditos" && (

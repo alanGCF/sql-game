@@ -164,6 +164,18 @@ describe("Guardian: local siempre, servidor en cada checkpoint", () => {
     expect(await g.checarEntrada(OTRO)).toEqual({ ok: false, motivo: "invalido" });
   });
 
+  it("olvidar borra la partida de este navegador; en el servidor sigue con su número (D-26)", async () => {
+    const s = servidorFalso();
+    const local = almacenMemoria();
+    const g = new Guardian(local, s.api);
+    await g.empezar("Ale", "v1", () => 9);
+    await g.olvidar();
+    expect(g.estado).toBeNull();
+    expect(local.dato).toBeNull();
+    expect(await new Guardian(local, s.api).cargarLocal()).toBeNull();
+    expect(await new Guardian(almacenMemoria(), s.api).checarEntrada(CODIGO)).toMatchObject({ ok: true });
+  });
+
   it("continuar usa lo local aunque el servidor esté caído", async () => {
     const s = servidorFalso();
     const local = almacenMemoria();

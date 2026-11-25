@@ -407,11 +407,37 @@ test("guardado (F4-12): al recargar, el gafete ofrece seguir la partida de este 
   await page.waitForFunction(() => window.__planta7?.ready === true);
   const menu = page.getByTestId("menu");
   await expect(menu).toContainText("Mar");
-  await expect(menu).toContainText(`${codigo.slice(0, 4)}-${codigo.slice(4, 8)}-${codigo.slice(8)}`);
+  // D-26: en el gafete solo se ven los últimos 4 caracteres, salvo al pedirlo.
+  const completo = `${codigo.slice(0, 4)}-${codigo.slice(4, 8)}-${codigo.slice(8)}`;
+  await expect(menu).toContainText(`••••-••••-${codigo.slice(8)}`);
+  await expect(menu).not.toContainText(completo);
+  await menu.getByRole("button", { name: "Mostrar mi número" }).click();
+  await expect(menu).toContainText(completo);
   await menu.getByRole("button", { name: "Checar entrada como Mar" }).click();
   await expect(menu).toBeHidden();
   expect(await page.evaluate(() => window.__planta7?.partida?.())).toMatchObject({
     mision: "t1-m02-el-leeme",
     nombre: "Mar",
   });
+});
+
+test('guardado (D-26): "No soy yo" olvida la partida en esta computadora', async ({ page }) => {
+  test.setTimeout(120_000);
+  await empezarPrimerDia(page, "Luz");
+  // Ya escrita en el navegador (hasta el primer checkpoint queda "pendiente" de subir).
+  await expect
+    .poll(() => page.evaluate(() => window.__planta7?.partida?.()?.guardado))
+    .not.toBe("sin_partida");
+  await page.reload();
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const menu = page.getByTestId("menu");
+  await expect(menu.getByRole("button", { name: "Checar entrada como Luz" })).toBeVisible();
+  await menu.getByRole("button", { name: /No soy yo/ }).click();
+  await expect(menu).toContainText("Esta computadora olvidará la partida de Luz");
+  await menu.getByRole("button", { name: "Sí, olvidarla" }).click();
+  await expect(menu).toContainText("(nuevo ingreso)");
+  await expect(menu.getByRole("button", { name: "Checar entrada con mi número" })).toBeVisible();
+  await page.reload();
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  await expect(page.getByTestId("menu")).toContainText("(nuevo ingreso)");
 });
