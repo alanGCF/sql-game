@@ -24,11 +24,11 @@ function verificador(simbolos: string): string {
 
 const bytesSeguros = (n: number) => crypto.getRandomValues(new Uint8Array(n));
 
-/** 256 es múltiplo de 32: tomar cada byte módulo 32 no introduce sesgo. */
+/** 256 es múltiplo de 32: quedarse con los 5 bits bajos de cada byte no introduce sesgo. */
 export function generarCodigo(aleatorio: (n: number) => Uint8Array = bytesSeguros): string {
   const bytes = aleatorio(ALEATORIOS);
   let s = "";
-  for (let i = 0; i < ALEATORIOS; i++) s += ALFABETO[(bytes[i] ?? 0) % BASE];
+  for (let i = 0; i < ALEATORIOS; i++) s += ALFABETO[(bytes[i] ?? 0) & (BASE - 1)];
   return s + verificador(s);
 }
 

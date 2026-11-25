@@ -56,7 +56,8 @@ export const PartidaEsquema = z.strictObject({
 export type Partida = z.infer<typeof PartidaEsquema>;
 
 /** Migraciones de formatos anteriores al actual (índice = formato de origen). */
-const MIGRACIONES: Record<number, (d: Record<string, unknown>) => Record<string, unknown>> = {};
+// Map y no objeto: un `formato` hostil nunca alcanza métodos del prototipo (constructor, toString…).
+const MIGRACIONES = new Map<number, (d: Record<string, unknown>) => Record<string, unknown>>();
 
 export type ResultadoPartida = { ok: true; partida: Partida } | { ok: false; error: string };
 
@@ -73,10 +74,10 @@ export function leerPartida(datos: unknown): ResultadoPartida {
   let d = datos as Record<string, unknown>;
   for (
     let guarda = 0;
-    d && typeof d === "object" && typeof d.formato === "number" && d.formato < 1 && guarda < 10;
+    d && typeof d === "object" && Number.isInteger(d.formato) && (d.formato as number) < 1 && guarda < 10;
     guarda++
   ) {
-    const migrar = MIGRACIONES[d.formato as number];
+    const migrar = MIGRACIONES.get(d.formato as number);
     if (!migrar) return { ok: false, error: `formato ${String(d.formato)} sin migración` };
     d = migrar(d);
   }
