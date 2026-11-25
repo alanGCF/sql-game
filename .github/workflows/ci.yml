@@ -46,10 +46,11 @@ jobs:
           retention-days: 7
 
   # Capturas de referencia (F3-09): solo valen en el contenedor oficial de Playwright (mismas fuentes y
-  # Chromium). Un push a develop con "[capturas]" en el mensaje del último commit las regenera y las sube.
+  # Chromium). Un push del dueño a develop con "[capturas]" en el último commit las regenera y las sube.
+  # La imagen (etiqueta y digest) se actualiza a mano junto con @playwright/test: lo verifica un paso.
   capturas:
     name: Capturas de referencia (contenedor de Playwright)
-    if: ${{ !contains(github.event.head_commit.message, '[capturas]') }}
+    if: ${{ !(github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == github.repository_owner && contains(github.event.head_commit.message, '[capturas]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
@@ -63,8 +64,15 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: La versión de Playwright coincide con la imagen
+        run: |
+          v=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")
+          if [ "$v" != "1.63.0" ]; then
+            echo "::error::@playwright/test $v no coincide con la imagen v1.63.0: actualiza container.image (etiqueta y digest)"
+            exit 1
+          fi
+      # Sin referencias falla (Playwright no las crea en CI): no se aprueba nada en silencio.
       - name: Compara contra las referencias
-        if: ${{ hashFiles('tests/e2e/capturas.spec.ts-snapshots/*.png') != '' }}
         run: npx playwright test tests/e2e/capturas.spec.ts --project desktop-720
         env:
           CAPTURAS: "1"
@@ -77,7 +85,7 @@ jobs:
 
   capturas-generar:
     name: Regenerar capturas de referencia
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && contains(github.event.head_commit.message, '[capturas]') }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && github.actor == github.repository_owner && contains(github.event.head_commit.message, '[capturas]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     container:
@@ -91,6 +99,13 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      - name: La versión de Playwright coincide con la imagen
+        run: |
+          v=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")
+          if [ "$v" != "1.63.0" ]; then
+            echo "::error::@playwright/test $v no coincide con la imagen v1.63.0: actualiza container.image (etiqueta y digest)"
+            exit 1
+          fi
       - run: |
           rm -rf tests/e2e/capturas.spec.ts-snapshots
           npx playwright test tests/e2e/capturas.spec.ts --project desktop-720 --update-snapshots=all
@@ -103,7 +118,9 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
-  # Único job con escritura: no instala dependencias ni corre código del repo; solo copia PNG validados.
+  # Único job con escritura: no instala dependencias ni corre código del repo. El artefacto se trata como
+  # hostil: se baja y se valida (nombres, cantidad, tamaños y estructura PNG) antes de que haya repo y token
+  # en disco. Su commit llega a develop sin CI: se revisa (diff e imágenes) antes de llevar develop a main.
   capturas-subir:
     name: Subir capturas de referencia a develop
     needs: capturas-generar
@@ -112,29 +129,62 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          ref: develop
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: capturas
           path: ${{ runner.temp }}/capturas
-      - name: Valida que solo haya PNG con los nombres esperados
+      - name: Valida las PNG (nombres, cantidad, tamaño y estructura)
         env:
           DIR: ${{ runner.temp }}/capturas
+        shell: python3 -I {0}
         run: |
-          set -eu
-          n=0
-          for f in "$DIR"/* "$DIR"/.[!.]*; do
-            [ -e "$f" ] || continue
-            nombre=$(basename "$f")
-            if [ -L "$f" ] || [ ! -f "$f" ]; then echo "no es un archivo normal: $nombre"; exit 1; fi
-            if ! printf '%s' "$nombre" | grep -Eq '^[a-z0-9-]+-desktop-720-linux\.png$'; then echo "nombre inesperado: $nombre"; exit 1; fi
-            if [ "$(head -c 8 "$f" | od -An -tx1 | tr -d ' \n')" != "89504e470d0a1a0a" ]; then echo "no es PNG: $nombre"; exit 1; fi
-            if [ "$(stat -c %s "$f")" -gt 3000000 ]; then echo "demasiado grande: $nombre"; exit 1; fi
-            n=$((n + 1))
-          done
-          [ "$n" -gt 0 ]
+          import os, re, struct, sys, zlib
+          carpeta = os.environ["DIR"]
+          nombre_valido = re.compile(r"[a-z0-9-]+-desktop-720-linux\.png")
+          nombres = os.listdir(carpeta)
+          if not 0 < len(nombres) <= 30:
+              sys.exit(f"cantidad inesperada de archivos: {len(nombres)}")
+          total = 0
+          for nombre in nombres:
+              if not nombre_valido.fullmatch(nombre):
+                  sys.exit(f"nombre inesperado: {nombre!r}")
+              ruta = os.path.join(carpeta, nombre)
+              if os.path.islink(ruta) or not os.path.isfile(ruta):
+                  sys.exit(f"no es un archivo normal: {nombre}")
+              with open(ruta, "rb") as f:
+                  datos = f.read(3_000_001)
+              if len(datos) > 3_000_000:
+                  sys.exit(f"demasiado grande: {nombre}")
+              total += len(datos)
+              if datos[:8] != b"\x89PNG\r\n\x1a\n":
+                  sys.exit(f"no es PNG: {nombre}")
+              i, tipos = 8, []
+              while i < len(datos):
+                  if i + 12 > len(datos):
+                      sys.exit(f"chunk truncado: {nombre}")
+                  (largo,) = struct.unpack(">I", datos[i : i + 4])
+                  fin = i + 12 + largo
+                  if fin > len(datos):
+                      sys.exit(f"chunk truncado: {nombre}")
+                  (crc,) = struct.unpack(">I", datos[fin - 4 : fin])
+                  if zlib.crc32(datos[i + 4 : fin - 4]) != crc:
+                      sys.exit(f"CRC inválido: {nombre}")
+                  tipos.append(datos[i + 4 : i + 8])
+                  i = fin
+                  if tipos[-1] == b"IEND":
+                      break
+              if i != len(datos):
+                  sys.exit(f"bytes después de IEND: {nombre}")
+              if not tipos or tipos[0] != b"IHDR" or tipos[-1] != b"IEND" or set(tipos) - {b"IHDR", b"IDAT", b"IEND"}:
+                  sys.exit(f"chunks inesperados: {nombre}")
+              if struct.unpack(">II", datos[16:24]) != (1280, 720):
+                  sys.exit(f"no mide 1280x720: {nombre}")
+          if total > 40_000_000:
+              sys.exit(f"demasiados bytes en total: {total}")
+          print(f"{len(nombres)} PNG válidas, {total} bytes")
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: develop
       - name: Commit y push a develop
         env:
           DIR: ${{ runner.temp }}/capturas
