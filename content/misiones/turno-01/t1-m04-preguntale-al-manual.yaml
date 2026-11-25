@@ -23,10 +23,10 @@ briefing:
 
 objetivos:
   - id: responder-opcion
-    pendiente: "¿Qué opción de ls muestra los archivos ocultos?"
+    pendiente: "Ticket de Eduardo: ¿qué opción de ls muestra los archivos ocultos?"
     cuando:
       respuesta:
-        donde: libreta
+        donde: ticket
         esperado: "-a"
         acepta_tambien: ["a", "--all", "ls -a"]
         comentarios:

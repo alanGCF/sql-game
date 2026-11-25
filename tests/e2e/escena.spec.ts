@@ -203,3 +203,75 @@ test("diálogos: el briefing va en subtítulo con el departamento y la llamada e
   await expect(dialogo).toHaveClass(/subtitulo/);
   await expect(dialogo).toContainText("Ing. Karla Ibáñez · Calidad");
 });
+
+test("con un diálogo en pantalla, Enter con la terminal vacía lo cierra sin ejecutar nada", async ({
+  page,
+}) => {
+  await abrir(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  await expect(input).toBeFocused();
+  const dialogo = page.getByTestId("dialogo");
+  await expect(dialogo).toBeVisible();
+  await input.press("Enter");
+  await input.press("Enter");
+  await expect(dialogo).toBeHidden();
+  await expect(page.getByTestId("terminal").locator(".terminal-linea")).toHaveCount(0);
+});
+
+test("T1 completo se juega en el navegador: terminal + Tickets hasta terminar el turno", async ({ page }) => {
+  test.setTimeout(180_000);
+  await abrir(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const terminal = page.getByTestId("terminal");
+  const tickets = page.getByTestId("tickets");
+  const mision = async () => (await page.evaluate(() => window.__planta7?.partida?.()))?.mision;
+
+  const comando = async (linea: string, salida?: RegExp) => {
+    await page.getByRole("tab", { name: /Terminal/ }).click();
+    const input = page.getByLabel("Comando");
+    await input.fill(linea);
+    await input.press("Enter");
+    const ultima = terminal.locator(".terminal-linea").last();
+    if (salida) await expect(ultima).toHaveText(salida);
+    return (await ultima.textContent())?.trim() ?? "";
+  };
+  const ticket = async (pregunta: RegExp, valor: string) => {
+    await page.getByRole("tab", { name: /Tickets/ }).click();
+    await tickets.getByRole("button", { name: pregunta }).click();
+    const r = page.getByLabel("Respuesta");
+    await r.fill(valor);
+    await r.press("Enter");
+    await expect(tickets.getByRole("status")).toContainText("Ticket resuelto");
+  };
+
+  // T1-M1
+  await comando("pwd", /^\/home\/becario$/);
+  await ticket(/¿En qué carpeta estás\?/, "/home/becario");
+  const n = await comando("ls tickets | wc -l", /^\d+$/);
+  await ticket(/¿Cuántos tickets hay/, n);
+  expect(await mision()).toBe("t1-m02-el-leeme");
+
+  // T1-M2
+  const linea = await comando("grep -r Karla tickets", /T-\d+\.txt:Solicita/);
+  const folio = /T-(\d+)/.exec(linea)?.[1] ?? "";
+  await ticket(/¿Qué folio le tocó/, folio);
+  await comando("cat LEEME.txt", /— R\./);
+  await ticket(/¿Con qué inicial firmó/, "R");
+  expect(await mision()).toBe("t1-m03-moverse-por-la-planta");
+
+  // T1-M3
+  await comando("cd /srv/lineas/linea3");
+  const paros = await comando("grep Paros estado.txt | cut -d: -f2", /^\s*\d+$/);
+  await ticket(/¿Cuántos paros sin causa/, paros);
+  await comando("history", /history$/);
+  expect(await mision()).toBe("t1-m04-preguntale-al-manual");
+
+  // T1-M4
+  await comando("man ls", /./);
+  await ticket(/¿Qué opción de ls muestra/, "-a");
+  await comando("cd ~");
+  await comando("cat .r/hola", /— R\./);
+  expect(await mision()).toBeNull();
+  expect((await page.evaluate(() => window.__planta7?.partida?.()))?.eventos).toContain("turno_completado");
+});

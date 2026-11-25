@@ -13,7 +13,7 @@ function iniciales(nombre: string): string {
 
 /**
  * Diálogos (D-22): las llamadas en una tarjeta a un lado; lo demás, como subtítulo abajo con el
- * departamento de quien habla. Se avanza con Enter (si no estás escribiendo) o con el botón.
+ * departamento de quien habla. Se avanza con Enter (con el campo vacío) o con el botón.
  */
 export function Dialogos() {
   const actual = usePartida((s) => s.dialogos[0]);
@@ -22,14 +22,20 @@ export function Dialogos() {
 
   useEffect(() => {
     if (!actual) return;
+    // En captura, antes que la terminal o Tickets: Enter cierra el diálogo si no estás escribiendo
+    // (campo vacío; en bash, Enter con la línea vacía no hace nada).
     const tecla = (e: KeyboardEvent) => {
-      const foco = document.activeElement?.tagName;
-      if (e.key !== "Enter" || foco === "INPUT" || foco === "TEXTAREA" || foco === "BUTTON") return;
+      if (e.key !== "Enter") return;
+      const foco = document.activeElement;
+      if (foco instanceof HTMLButtonElement) return;
+      if ((foco instanceof HTMLInputElement || foco instanceof HTMLTextAreaElement) && foco.value !== "")
+        return;
       e.preventDefault();
+      e.stopPropagation();
       avanzar();
     };
-    window.addEventListener("keydown", tecla);
-    return () => window.removeEventListener("keydown", tecla);
+    window.addEventListener("keydown", tecla, true);
+    return () => window.removeEventListener("keydown", tecla, true);
   }, [actual, avanzar]);
 
   if (!actual) return null;
