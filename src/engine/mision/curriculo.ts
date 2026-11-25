@@ -72,6 +72,8 @@ export const PersonajesEsquema = z.strictObject({
     z.strictObject({
       nombre: z.string().min(1),
       rol: z.string(),
+      /** Lo que se muestra junto al nombre en diálogos y tickets (D-22): "Mantenimiento", "Calidad"… */
+      departamento: z.string().min(1).optional(),
       extension: z.number().int().optional(),
       usuario: z.string().optional(),
       /** Llamadas por turno antes de "ponte a trabajar" (2) y de dejar de contestar (3). */

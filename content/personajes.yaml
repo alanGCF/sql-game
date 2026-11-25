@@ -1,13 +1,13 @@
 # Personajes y contactos del teléfono (docs/plan/02-trama.md). Los ids son estables.
 personajes:
-  jugador: { nombre: "{{nombre}}", rol: "Técnico de sistemas, turno vespertino", extension: 210, usuario: becario }
-  companero: { nombre: Eduardo Téllez, rol: Sistemas Sr.; da las pistas, extension: 214, usuario: etellez, paciencia: 2 }
-  don_chuy: { nombre: Jesús "Don Chuy" Ortega, rol: Supervisor de mantenimiento, extension: 301, paciencia: 2 }
-  rsalcido: { nombre: Ing. Rebeca Salcido (R.), rol: Ex ingeniera de sistemas y automatización, usuario: rsalcido }
-  karla: { nombre: Ing. Karla Ibáñez, rol: Jefa de Calidad del turno, extension: 402, usuario: kibanez, paciencia: 2 }
-  trevino: { nombre: Lic. Mauricio Treviño, rol: Gerente de planta, extension: 100, usuario: mtrevino, paciencia: 1 }
-  delta: { nombre: Óscar Delgado, rol: Contratista de Soluciones Delta, usuario: delta_svc }
-  conmutador: { nombre: Conmutador, rol: Recepción y voceo, extension: 0, paciencia: 2 }
-  comedor: { nombre: Comedor, rol: Encargada del comedor, extension: 150, paciencia: 2 }
-  vigilancia: { nombre: Caseta de vigilancia, rol: Guardia del turno, extension: 900, paciencia: 2 }
+  jugador: { nombre: "{{nombre}}", departamento: Sistemas, rol: "Técnico de sistemas, turno vespertino", extension: 210, usuario: becario }
+  companero: { nombre: Eduardo Téllez, departamento: Sistemas, rol: Sistemas Sr.; da las pistas, extension: 214, usuario: etellez, paciencia: 2 }
+  don_chuy: { nombre: Jesús "Don Chuy" Ortega, departamento: Mantenimiento, rol: Supervisor de mantenimiento, extension: 301, paciencia: 2 }
+  rsalcido: { nombre: Ing. Rebeca Salcido (R.), departamento: Sistemas, rol: Ex ingeniera de sistemas y automatización, usuario: rsalcido }
+  karla: { nombre: Ing. Karla Ibáñez, departamento: Calidad, rol: Jefa de Calidad del turno, extension: 402, usuario: kibanez, paciencia: 2 }
+  trevino: { nombre: Lic. Mauricio Treviño, departamento: Gerencia, rol: Gerente de planta, extension: 100, usuario: mtrevino, paciencia: 1 }
+  delta: { nombre: Óscar Delgado, departamento: Soluciones Delta, rol: Contratista de Soluciones Delta, usuario: delta_svc }
+  conmutador: { nombre: Conmutador, departamento: Recepción, rol: Recepción y voceo, extension: 0, paciencia: 2 }
+  comedor: { nombre: Comedor, departamento: Comedor, rol: Encargada del comedor, extension: 150, paciencia: 2 }
+  vigilancia: { nombre: Caseta de vigilancia, departamento: Vigilancia, rol: Guardia del turno, extension: 900, paciencia: 2 }
   sistema: { nombre: Sistema, rol: Mensajes del juego }

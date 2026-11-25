@@ -35,10 +35,9 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | D-18 | Retención de partidas en el servidor | **2 meses** (60 días sin actividad) |
 | D-19 | Voces y sonido | Recomendación aceptada: balbuceo por personaje + subtítulos. Además: **sonido escaso**, solo de vez en cuando, nunca ruido constante (reglas en `direccion-arte.md` §Audio) |
 | D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
+| D-21 | Look de la app Tickets | **A · mesa de ayuda corporativa** (clara, lista a la izquierda y detalle con respuesta a la derecha) |
+| D-22 | Diálogos, llamadas y visitas | **Llamadas: tarjeta a un lado (C)** con iniciales, nombre y extensión. **Todo lo demás: subtítulo abajo (A)** con el nombre y el **departamento** de quien habla (nunca la palabra "visita") |
 
 ## Abiertas
 
-| ID | Decisión | Opciones (maquetas sobre la escena en estilo C) | Recomendación | Bloquea |
-|---|---|---|---|---|
-| **D-21** | Look de la app Tickets en el monitor | A · mesa de ayuda corporativa (clara, lista + detalle) · B · sistema viejo de la planta (oscuro, monoespaciado, se usa con teclado, igual que la terminal) · C · tarjetas (cálida, una tarjeta abierta para responder) | **B**: se siente parte del servidor de la planta, combina con la terminal y se maneja con teclado | F3-03 |
-| **D-22** | Cómo se muestran diálogos, llamadas y visitas | A · subtítulo abajo (barra oscura, nombre en color) · B · globo de cómic junto a quien habla · C · tarjeta a un lado con iniciales, nombre y tipo (llamada ext. 214 / visita) | **C**: deja ver quién habla y por dónde (teléfono o visita) sin tapar el monitor; se puede mover al lado izquierdo si tapa el pizarrón | F3-05 |
+Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.

@@ -141,3 +141,29 @@ test("el pizarrón muestra los pendientes de la misión y tacha los cumplidos", 
     "[x] Ticket de Eduardo: ¿en qué carpeta estás? (ruta completa)",
   );
 });
+
+test("la app Tickets responde tecleando, comenta la respuesta equivocada y no deja pegar", async ({
+  page,
+}) => {
+  await abrir(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  await page.getByRole("tab", { name: /Tickets/ }).click();
+  const tickets = page.getByTestId("tickets");
+  await expect(tickets.getByRole("button", { name: /¿En qué carpeta estás\?/ })).toBeVisible();
+  const respuesta = page.getByLabel("Respuesta");
+  await expect(respuesta).toBeFocused();
+
+  await respuesta.fill("~");
+  await respuesta.press("Enter");
+  await expect(tickets.getByRole("status")).toContainText("~ es el atajo de tu carpeta personal");
+
+  await respuesta.fill("/home/becario");
+  await respuesta.press("Enter");
+  await expect(tickets.getByRole("status")).toContainText("Ticket resuelto");
+  await expect(tickets.getByRole("button", { name: /¿En qué carpeta estás\?.*Resuelto/ })).toBeVisible();
+  expect((await page.evaluate(() => window.__planta7?.pizarron?.()))?.renglones[0]).toMatch(/^\[x\]/);
+
+  await respuesta.dispatchEvent("paste");
+  await expect(page.getByTestId("pensamiento")).toContainText("Mejor lo escribo yo");
+  await expect(respuesta).toHaveValue("");
+});

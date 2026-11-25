@@ -11,6 +11,7 @@
     "tests/content",
     "tests/game",
     "src/game/jornada.ts",
+    "src/game/tickets.ts",
     "src/engine",
     "scripts/play.ts",
     "shared",

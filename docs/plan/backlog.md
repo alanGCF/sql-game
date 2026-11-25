@@ -144,7 +144,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** la terminal del monitor ejecuta a través de la misión en curso; al cumplirse un objetivo se notifica a la interfaz.
 - **Listo cuando:** e2e: en T1-M1, `pwd` + respuesta cumplen el objetivo y avanza a T1-M2.
 
-### F3-03 · App Tickets en el monitor (consultar) · `pendiente` · depende: F3-01
+### F3-03 · App Tickets en el monitor (consultar) · `hecha (2026-11-25)` *(D-21: mesa de ayuda corporativa)* · depende: F3-01
 - **Hacer:** lista de tickets de la misión y campo para teclear la respuesta (sin pegar, D-17); retroalimentación de correcto/incorrecto con el `comentario` de la respuesta cuando lo hay. La app **no** lista los archivos de `~/tickets` ni muestra el folio o quién pide el ticket de Karla (T1-M1 y T1-M2 se resuelven con la terminal).
 - **Listo cuando:** e2e responde los tickets de T1; capturas aprobadas por el usuario.
 

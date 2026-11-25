@@ -26,7 +26,6 @@ function Linea({ linea }: { linea: LineaTerminal }) {
 
 /** Terminal sobre el monitor: todo se teclea (pegar y soltar bloqueados, ADR-012). */
 export function Terminal() {
-  const rect = useEscena((s) => s.rectMonitor);
   const pensar = useEscena((s) => s.pensar);
   const { shell, lineas, ocupada, enviar, interrumpir, listarCandidatos } = useTerminal();
   const tabPrevio = useRef(false);
@@ -36,14 +35,12 @@ export function Terminal() {
   const finRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (rect) inputRef.current?.focus();
-  }, [rect]);
+    inputRef.current?.focus();
+  }, []);
   // biome-ignore lint/correctness/useExhaustiveDependencies: desplazar al final cuando cambian las líneas.
   useEffect(() => {
     finRef.current?.scrollIntoView({ block: "end" });
   }, [lineas]);
-
-  if (!rect) return null;
 
   const bloquear = (e: ClipboardEvent | DragEvent) => {
     e.preventDefault();
@@ -97,12 +94,7 @@ export function Terminal() {
   };
 
   return (
-    <div
-      className="terminal"
-      data-testid="terminal"
-      style={{ left: rect.x, top: rect.y, width: rect.w, height: rect.h }}
-    >
-      <div className="terminal-barra">srv-sistemas — Terminal</div>
+    <div className="terminal" data-testid="terminal">
       <div className="terminal-cuerpo" aria-live="polite">
         {lineas.map((l) => (
           <Linea key={l.id} linea={l} />
