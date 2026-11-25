@@ -26,7 +26,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** GitHub Actions según `07-calidad-harness.md` §CI (sin el job `goldens`, que llega en F1-05); `npm audit`; CodeQL; Dependabot.
 - **Listo cuando:** el push a `develop` muestra todos los checks en verde.
 
-### F0-06 · Despliegue en Railway · `pospuesta` (imagen y guía listas; el usuario creará el servicio más adelante) · depende: F0-04
+### F0-06 · Despliegue en Railway · `hecha (2026-11-25)` *(https://rastro-en-el-log.up.railway.app; verificado: /healthz, cabeceras de seguridad, assets con caché inmutable y gzip, 404 uniforme, X-Forwarded-For falsificado ignorado. Pendiente: confirmar en los logs que `remoteAddress` es la IP real y fijar la imagen por digest)* · depende: F0-04
 - **Hacer:** `Dockerfile` multi-etapa (usuario no root), `.dockerignore`, servidor escuchando en `PORT`; guía en `docs/despliegue.md` (crear proyecto, servicio desde el repo con rama `main`, PostgreSQL, variables, healthcheck `/healthz`, "esperar a CI").
 - **Listo cuando:** el usuario despliega `main` y `/healthz` responde 200 en la URL de Railway.
 - **Verificar:** usuario + `curl -I` a la URL (cabeceras de seguridad presentes).

@@ -2,6 +2,8 @@
 
 Juego web **de escritorio** para aprender **Linux, SQL y redes desde cero**. Estás sentado en tu cubículo en 3D, en una planta de manufactura ficticia del desierto fronterizo: con la computadora, el teléfono y tu libreta descubres quién altera cada noche los datos de calidad. Cada comando que aprendes hace avanzar la historia.
 
+**Jugar:** https://rastro-en-el-log.up.railway.app (navegador de escritorio).
+
 **Estado:** motor del shell (F1) listo, con comandos idénticos a Debian stable; runtime de misiones, mundo base del Turno 1 y harness de contenido (F2) en curso; escena 3D en graybox con el estilo elegido (C). Ramas: `develop` (trabajo) y `main` (producción; el despliegue en Railway llega después).
 
 | Qué | Dónde |
