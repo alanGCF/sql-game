@@ -9,7 +9,9 @@
   --term-prompt: #7fd1a8;
   --term-glosa: #f2c46d;
   --term-barra: #1d2a27;
-  --fuente-mono: ui-monospace, "JetBrains Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  --fuente-mono: "JetBrains Mono", ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  /* D-25: Atkinson Hyperlegible (OFL, empaquetada en src/ui/fuentes.ts). */
+  --fuente-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
 }
 html,
 body,
@@ -19,7 +21,7 @@ body,
   height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: system-ui, sans-serif;
+  font-family: var(--fuente-ui);
   overflow: hidden;
 }
 .juego {
@@ -96,7 +98,7 @@ body,
   padding: 4px 10px;
   background: var(--term-barra);
   color: #9fd3c0;
-  font-family: system-ui, sans-serif;
+  font-family: var(--fuente-ui);
   font-size: 0.85em;
 }
 .terminal-cuerpo {
@@ -110,7 +112,7 @@ body,
 }
 .terminal-linea.glosa {
   color: var(--term-glosa);
-  font-family: system-ui, sans-serif;
+  font-family: var(--fuente-ui);
   font-style: italic;
 }
 .terminal-prompt {
@@ -225,7 +227,7 @@ body,
   min-height: 0;
   background: var(--tk-fondo);
   color: var(--tk-texto);
-  font-family: system-ui, sans-serif;
+  font-family: var(--fuente-ui);
 }
 .tickets-titulo {
   flex: none;

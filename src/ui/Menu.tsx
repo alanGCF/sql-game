@@ -119,6 +119,10 @@ export function Menu() {
                 La planta, sus personas, IPs y dominios son ficticios. No pedimos correo ni cuenta: solo el
                 nombre o apodo que escribas.
               </p>
+              <p>
+                Fuentes: Atkinson Hyperlegible (Braille Institute of America) y JetBrains Mono (JetBrains),
+                con licencia SIL Open Font License 1.1.
+              </p>
               <button type="button" onClick={() => setPaso("inicio")}>
                 Regresar
               </button>

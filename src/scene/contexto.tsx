@@ -1,6 +1,7 @@
 import { useThree } from "@react-three/fiber";
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { fuentesListas } from "../ui/fuentes";
 import { ESTILO } from "./estilos";
 
 const HoverCtx = createContext(false);
@@ -54,6 +55,8 @@ export function useTexturaCanvas(
   clave?: string,
 ): THREE.CanvasTexture {
   const invalidate = useThree((s) => s.invalidate);
+  const dibujarActual = useRef(dibujar);
+  dibujarActual.current = dibujar;
   const [textura] = useState(() => {
     const canvas = document.createElement("canvas");
     canvas.width = ancho;
@@ -65,6 +68,24 @@ export function useTexturaCanvas(
     tex.anisotropy = 4;
     return tex;
   });
+  // Se vuelve a dibujar cuando cargan las fuentes empaquetadas (la primera vez puede salir con la de respaldo).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: una sola vez por textura.
+  useEffect(() => {
+    let vigente = true;
+    fuentesListas.then(() => {
+      if (!vigente) return;
+      const canvas = textura.image as HTMLCanvasElement;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.clearRect(0, 0, ancho, alto);
+      dibujarActual.current(ctx, ancho, alto);
+      textura.needsUpdate = true;
+      invalidate();
+    });
+    return () => {
+      vigente = false;
+    };
+  }, []);
   const primera = useRef(true);
   // biome-ignore lint/correctness/useExhaustiveDependencies: solo se redibuja cuando cambia la clave.
   useEffect(() => {

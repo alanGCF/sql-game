@@ -1,7 +1,10 @@
 /** Dibujos 2D para texturas del cubículo. Fuentes del sistema: no se descarga nada. */
 
-const MONO = "ui-monospace, 'DejaVu Sans Mono', monospace";
-const SANS = "system-ui, 'DejaVu Sans', sans-serif";
+import { FUENTE_MONO, FUENTE_UI } from "../ui/fuentes";
+
+// Las mismas fuentes empaquetadas que la interfaz (D-25): las texturas se ven igual en todos los sistemas.
+const MONO = FUENTE_MONO;
+const SANS = FUENTE_UI;
 const MANO = "'Comic Neue', 'Segoe Print', 'DejaVu Sans', cursive";
 
 export function dibujarPantalla(ctx: CanvasRenderingContext2D, w: number, h: number) {

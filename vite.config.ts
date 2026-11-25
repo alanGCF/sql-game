@@ -10,6 +10,8 @@ export default defineConfig({
     target: "es2022",
     // El presupuesto real lo vigila scripts/size.mjs (JS inicial gzip).
     chunkSizeWarningLimit: 1500,
+    // Fuentes siempre como archivo: un data: URI lo bloquea la CSP (font-src 'self').
+    assetsInlineLimit: (archivo: string) => (/\.woff2?$/.test(archivo) ? false : undefined),
   },
   server: {
     proxy: { "/api": "http://localhost:3000" },
