@@ -29,52 +29,71 @@ export function dibujarPantalla(ctx: CanvasRenderingContext2D, w: number, h: num
   });
 }
 
-export function dibujarCalendario(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  ctx.fillStyle = "#f6f3ec";
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "#e0702b";
-  ctx.fillRect(0, 0, w, 70);
-  ctx.fillStyle = "#ffffff";
-  ctx.font = `bold 34px ${SANS}`;
-  ctx.fillText("NOVIEMBRE 2026", 22, 48);
-  const dias = ["L", "M", "M", "J", "V", "S", "D"];
-  const celda = w / 7;
-  ctx.font = `bold 22px ${SANS}`;
-  ctx.fillStyle = "#555";
-  dias.forEach((d, i) => {
-    ctx.fillText(d, i * celda + celda / 2 - 7, 100);
-  });
-  // Semana del 26 oct al 16 nov (4 filas).
-  const fechas = [26, 27, 28, 29, 30, 31, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-  ctx.font = `24px ${SANS}`;
-  fechas.forEach((f, i) => {
-    const col = i % 7;
-    const fila = Math.floor(i / 7);
-    const x = col * celda + 10;
-    const y = 140 + fila * 92;
-    ctx.strokeStyle = "#d8d2c4";
-    ctx.strokeRect(col * celda, y - 30, celda, 92);
-    ctx.fillStyle = col >= 5 ? "#9a9a9a" : "#222";
-    ctx.fillText(String(f), x, y);
-    if (i >= 2 && i <= 6 && col < 5) {
-      ctx.fillStyle = "#e0a400";
-      ctx.fillText("★★★", x, y + 34);
+const MESES = [
+  "ENERO",
+  "FEBRERO",
+  "MARZO",
+  "ABRIL",
+  "MAYO",
+  "JUNIO",
+  "JULIO",
+  "AGOSTO",
+  "SEPTIEMBRE",
+  "OCTUBRE",
+  "NOVIEMBRE",
+  "DICIEMBRE",
+];
+
+/**
+ * Calendario de pared del 26 de octubre al 16 de noviembre de 2026 (el periodo del juego). `hoy` va
+ * encerrado y el título es su mes; el sábado 7 es el tiempo extra.
+ */
+// shortcut: las estrellas por turno terminado llegan con la partida guardada (F4); hoy no se dibujan.
+export function dibujarCalendario(hoy: string) {
+  return (ctx: CanvasRenderingContext2D, w: number) => {
+    const [, mesHoy = 10, diaHoy = 28] = hoy.split("-").map(Number);
+    ctx.fillStyle = "#f6f3ec";
+    ctx.fillRect(0, 0, w, 520);
+    ctx.fillStyle = "#e0702b";
+    ctx.fillRect(0, 0, w, 70);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = `bold 34px ${SANS}`;
+    ctx.fillText(`${MESES[mesHoy - 1] ?? ""} 2026`, 22, 48);
+    const dias = ["L", "M", "M", "J", "V", "S", "D"];
+    const celda = w / 7;
+    ctx.font = `bold 22px ${SANS}`;
+    ctx.fillStyle = "#555";
+    for (const [i, d] of dias.entries()) ctx.fillText(d, i * celda + celda / 2 - 7, 100);
+    // Del lunes 26 de octubre al lunes 16 de noviembre (4 filas).
+    const fechas: [number, number][] = [];
+    for (let d = 26; d <= 31; d++) fechas.push([10, d]);
+    for (let d = 1; d <= 16; d++) fechas.push([11, d]);
+    ctx.font = `24px ${SANS}`;
+    for (const [i, [mes, dia]] of fechas.entries()) {
+      const col = i % 7;
+      const fila = Math.floor(i / 7);
+      const x = col * celda + 10;
+      const y = 140 + fila * 92;
+      ctx.strokeStyle = "#d8d2c4";
+      ctx.strokeRect(col * celda, y - 30, celda, 92);
+      ctx.fillStyle = mes !== mesHoy ? "#a8a29a" : col >= 5 ? "#9a9a9a" : "#222";
+      ctx.fillText(String(dia), x, y);
+      if (mes === mesHoy && dia === diaHoy) {
+        ctx.strokeStyle = "#c0392b";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(x + 14, y - 8, 26, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+      }
+      if (mes === 11 && dia === 7) {
+        ctx.fillStyle = "#3d5a80";
+        ctx.font = `16px ${SANS}`;
+        ctx.fillText("T. extra", x, y + 34);
+        ctx.font = `24px ${SANS}`;
+      }
     }
-    if (f === 3 && i > 6) {
-      ctx.strokeStyle = "#c0392b";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(x + 14, y - 8, 26, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.lineWidth = 1;
-    }
-    if (f === 7) {
-      ctx.fillStyle = "#3d5a80";
-      ctx.font = `16px ${SANS}`;
-      ctx.fillText("T. extra", x, y + 34);
-      ctx.font = `24px ${SANS}`;
-    }
-  });
+  };
 }
 
 /** Parte un texto en renglones que caben en `ancho` píxeles con la fuente actual del contexto. */

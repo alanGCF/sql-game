@@ -1,5 +1,6 @@
 import { RoundedBox } from "@react-three/drei";
 import { DoubleSide } from "three";
+import { inicioTurno } from "../engine/calendario";
 import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
 import { favoresPizarron, renglonesPizarron } from "../game/pizarron";
@@ -236,7 +237,9 @@ function Pizarron() {
 }
 
 function Calendario() {
-  const tex = useTexturaCanvas(512, 520, dibujarCalendario);
+  const turno = usePartida((s) => s.jornada.turno.turno);
+  const hoy = inicioTurno(turno).slice(0, 10);
+  const tex = useTexturaCanvas(512, 520, dibujarCalendario(hoy), hoy);
   return (
     <Interactivo nombre="Calendario" vista="calendario">
       <mesh position={[-0.87, 1.05, -0.25]} rotation={[0, Math.PI / 2, 0]}>
