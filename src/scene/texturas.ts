@@ -5,7 +5,9 @@ import { FUENTE_MONO, FUENTE_UI } from "../ui/fuentes";
 // Las mismas fuentes empaquetadas que la interfaz (D-25): las texturas se ven igual en todos los sistemas.
 const MONO = FUENTE_MONO;
 const SANS = FUENTE_UI;
-const MANO = "'Comic Neue', 'Segoe Print', 'DejaVu Sans', cursive";
+// shortcut: la letra de mano del pizarrón y los post-its usa la fuente de la interfaz hasta elegir una
+// manuscrita OFL empaquetada (F4-05). Antes caía en una distinta en cada sistema (Segoe Print, DejaVu, cursiva).
+const MANO = FUENTE_UI;
 
 export function dibujarPantalla(ctx: CanvasRenderingContext2D, w: number, h: number) {
   ctx.fillStyle = "#0b1110";
