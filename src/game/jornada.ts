@@ -20,6 +20,11 @@ export type EventoJornada =
  * principales en orden, favores que se activan al iniciar la misión de su `disponible_desde`, y una
  * cola de eventos para la interfaz. Sin DOM ni React.
  */
+/** Minuto del día en que entra el turno vespertino (15:30). */
+const ENTRADA = 15 * 60 + 30;
+/** Cerrar todas las misiones principales lleva el reloj hasta las 23:30 (deja aire para el cierre). */
+const MINUTOS_DE_MISIONES = 8 * 60;
+
 export class Jornada {
   private indice = -1;
   private principal: MisionEnCurso | null = null;
@@ -66,6 +71,12 @@ export class Jornada {
 
   turnoCompletado(): boolean {
     return this.indice >= this.turno.misiones.length;
+  }
+
+  /** Minutos desde las 00:00 del día del turno (24:00 = 1440): la escena ilumina con esto. */
+  minutoDelDia(): number {
+    const inicio = Date.parse(inicioTurno(this.turno.turno));
+    return ENTRADA + (this.shell.mundo.reloj.now() - inicio) / 60_000;
   }
 
   /** Saca los eventos pendientes (p. ej. el briefing de la primera misión). */
@@ -137,6 +148,20 @@ export class Jornada {
     const favor = mc !== this.principal;
     this.cola.push({ tipo: "mision_completada", mision: id, estrellas: mc.estrellas(), favor });
     if (favor) this.favores.splice(this.favores.indexOf(mc), 1);
-    else this.siguiente();
+    else {
+      this.adelantarReloj();
+      this.siguiente();
+    }
+  }
+
+  /**
+   * El reloj avanza con lo que haces (04-mecanicas.md): 15 s por comando y, al cerrar la misión k de n,
+   * al menos hasta 15:30 + k/n del turno. Así la ventana pasa de la tarde a la noche aunque se teclee poco.
+   */
+  // shortcut: reparto uniforme por misión; revisar cuando F4 traiga eventos `reloj:HH:MM` y llamadas.
+  private adelantarReloj(): void {
+    const meta = ENTRADA + ((this.indice + 1) / this.turno.misiones.length) * MINUTOS_DE_MISIONES;
+    const falta = meta - this.minutoDelDia();
+    if (falta > 0) this.shell.mundo.reloj.avanzar(Math.round(falta * 60));
   }
 }

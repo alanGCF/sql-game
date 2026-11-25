@@ -1,9 +1,7 @@
-import { useMemo } from "react";
 import { usePartida } from "./game/partidaStore";
 import { favoresPizarron, renglonesPizarron } from "./game/pizarron";
 import { useEscena, type Vista } from "./game/store";
 import { Escena } from "./scene/Escena";
-import { estiloDesdeUrl } from "./scene/estilos";
 import { setTestHook } from "./test-hooks";
 import { Capas } from "./ui/Capas";
 
@@ -18,6 +16,10 @@ setTestHook("pizarron", () => {
     favores: favoresPizarron(pendientes),
   };
 });
+setTestHook("hora", (hhmm) => {
+  const [h = 0, m = 0] = hhmm.split(":").map(Number);
+  usePartida.setState({ minuto: h * 60 + m });
+});
 setTestHook("partida", () => {
   const s = usePartida.getState();
   return {
@@ -29,10 +31,9 @@ setTestHook("partida", () => {
 });
 
 export function App() {
-  const estilo = useMemo(estiloDesdeUrl, []);
   return (
-    <div className={`juego estilo-${estilo.id}`}>
-      <Escena estilo={estilo} />
+    <div className="juego">
+      <Escena />
       <Capas />
     </div>
   );

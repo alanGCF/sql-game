@@ -144,7 +144,7 @@ Las entradas automáticas aparecen con animación de escritura a mano y un sonid
 - **Luz:** la ventana pasa de tarde (15:30) a noche; las lámparas se ajustan; a las 00:00 el turno termina.
 - **Visitas:** alguien se acerca por el pasillo (pasos, voz). Pueden ser de historia, favores o ambientales, y traen rumores.
 - **Fechas especiales (D-20):** marcadas en el calendario, con adornos en tu escritorio y comentarios de los compañeros; no afectan la historia. Detalle en `02-trama.md` §Fechas especiales.
-- **Reloj de juego:** avanza con lo que haces (comandos, llamadas, misiones), no con el tiempo real; los eventos guionizados ocurren a su hora.
+- **Reloj de juego:** avanza con lo que haces (comandos, llamadas, misiones), no con el tiempo real; los eventos guionizados ocurren a su hora. Hoy: 15 s por comando y, al cerrar la misión principal *k* de *n*, al menos hasta 15:30 + *k*/*n* × 8 h (la última deja el reloj en 23:30). Se ajusta cuando lleguen las llamadas y los eventos `reloj:HH:MM` (F4).
 
 ## Estructura
 

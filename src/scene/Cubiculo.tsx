@@ -1,7 +1,10 @@
+import { RoundedBox } from "@react-three/drei";
+import { DoubleSide } from "three";
+import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
 import { favoresPizarron, renglonesPizarron } from "../game/pizarron";
 import { useEscena } from "../game/store";
-import { Mat, useEstilo, useTexturaCanvas } from "./contexto";
+import { Mat, useTexturaCanvas } from "./contexto";
 import { Interactivo } from "./Interactivo";
 import {
   dibujarCalendario,
@@ -18,28 +21,26 @@ import {
 /** Medidas en metros. El jugador está sentado en (0, 1.18, 0.45) mirando hacia -z. */
 export const ESCRITORIO_Y = 0.74;
 export const MONITOR = { centro: [0, 1.06, -0.415] as const, ancho: 0.52, alto: 0.31 };
+/** Ventana del fondo, sobre las mamparas y a la izquierda del reloj de pared. */
+export const VENTANA = { centro: [-2.5, 2.05, -5.97] as const, ancho: 4, alto: 1.1 };
 
-const BASE = {
-  mampara: "#8f8a7d",
+/** Paleta del estilo C: gris claro de mampara, madera clara, blanco cálido, acentos naranja. */
+const C = {
+  mampara: "#a7adb3",
   marcoMampara: "#5d6168",
-  escritorio: "#b89b72",
+  escritorio: "#d9ccb6",
   plasticoOscuro: "#2b2d31",
   teclado: "#d9d6cf",
-  piso: "#4b4f55",
-  techo: "#d8d5cc",
-  pared: "#cfc8b8",
+  piso: "#6c7077",
+  techo: "#b9b8b2",
+  pared: "#e4e2dc",
   libreta: "#3d5a80",
   taza: "#e9e4da",
-  lonchera: "#b03a2e",
+  lonchera: "#3d6e8f",
   planta: "#4a7c59",
   maceta: "#a0522d",
   papel: "#f1eee6",
 };
-
-function usePaleta() {
-  const estilo = useEstilo();
-  return { ...BASE, ...estilo.paleta };
-}
 
 function Caja({
   pos,
@@ -54,22 +55,45 @@ function Caja({
   rot?: [number, number, number];
   sombra?: boolean;
 }) {
-  const estilo = useEstilo();
   return (
-    <mesh
-      position={pos}
-      rotation={rot ?? [0, 0, 0]}
-      castShadow={sombra && estilo.sombras}
-      receiveShadow={estilo.sombras}
-    >
+    <mesh position={pos} rotation={rot ?? [0, 0, 0]} castShadow={sombra} receiveShadow>
       <boxGeometry args={tam} />
       <Mat color={color} />
     </mesh>
   );
 }
 
+/** Caja con bordes redondeados para objetos pequeños (estilo C); mismo costo en draw calls. */
+function CajaRedonda({
+  pos,
+  tam,
+  color,
+  rot,
+  radio,
+}: {
+  pos: [number, number, number];
+  tam: [number, number, number];
+  color: string;
+  rot?: [number, number, number];
+  radio?: number;
+}) {
+  const r = radio ?? Math.min(...tam) * 0.3;
+  return (
+    <RoundedBox
+      args={tam}
+      radius={r}
+      smoothness={3}
+      position={pos}
+      rotation={rot ?? [0, 0, 0]}
+      castShadow
+      receiveShadow
+    >
+      <Mat color={color} />
+    </RoundedBox>
+  );
+}
+
 function Mamparas() {
-  const C = usePaleta();
   return (
     <group>
       {/* frontal */}
@@ -86,7 +110,6 @@ function Mamparas() {
 }
 
 function Escritorio() {
-  const C = usePaleta();
   return (
     <group>
       <Caja pos={[0, ESCRITORIO_Y - 0.015, -0.39]} tam={[1.74, 0.03, 0.78]} color={C.escritorio} />
@@ -99,7 +122,6 @@ function Escritorio() {
 }
 
 function Monitor() {
-  const C = usePaleta();
   const pantalla = useTexturaCanvas(1024, 600, dibujarPantalla);
   const vista = useEscena((s) => s.vista);
   const postIt = useTexturaCanvas(160, 160, dibujarPostIt(["pass:", "duna47"]));
@@ -109,10 +131,11 @@ function Monitor() {
     <Interactivo nombre="Computadora" vista="monitor">
       <Caja pos={[0, ESCRITORIO_Y + 0.01, -0.45]} tam={[0.24, 0.02, 0.18]} color={C.plasticoOscuro} />
       <Caja pos={[0, ESCRITORIO_Y + 0.12, -0.47]} tam={[0.05, 0.22, 0.04]} color={C.plasticoOscuro} />
-      <Caja
+      <CajaRedonda
         pos={[cx, cy, cz - 0.025]}
         tam={[MONITOR.ancho + 0.05, MONITOR.alto + 0.05, 0.04]}
         color={C.plasticoOscuro}
+        radio={0.012}
       />
       {/* Pantalla: cuando el jugador se acerca, la terminal DOM ocupa su lugar. */}
       <mesh position={[cx, cy, cz - 0.004]}>
@@ -132,19 +155,23 @@ function Monitor() {
         <Mat color="#ffffff" mapa={postIt2} />
       </mesh>
       {/* teclado y mouse */}
-      <Caja pos={[0, ESCRITORIO_Y + 0.012, -0.2]} tam={[0.44, 0.022, 0.14]} color={C.teclado} />
-      <Caja pos={[0.32, ESCRITORIO_Y + 0.012, -0.19]} tam={[0.06, 0.024, 0.1]} color={C.teclado} />
+      <CajaRedonda pos={[0, ESCRITORIO_Y + 0.012, -0.2]} tam={[0.44, 0.022, 0.14]} color={C.teclado} />
+      <CajaRedonda
+        pos={[0.32, ESCRITORIO_Y + 0.012, -0.19]}
+        tam={[0.06, 0.024, 0.1]}
+        color={C.teclado}
+        radio={0.011}
+      />
     </Interactivo>
   );
 }
 
 function Telefono() {
-  const C = usePaleta();
   return (
     <Interactivo nombre="Teléfono" vista="telefono">
       <group position={[-0.5, ESCRITORIO_Y, -0.45]} rotation={[0, 0.45, 0]}>
-        <Caja pos={[0, 0.025, 0]} tam={[0.19, 0.05, 0.17]} color={C.plasticoOscuro} />
-        <Caja pos={[0, 0.062, -0.045]} tam={[0.2, 0.03, 0.05]} color="#1f2124" />
+        <CajaRedonda pos={[0, 0.025, 0]} tam={[0.19, 0.05, 0.17]} color={C.plasticoOscuro} />
+        <CajaRedonda pos={[0, 0.062, -0.045]} tam={[0.2, 0.03, 0.05]} color="#1f2124" />
         <Caja pos={[0.02, 0.052, 0.035]} tam={[0.09, 0.004, 0.07]} color="#c9ccc6" />
         <Caja pos={[-0.055, 0.052, 0.04]} tam={[0.04, 0.004, 0.025]} color="#7fa392" />
         <mesh position={[-0.08, 0.065, 0.06]}>
@@ -157,11 +184,10 @@ function Telefono() {
 }
 
 function Libreta() {
-  const C = usePaleta();
   return (
     <Interactivo nombre="Libreta de apuntes" vista="libreta">
       <group position={[0.3, ESCRITORIO_Y + 0.008, -0.12]} rotation={[0, -0.25, 0]}>
-        <Caja pos={[0, 0, 0]} tam={[0.16, 0.016, 0.22]} color={C.libreta} />
+        <CajaRedonda pos={[0, 0, 0]} tam={[0.16, 0.016, 0.22]} color={C.libreta} radio={0.005} />
         <Caja pos={[-0.075, 0.009, 0]} tam={[0.012, 0.012, 0.21]} color="#9aa0a6" />
         <Caja pos={[0.02, 0.005, -0.1]} tam={[0.03, 0.01, 0.03]} color="#e0702b" />
       </group>
@@ -199,7 +225,7 @@ function Pizarron() {
         <Caja pos={[0, 0, -0.012]} tam={[0.64, 0.48, 0.02]} color="#9aa0a6" sombra={false} />
         <mesh position={[0, 0, 0.001]}>
           <planeGeometry args={[0.6, 0.45]} />
-          <Mat color="#ffffff" mapa={tex} rugosidad={0.3} />
+          <Mat color="#ffffff" mapa={tex} rugosidad={0.85} emisivo="#ffffff" intensidadEmisiva={0.3} />
         </mesh>
         {favores.map((t, i) => (
           <PostItFavor key={t} titulo={t} pos={[0.24 - i * 0.1, 0.17, 0.004]} />
@@ -222,11 +248,9 @@ function Calendario() {
 }
 
 function ObjetosEscritorio() {
-  const C = usePaleta();
   const gafete = useTexturaCanvas(320, 160, dibujarGafete);
   const foto = useTexturaCanvas(200, 160, dibujarFoto);
   const directorio = useTexturaCanvas(320, 260, dibujarDirectorio);
-  const estilo = useEstilo();
   return (
     <group>
       {/* Gafete */}
@@ -238,16 +262,16 @@ function ObjetosEscritorio() {
       </Interactivo>
       {/* Taza */}
       <Interactivo nombre="Taza de café">
-        <mesh position={[0.62, ESCRITORIO_Y + 0.05, -0.28]} castShadow={estilo.sombras}>
-          <cylinderGeometry args={[0.04, 0.035, 0.1, estilo.flat ? 10 : 24]} />
+        <mesh position={[0.62, ESCRITORIO_Y + 0.05, -0.28]} castShadow>
+          <cylinderGeometry args={[0.04, 0.035, 0.1, 24]} />
           <Mat color={C.taza} />
         </mesh>
       </Interactivo>
       {/* Lonchera */}
       <Interactivo nombre="Lonchera">
         <group position={[-0.7, ESCRITORIO_Y + 0.07, -0.66]} rotation={[0, 0.2, 0]}>
-          <Caja pos={[0, 0, 0]} tam={[0.22, 0.14, 0.15]} color={C.lonchera} />
-          <Caja pos={[0, 0.085, 0]} tam={[0.12, 0.02, 0.02]} color="#222" />
+          <CajaRedonda pos={[0, 0, 0]} tam={[0.22, 0.14, 0.15]} color={C.lonchera} radio={0.025} />
+          <CajaRedonda pos={[0, 0.08, 0]} tam={[0.12, 0.02, 0.02]} color="#222" />
         </group>
       </Interactivo>
       {/* Foto y planta */}
@@ -262,12 +286,12 @@ function ObjetosEscritorio() {
       </Interactivo>
       <Interactivo nombre="Planta">
         <group position={[0.42, ESCRITORIO_Y, -0.66]}>
-          <mesh position={[0, 0.045, 0]} castShadow={estilo.sombras}>
-            <cylinderGeometry args={[0.045, 0.035, 0.09, estilo.flat ? 8 : 20]} />
+          <mesh position={[0, 0.045, 0]} castShadow>
+            <cylinderGeometry args={[0.045, 0.035, 0.09, 20]} />
             <Mat color={C.maceta} />
           </mesh>
-          <mesh position={[0, 0.13, 0]} castShadow={estilo.sombras}>
-            <icosahedronGeometry args={[0.07, estilo.flat ? 0 : 2]} />
+          <mesh position={[0, 0.13, 0]} castShadow>
+            <icosahedronGeometry args={[0.07, 2]} />
             <Mat color={C.planta} />
           </mesh>
         </group>
@@ -309,19 +333,45 @@ function ObjetosEscritorio() {
         <Caja pos={[0, 0.01, 0]} tam={[0.12, 0.02, 0.12]} color="#2f3238" />
         <Caja pos={[0, 0.2, -0.04]} tam={[0.015, 0.38, 0.015]} color="#2f3238" rot={[0.2, 0, 0]} />
         <mesh position={[0.03, 0.39, -0.08]} rotation={[0.9, 0, -0.3]}>
-          <coneGeometry args={[0.045, 0.07, estilo.flat ? 8 : 20, 1, true]} />
-          <Mat color="#e0702b" />
+          <coneGeometry args={[0.045, 0.07, 20, 1, true]} />
+          <meshStandardMaterial color="#e0702b" roughness={0.45} side={DoubleSide} />
+        </mesh>
+        {/* foco encendido dentro de la pantalla de la lámpara */}
+        <mesh position={[0.03, 0.375, -0.065]}>
+          <sphereGeometry args={[0.018, 12, 8]} />
+          <meshBasicMaterial color="#fff2cf" toneMapped={false} />
         </mesh>
       </group>
     </group>
   );
 }
 
+/** Ventana del fondo: se redibuja cada 5 minutos de juego (de la tarde a la noche). */
+function Ventana() {
+  const minuto = usePartida((s) => s.minuto);
+  const cada5 = Math.floor(minuto / 5) * 5;
+  const tex = useTexturaCanvas(1024, 282, dibujarVentana(iluminacion(cada5)), String(cada5));
+  const [x, y, z] = VENTANA.centro;
+  return (
+    <mesh position={[x, y, z]}>
+      <planeGeometry args={[VENTANA.ancho, VENTANA.alto]} />
+      <meshBasicMaterial map={tex} toneMapped={false} />
+    </mesh>
+  );
+}
+
+function RelojPared() {
+  const minuto = usePartida((s) => s.minuto);
+  const reloj = useTexturaCanvas(256, 256, dibujarReloj(minuto), String(minuto));
+  return (
+    <mesh position={[0.6, 2.25, -5.98]}>
+      <circleGeometry args={[0.28, 40]} />
+      <Mat color="#ffffff" mapa={reloj} />
+    </mesh>
+  );
+}
+
 function Oficina() {
-  const C = usePaleta();
-  const ventana = useTexturaCanvas(512, 256, dibujarVentana);
-  const reloj = useTexturaCanvas(256, 256, dibujarReloj);
-  const estilo = useEstilo();
   const mamparasLejanas: [number, number][] = [
     [-2.2, -2.2],
     [0, -2.6],
@@ -334,7 +384,7 @@ function Oficina() {
   return (
     <group>
       {/* piso, techo y paredes */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow={estilo.sombras}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[14, 14]} />
         <Mat color={C.piso} />
       </mesh>
@@ -350,11 +400,7 @@ function Oficina() {
         <planeGeometry args={[14, 2.8]} />
         <Mat color={C.pared} />
       </mesh>
-      {/* ventana hacia la planta */}
-      <mesh position={[-4.98, 1.55, -1.5]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.2, 1.3]} />
-        <meshBasicMaterial map={ventana} toneMapped={false} />
-      </mesh>
+      <Ventana />
       {/* lámparas del techo */}
       {[-2, 0.5, 3].map((z) =>
         [-1.6, 1.6].map((x) => (
@@ -364,11 +410,7 @@ function Oficina() {
           </mesh>
         )),
       )}
-      {/* reloj de pared */}
-      <mesh position={[0.6, 2.25, -5.98]}>
-        <circleGeometry args={[0.28, estilo.flat ? 16 : 40]} />
-        <Mat color="#ffffff" mapa={reloj} />
-      </mesh>
+      <RelojPared />
       {/* otros cubículos */}
       {mamparasLejanas.map(([x, z]) => (
         <group key={`${x},${z}`} position={[x, 0, z]}>
@@ -380,11 +422,11 @@ function Oficina() {
       {/* alguien a lo lejos (silueta) */}
       <group position={[1.6, 0, -3.4]}>
         <mesh position={[0, 0.8, 0]}>
-          <capsuleGeometry args={[0.18, 0.9, 4, estilo.flat ? 8 : 16]} />
+          <capsuleGeometry args={[0.18, 0.9, 4, 16]} />
           <Mat color="#3d5a80" />
         </mesh>
         <mesh position={[0, 1.52, 0]}>
-          <sphereGeometry args={[0.12, estilo.flat ? 8 : 16, estilo.flat ? 6 : 12]} />
+          <sphereGeometry args={[0.12, 16, 12]} />
           <Mat color="#8d5b3f" />
         </mesh>
       </group>

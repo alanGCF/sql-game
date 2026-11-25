@@ -148,7 +148,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** lista de tickets de la misión y campo para teclear la respuesta (sin pegar, D-17); retroalimentación de correcto/incorrecto con el `comentario` de la respuesta cuando lo hay. La app **no** lista los archivos de `~/tickets` ni muestra el folio o quién pide el ticket de Karla (T1-M1 y T1-M2 se resuelven con la terminal).
 - **Listo cuando:** e2e responde los tickets de T1; capturas aprobadas por el usuario.
 
-### F3-04 · Pizarrón con los pendientes del turno · `hecha (2026-11-24)` *(la luz de la lámpara aclara el centro del pizarrón: revisar en F3-06)* · depende: F3-01
+### F3-04 · Pizarrón con los pendientes del turno · `hecha (2026-11-24)` *(el brillo de la lámpara en el pizarrón se corrigió en F3-06)* · depende: F3-01
 - **Hacer:** textura del pizarrón generada con los pendientes de la misión y del turno; tachado al cumplirse.
 - **Listo cuando:** captura del pizarrón antes y después de cumplir un objetivo.
 
@@ -156,7 +156,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** capa DOM de diálogo con nombre del personaje, avance con clic o Enter, accesible por teclado; muestra el briefing y los efectos de la cola. Ampliar el esquema de efectos con varios globos por evento y un efecto `pensamiento` del protagonista (pedido de la revisión narrativa de T1).
 - **Listo cuando:** e2e recorre el briefing de T1-M1; capturas aprobadas.
 
-### F3-06 · Escena en estilo C definitiva · `pendiente` · depende: F0-07
+### F3-06 · Escena en estilo C definitiva · `hecha (2026-11-25)` *(solo estilo C, también por omisión en producción; ventana al fondo sobre las mamparas con la planta y la sierra: tarde → atardecer (18:20) → noche con luces; luz de la ventana, reflejos y luz de oficina por hora; reloj de pared con la hora del juego; lámpara como foco hacia el escritorio (sin brillo en el pizarrón); bordes redondeados en objetos pequeños; 111 draw calls. El reloj avanza 15 s por comando y al cerrar cada misión principal; medir en Iris Xe/UHD 620 queda para F9)* · depende: F0-07
 - **Hacer:** materiales, luces y formas del estilo C según `direccion-arte.md`; ventana que cambia de tarde a noche con el reloj de juego; se retiran los estilos A y B; presupuesto de 150 draw calls.
 - **Listo cuando:** capturas de referencia nuevas sin regresiones de encuadre; presupuesto cumplido.
 

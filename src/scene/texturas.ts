@@ -1,4 +1,4 @@
-/** Dibujos 2D para texturas del cubículo (spike F0-07). Fuentes del sistema: no se descarga nada. */
+/** Dibujos 2D para texturas del cubículo. Fuentes del sistema: no se descarga nada. */
 
 const MONO = "ui-monospace, 'DejaVu Sans Mono', monospace";
 const SANS = "system-ui, 'DejaVu Sans', sans-serif";
@@ -157,55 +157,124 @@ export function dibujarGafete(ctx: CanvasRenderingContext2D, w: number, h: numbe
   ctx.fillText("K7QF-29XM-PL4D", 96, 118);
 }
 
-export function dibujarReloj(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  const r = w / 2;
-  ctx.fillStyle = "#f2efe8";
-  ctx.beginPath();
-  ctx.arc(r, r, r - 4, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = "#222";
-  ctx.lineWidth = 8;
-  ctx.stroke();
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * Math.PI * 2;
+/** Reloj de pared con la hora del juego (`minuto` = minutos desde las 00:00). */
+export function dibujarReloj(minuto: number) {
+  return (ctx: CanvasRenderingContext2D, w: number) => {
+    const r = w / 2;
+    ctx.fillStyle = "#f2efe8";
     ctx.beginPath();
-    ctx.moveTo(r + Math.sin(a) * (r - 18), r - Math.cos(a) * (r - 18));
-    ctx.lineTo(r + Math.sin(a) * (r - 34), r - Math.cos(a) * (r - 34));
+    ctx.arc(r, r, r - 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 8;
     ctx.stroke();
-  }
-  const aguja = (ang: number, largo: number, grosor: number) => {
-    ctx.lineWidth = grosor;
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(r + Math.sin(a) * (r - 18), r - Math.cos(a) * (r - 18));
+      ctx.lineTo(r + Math.sin(a) * (r - 34), r - Math.cos(a) * (r - 34));
+      ctx.stroke();
+    }
+    const aguja = (ang: number, largo: number, grosor: number) => {
+      ctx.lineWidth = grosor;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(r, r);
+      ctx.lineTo(r + Math.sin(ang) * largo, r - Math.cos(ang) * largo);
+      ctx.stroke();
+    };
+    const m = Math.floor(minuto) % 720;
+    aguja((m / 720) * Math.PI * 2, r * 0.5, 10);
+    aguja(((m % 60) / 60) * Math.PI * 2, r * 0.75, 6);
+    ctx.fillStyle = "#222";
     ctx.beginPath();
-    ctx.moveTo(r, r);
-    ctx.lineTo(r + Math.sin(ang) * largo, r - Math.cos(ang) * largo);
-    ctx.stroke();
+    ctx.arc(r, r, 9, 0, Math.PI * 2);
+    ctx.fill();
   };
-  aguja(((7 + 5 / 60) / 12) * Math.PI * 2, r * 0.5, 10); // 19:05
-  aguja((5 / 60) * Math.PI * 2, r * 0.75, 6);
-  void h;
 }
 
-export function dibujarVentana(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, "#2b3a67");
-  g.addColorStop(0.55, "#d9744a");
-  g.addColorStop(0.8, "#f2b35b");
-  g.addColorStop(1, "#6b4a3a");
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "#2d2320";
-  // Siluetas de la planta y del desierto.
-  ctx.beginPath();
-  ctx.moveTo(0, h * 0.82);
-  ctx.lineTo(w * 0.2, h * 0.78);
-  ctx.lineTo(w * 0.45, h * 0.84);
-  ctx.lineTo(w * 0.7, h * 0.76);
-  ctx.lineTo(w, h * 0.8);
-  ctx.lineTo(w, h);
-  ctx.lineTo(0, h);
-  ctx.fill();
-  ctx.fillRect(w * 0.55, h * 0.62, w * 0.3, h * 0.2);
-  ctx.fillRect(w * 0.62, h * 0.5, w * 0.03, h * 0.14);
+/** Colores de la ventana a una hora dada (los calcula src/game/hora.ts). */
+export interface ColoresVentana {
+  cielo: string;
+  horizonte: string;
+  montes: string;
+  planta: string;
+  lucesPlanta: number;
+}
+
+// Estrellas fijas (posición relativa) para que la noche no cambie entre cuadros.
+const ESTRELLAS = [
+  [0.06, 0.12],
+  [0.14, 0.3],
+  [0.22, 0.08],
+  [0.31, 0.22],
+  [0.4, 0.1],
+  [0.47, 0.34],
+  [0.55, 0.16],
+  [0.63, 0.06],
+  [0.71, 0.26],
+  [0.78, 0.12],
+  [0.86, 0.32],
+  [0.93, 0.18],
+  [0.1, 0.42],
+  [0.67, 0.4],
+] as const;
+
+/**
+ * La planta vista por la ventana del fondo: cielo de Juárez, la sierra, la nave de manufactura con su
+ * chimenea y el tanque de agua. De noche se prenden las luces de la nave y el foco rojo de la chimenea.
+ */
+export function dibujarVentana(c: ColoresVentana) {
+  return (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    const g = ctx.createLinearGradient(0, 0, 0, h * 0.45);
+    g.addColorStop(0, c.cielo);
+    g.addColorStop(1, c.horizonte);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    if (c.lucesPlanta > 0.5) {
+      ctx.fillStyle = `rgba(255,255,240,${(c.lucesPlanta - 0.5) * 1.4})`;
+      for (const [x, y] of ESTRELLAS) ctx.fillRect(x * w, y * h, 2, 2);
+    }
+    // Sierra al fondo.
+    ctx.fillStyle = c.montes;
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.42);
+    const sierra = [0.4, 0.32, 0.36, 0.27, 0.3, 0.38, 0.35, 0.41, 0.37, 0.43, 0.45];
+    for (const [i, y] of sierra.entries()) ctx.lineTo((i / (sierra.length - 1)) * w, y * h);
+    ctx.lineTo(w, h);
+    ctx.lineTo(0, h);
+    ctx.fill();
+    // Nave de manufactura, chimenea y tanque de agua.
+    ctx.fillStyle = c.planta;
+    ctx.fillRect(0, h * 0.52, w, h * 0.48);
+    ctx.fillRect(w * 0.12, h * 0.38, w * 0.42, h * 0.16);
+    ctx.fillRect(w * 0.6, h * 0.44, w * 0.3, h * 0.1);
+    ctx.fillRect(w * 0.47, h * 0.12, w * 0.022, h * 0.28);
+    ctx.fillRect(w * 0.77, h * 0.18, w * 0.006, h * 0.27);
+    ctx.fillRect(w * 0.81, h * 0.18, w * 0.006, h * 0.27);
+    ctx.beginPath();
+    ctx.ellipse(w * 0.793, h * 0.16, w * 0.04, h * 0.07, 0, 0, Math.PI * 2);
+    ctx.fill();
+    if (c.lucesPlanta > 0) {
+      ctx.fillStyle = `rgba(255,214,120,${c.lucesPlanta})`;
+      for (let i = 0; i < 9; i++) ctx.fillRect(w * (0.15 + i * 0.042), h * 0.44, w * 0.018, h * 0.03);
+      for (let i = 0; i < 6; i++) ctx.fillRect(w * (0.62 + i * 0.045), h * 0.48, w * 0.02, h * 0.025);
+      for (let i = 0; i < 14; i++) ctx.fillRect(w * (0.03 + i * 0.07), h * 0.6, w * 0.006, h * 0.012);
+      ctx.fillStyle = `rgba(255,60,50,${c.lucesPlanta})`;
+      ctx.beginPath();
+      ctx.arc(w * 0.481, h * 0.11, Math.max(3, w * 0.004), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Marco y parteluces.
+    ctx.fillStyle = "#3a3d42";
+    const grosor = Math.max(6, w * 0.008);
+    for (let i = 0; i <= 4; i++) {
+      const x = Math.min(w - grosor, (i / 4) * w - (i ? grosor / 2 : 0));
+      ctx.fillRect(x, 0, grosor, h);
+    }
+    ctx.fillRect(0, 0, w, grosor);
+    ctx.fillRect(0, h - grosor, w, grosor);
+  };
 }
 
 export function dibujarFoto(ctx: CanvasRenderingContext2D, w: number, h: number) {

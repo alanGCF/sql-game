@@ -52,7 +52,9 @@ Sombreado suave, sombras suaves y reflejos sutiles; formas limpias con algo de d
 - **Luz:** luz de oficina neutra del techo + lámpara de escritorio cálida + ventana que cambia de atardecer a noche durante el turno.
 - **Materiales:** mate en mamparas y papel; satinado en escritorio y plásticos; pantalla emisiva sin reflejos.
 - **Rendimiento:** es el estilo más pesado; presupuesto de 150 draw calls y medición en hardware real (Iris Xe/UHD 620) desde F3. Si no da 60 fps: menos sombras dinámicas, luz horneada y una opción de "calidad baja" en Ajustes.
-- Los estilos A y B del spike quedan como referencia en `src/scene/estilos.ts` hasta F3, donde se retiran.
+- Los estilos A y B del spike se retiraron en F3-06; la escena solo tiene el estilo C (`src/scene/estilos.ts`).
+- **Ventana:** en la pared del fondo, sobre las mamparas y a la izquierda del reloj: la sierra, la nave de la planta con su chimenea y el tanque de agua. Tarde (15:30) → atardecer (el sol se mete hacia las 18:20) → noche (luces de la nave, foco rojo de la chimenea, estrellas). La luz que entra, los reflejos y un poco la luz de oficina siguen la hora (`src/game/hora.ts`).
+- **Lámpara:** foco cálido que apunta al escritorio; no ilumina el pizarrón.
 
 Paleta base: gris claro de mampara, madera clara del escritorio, blanco cálido de pared, naranja de seguridad como acento, azul noche en la ventana al final del turno. Contraste AA en todas las capas DOM.
 

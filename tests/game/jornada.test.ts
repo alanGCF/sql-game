@@ -90,3 +90,30 @@ describe("jornada: T1 encadenado sobre un solo mundo", () => {
     expect(r.eventos).toEqual([]);
   });
 });
+
+describe("jornada: reloj de juego", () => {
+  it("empieza a las 15:30, cada comando suma 15 s y cada misión principal adelanta la tarde", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    expect(j.minutoDelDia()).toBe(15 * 60 + 30);
+    for (let i = 0; i < 4; i++) await j.ejecutar("pwd");
+    expect(j.minutoDelDia()).toBe(15 * 60 + 31);
+    const n = t1.misiones.length;
+    for (const [k, m] of t1.misiones.entries()) {
+      const antes = j.minutoDelDia();
+      await resolver(j, m);
+      // Al cerrar la misión k el reloj llega al menos a su parte del turno (15:30 → 23:30).
+      expect(j.minutoDelDia()).toBeGreaterThanOrEqual(15 * 60 + 30 + ((k + 1) / n) * 8 * 60);
+      expect(j.minutoDelDia()).toBeGreaterThan(antes);
+    }
+    expect(j.minutoDelDia()).toBeLessThan(24 * 60);
+  });
+
+  it("completar un favor no adelanta el reloj más que sus comandos", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    for (const m of t1.misiones.slice(0, -1)) await resolver(j, m);
+    const favor = t1.favores[0] as Mision;
+    const antes = j.minutoDelDia();
+    await resolver(j, favor);
+    expect(j.minutoDelDia() - antes).toBeLessThan(favor.solucion.length);
+  });
+});

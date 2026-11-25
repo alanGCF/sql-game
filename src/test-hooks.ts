@@ -12,6 +12,8 @@ export interface TestHooks {
   dialogo?: () => { forma: string; nombre: string; detalle: string; texto: string } | null;
   /** Lo que muestra el pizarrón: "[x] texto" por renglón y los favores en post-it. */
   pizarron?: () => { renglones: string[]; favores: string[] };
+  /** Fija la hora que muestra la escena ("HH:MM", 24:00 = medianoche) para capturas de la ventana. */
+  hora?: (hhmm: string) => void;
 }
 
 declare global {

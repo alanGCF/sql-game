@@ -1,8 +1,8 @@
 import { expect, type Page, test } from "@playwright/test";
 import type {} from "../../src/test-hooks.js";
 
-async function abrir(page: Page, estilo = "a") {
-  await page.goto(`/?test=1&estilo=${estilo}`);
+async function abrir(page: Page) {
+  await page.goto("/?test=1");
   await page.waitForFunction(() => window.__planta7?.ready === true);
   await page.evaluate(() => window.__planta7?.mirar?.(0, 0));
 }
@@ -64,17 +64,20 @@ test("Esc regresa a la vista general", async ({ page }) => {
   await expect(page.getByTestId("terminal")).toBeHidden();
 });
 
-for (const estilo of ["a", "b", "c"]) {
-  test(`estilo ${estilo}: carga sin errores y respeta el presupuesto de draw calls`, async ({ page }) => {
-    const errores: string[] = [];
-    page.on("pageerror", (e) => errores.push(e.message));
-    await abrir(page, estilo);
+test("la escena carga sin errores y respeta el presupuesto de draw calls, de tarde y de noche", async ({
+  page,
+}) => {
+  const errores: string[] = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await abrir(page);
+  for (const hora of ["15:30", "18:20", "23:00"]) {
+    await page.evaluate((h) => window.__planta7?.hora?.(h), hora);
     await page.waitForTimeout(300);
     const info = await page.evaluate(() => window.__planta7?.info?.());
     expect(info?.calls ?? 999).toBeLessThanOrEqual(150);
-    expect(errores).toEqual([]);
-  });
-}
+  }
+  expect(errores).toEqual([]);
+});
 
 test("Tab autocompleta y un segundo Tab lista las opciones", async ({ page }) => {
   await abrir(page);
@@ -277,7 +280,7 @@ test("T1 completo se juega en el navegador: terminal + Tickets hasta terminar el
 });
 
 test("menú (gafete): primer día pide el nombre tecleado y empieza el turno", async ({ page }) => {
-  await page.goto("/?test=1&estilo=c&menu=1");
+  await page.goto("/?test=1&menu=1");
   await page.waitForFunction(() => window.__planta7?.ready === true);
   const menu = page.getByTestId("menu");
   await expect(menu.getByRole("heading", { name: "Rastro en el Log" })).toBeVisible();

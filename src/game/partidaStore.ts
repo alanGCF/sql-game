@@ -53,6 +53,8 @@ interface EstadoPartida {
   avanzarDialogo: () => void;
   /** Eventos para la interfaz (diálogos, objetivos, efectos), los más recientes al final. */
   eventos: EventoJornada[];
+  /** Minuto del día del reloj de juego, entero (la ventana y el reloj de pared lo siguen). */
+  minuto: number;
   ejecutar: (linea: string) => Promise<ResultadoLinea>;
   responder: (
     mision: string,
@@ -65,6 +67,7 @@ const MAX_EVENTOS = 200;
 
 function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
   return {
+    minuto: Math.floor(j.minutoDelDia()),
     eventos: [...s.eventos, ...eventos].slice(-MAX_EVENTOS),
     pendientes: pendientesDe(j),
     tickets: unirTickets(s.tickets, ticketsDe(activas(j), personajes)),
@@ -77,6 +80,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => ({
   nombre: "",
   setNombre: (nombre) => set({ nombre: nombre.trim().slice(0, 40) }),
   jornada: inicial,
+  minuto: Math.floor(inicial.minutoDelDia()),
   pendientes: pendientesDe(inicial),
   tickets: ticketsDe(activas(inicial), personajes),
   ...(() => {
@@ -90,6 +94,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => ({
     const { jornada } = get();
     const { resultado, eventos } = await jornada.ejecutar(linea);
     if (eventos.length) set(actualizado(jornada, get(), eventos));
+    else set({ minuto: Math.floor(jornada.minutoDelDia()) });
     return resultado;
   },
   async responder(mision, objetivo, valor) {
