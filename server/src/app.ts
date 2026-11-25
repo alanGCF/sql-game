@@ -12,6 +12,8 @@ import {
   LIMITE_TASA_ASSETS_POR_MINUTO,
   LIMITE_TASA_GLOBAL_POR_MINUTO,
 } from "../../shared/limites.js";
+import type { RepositorioPartidas } from "./partidas.js";
+import { rutasPartidas } from "./rutas-partidas.js";
 
 export interface AppOptions {
   /** Carpeta del build del cliente. Sin ella solo se sirve la API. */
@@ -23,6 +25,8 @@ export interface AppOptions {
   trustProxyHops?: number;
   rateLimitMax?: number;
   rateLimitAssetsMax?: number;
+  /** Almacén de partidas. `null`: sin base, la API contesta 503. Sin la opción no se registra la API. */
+  partidas?: RepositorioPartidas | null;
 }
 
 /** CSP estricta: todo del mismo origen; WASM permitido para sql.js. Cambiarla requiere ADR. */
@@ -134,6 +138,8 @@ export async function buildApp(opts: AppOptions = {}): Promise<FastifyInstance> 
   });
 
   app.get("/healthz", async () => ({ ok: true }));
+
+  if (opts.partidas !== undefined) rutasPartidas(app, opts.partidas);
 
   if (opts.staticDir) {
     await app.register(fastifyStatic, {

@@ -218,7 +218,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** Web Audio sintetizado para interacción y murmullo de voces; ambientales a lo lejos (uno cada 2–4 min con la semilla, nunca durante diálogos); volúmenes y "modo silencio" en Ajustes; subtítulo para todo audio.
 - **Listo cuando:** pruebas del planificador de ambientales (frecuencia, sin simultaneidad) y e2e de subtítulos.
 
-### F4-11 · API de partidas en el servidor (Postgres) · `pendiente` · depende: F0-08
+### F4-11 · API de partidas en el servidor (Postgres) · `hecha (2026-11-25)` *(código de 11 símbolos + verificador Luhn mod 32 en `shared/codigo.ts`; POST/GET/PUT con límites por ruta y respuesta uniforme; revisión contra sobrescrituras; retención diaria de 60 días; repositorio en memoria y en Postgres con el mismo contrato, probado contra Postgres real en CI; ADR-019. Pendiente: usuario de base con permisos mínimos en Railway, que es un paso manual del dueño)* · depende: F0-08
 - **Hacer:** tabla de partidas por código (12 caracteres sin ambiguos, `K7QF-29XM-PL4D`), crear/guardar/cargar con `PartidaEsquema` de `shared/`, consultas parametrizadas, 64 KB máximo, límites de tasa por IP y por código, migraciones; driver de Postgres justificado en un ADR. Nada de correos ni contraseñas.
 - **Listo cuando:** pruebas del servidor (código inválido, tamaño, tasa, versión de formato) y `auditor-seguridad` sin hallazgos altos.
 

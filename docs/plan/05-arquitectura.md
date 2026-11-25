@@ -193,7 +193,8 @@ Ejemplo comentado: `docs/ejemplos/mision-ejemplo.yaml`.
 | `GET /api/partidas/:codigo` | Devuelve la partida si el código existe | 30/min por IP; respuesta uniforme si no existe |
 | `PUT /api/partidas/:codigo` | Guarda checkpoint (cuerpo validado con Zod, versión de formato, `revision` para evitar sobrescrituras viejas) | 60/min por IP; ≤ 64 KB |
 
-- **Código:** 12 caracteres del alfabeto Crockford base32 sin `I L O U` (≈ 60 bits), con dígito verificador para detectar errores de tecleo antes de llamar al servidor.
+- **Código:** 12 caracteres del alfabeto Crockford base32 sin `I L O U`: 11 aleatorios con CSPRNG (55 bits) y un verificador Luhn mod 32 que detecta errores de tecleo antes de llamar al servidor (`shared/codigo.ts`). Al leerlo se aceptan minúsculas, guiones, `O`→`0` e `I`/`L`→`1`.
+- **Implementación (F4-11):** `server/src/rutas-partidas.ts` y `server/src/partidas.ts` (repositorio en memoria para desarrollo y pruebas, Postgres con `pg` en producción; mismo contrato probado contra los dos). Sin `DATABASE_URL`: memoria en desarrollo, 503 en producción. La tabla se crea en la primera operación; si la base no responde, la API contesta 503 y el sitio sigue.
 - **Almacenamiento:** tabla `partidas(codigo_hash bytea primary key, datos jsonb, revision int, creada timestamptz, actualizada timestamptz)`. Nunca se guarda el código en claro.
 - **Retención:** partidas sin actividad durante 60 días (2 meses) se borran con una tarea programada diaria (D-18). El juego avisa en el menú cuántos días le quedan a una partida inactiva.
 - **Sin cookies, sin sesiones, sin CORS** (mismo origen).

@@ -16,12 +16,20 @@ const Entorno = z.object({
     .pipe(z.number().max(3))
     .default(1),
   STATIC_DIR: z.string().min(1).optional(),
+  // Railway la da desde el servicio Postgres (red privada). Sin ella: memoria en desarrollo, 503 en producción.
+  DATABASE_URL: z
+    .string()
+    .regex(/^postgres(ql)?:\/\/\S+$/, "URL postgres://")
+    .optional(),
+  NODE_ENV: z.string().optional(),
 });
 
 export interface Config {
   port: number;
   trustProxyHops: number;
   staticDir?: string;
+  databaseUrl?: string;
+  produccion: boolean;
 }
 
 export function leerEntorno(env: Readonly<Record<string, string | undefined>>): Config {
@@ -30,7 +38,12 @@ export function leerEntorno(env: Readonly<Record<string, string | undefined>>): 
     throw new Error(
       `entorno inválido: ${r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`,
     );
-  const c: Config = { port: r.data.PORT, trustProxyHops: r.data.TRUST_PROXY_HOPS };
+  const c: Config = {
+    port: r.data.PORT,
+    trustProxyHops: r.data.TRUST_PROXY_HOPS,
+    produccion: r.data.NODE_ENV === "production",
+  };
   if (r.data.STATIC_DIR) c.staticDir = r.data.STATIC_DIR;
+  if (r.data.DATABASE_URL) c.databaseUrl = r.data.DATABASE_URL;
   return c;
 }

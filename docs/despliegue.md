@@ -19,7 +19,7 @@ Un servicio web (imagen del `Dockerfile` en la raíz) y, desde F4, una base Post
 | `PORT` | (la pone Railway) | Puerto donde escucha el servidor |
 | `NODE_ENV` | `production` | Ya viene en la imagen |
 | `TRUST_PROXY_HOPS` | `1` | Saltos de proxy confiables para obtener la IP real (límite de tasa). Entero de 0 a 3; un valor inválido detiene el arranque. No lo cambies sin hacer la prueba del paso 4 |
-| `DATABASE_URL` | referencia a la variable de la base (desde F4) | Conexión a PostgreSQL |
+| `DATABASE_URL` | referencia a la variable de la base | Conexión a PostgreSQL para la API de partidas (F4-11). Sin ella, en producción la API contesta 503 y el resto del sitio sigue. La tabla `partidas` se crea sola en el primer uso. |
 
 Nunca pongas secretos en el repositorio ni en el código del cliente.
 

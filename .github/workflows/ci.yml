@@ -20,6 +20,20 @@ jobs:
     name: Tipos, lint, pruebas, build y e2e
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # Postgres desechable para el contrato del repositorio de partidas (tests/server/repositorio.test.ts).
+    services:
+      postgres:
+        image: postgres:17-alpine@sha256:f9cf3e1f0066f0eb0c48707d864f0ac5941e9ff454a072077d97a4d278d07d73
+        env:
+          POSTGRES_PASSWORD: pruebas
+          POSTGRES_DB: pruebas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -32,6 +46,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
+        env:
+          PRUEBAS_PG_URL: postgresql://postgres:pruebas@localhost:5432/pruebas
       - run: npm run build
       - run: npm run size
       - run: npx playwright install --with-deps chromium

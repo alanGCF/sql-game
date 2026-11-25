@@ -62,7 +62,7 @@ El motor no usa `Date.now()` ni `Math.random()`. Reloj de juego y RNG con semill
 
 ## ADR-013 · Línea base de seguridad · aceptada
 
-Controles de `docs/plan/08-seguridad.md`: validación Zod en servidor, SQL parametrizado, código de ≈ 60 bits guardado como hash, límites de tamaño y tasa, CSP estricta y cabeceras, contenedor no root, `npm audit`, CodeQL, auditoría antes de `main`.
+Controles de `docs/plan/08-seguridad.md`: validación Zod en servidor, SQL parametrizado, código de 55 bits guardado como hash, límites de tamaño y tasa, CSP estricta y cabeceras, contenedor no root, `npm audit`, CodeQL, auditoría antes de `main`.
 
 ## ADR-014 · Ramas `main` y `develop` · aceptada
 
@@ -90,3 +90,9 @@ Solo dos ramas. Se trabaja en `develop` (un commit por tarea). `main` recibe `de
 **Contexto.** El escritorio está quieto casi todo el tiempo. Con el estilo C (sombras suaves, reflejos, luz por hora) dibujar a 60 fps gasta GPU y batería sin cambiar nada; en CI con WebGL por software (SwiftShader) daba 2–7 fps a 720p y cada captura tardaba 4–15 s, con pruebas intermitentes.
 **Decisión.** El `Canvas` usa `frameloop="demand"`: se dibuja un cuadro cuando cambia algo de React/three (luces por hora, resaltado, texturas: `useTexturaCanvas` llama `invalidate`), al mover el cursor o cambiar la vista (`CamaraSentada` se suscribe al store y a `pointermove`), y mientras la cámara amortiguada o una transición no terminan (piden el siguiente cuadro). El `dt` se acota a 1/30 s para que la primera animación tras un rato quieta no salte.
 **Consecuencias.** (+) Sin consumo con la escena quieta (laptops con Iris Xe/UHD 620); capturas en ~100 ms; e2e de 7.9 a 4.4 min. (−) Toda animación nueva por cuadro (teléfono sonando, ambientales) debe pedir sus cuadros con `invalidate` mientras dure; si no, se congela.
+
+## ADR-019 · `pg` (node-postgres) para la base de partidas · aceptada
+
+**Contexto.** F4-11 guarda las partidas en el PostgreSQL de Railway (ADR-010). Hace falta un driver con consultas parametrizadas, pool de conexiones y tiempos límite.
+**Decisión.** `pg` 8.x (node-postgres, licencia MIT, el driver de Postgres más usado en Node, mantenido activamente; dependencias propias del mismo proyecto: `pg-pool`, `pg-protocol`, `pg-types`) y `@types/pg` como dependencia de desarrollo. Pool de 5 conexiones, `statement_timeout` de 5 s, conexión en 5 s. Solo consultas con `$1…`; sin SQL dinámico. Las pruebas corren el mismo contrato contra memoria y contra un Postgres real (servicio en CI, `PRUEBAS_PG_URL` en local).
+**Consecuencias.** (+) Driver estándar, bien auditado, con tipos. (−) Una dependencia de servidor más (entra en la imagen de producción); se vigila con `npm audit` y Dependabot.

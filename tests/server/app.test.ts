@@ -105,14 +105,24 @@ describe("servidor", () => {
 
 describe("variables de entorno del servidor", () => {
   it("usa valores por omisión seguros", () => {
-    expect(leerEntorno({})).toEqual({ port: 3000, trustProxyHops: 1 });
+    expect(leerEntorno({})).toEqual({ port: 3000, trustProxyHops: 1, produccion: false });
   });
 
   it("acepta valores válidos", () => {
-    expect(leerEntorno({ PORT: "8080", TRUST_PROXY_HOPS: "2", STATIC_DIR: "/app/x" })).toEqual({
+    expect(
+      leerEntorno({
+        PORT: "8080",
+        TRUST_PROXY_HOPS: "2",
+        STATIC_DIR: "/app/x",
+        NODE_ENV: "production",
+        DATABASE_URL: "postgresql://u:p@postgres.railway.internal:5432/railway",
+      }),
+    ).toEqual({
       port: 8080,
       trustProxyHops: 2,
       staticDir: "/app/x",
+      produccion: true,
+      databaseUrl: "postgresql://u:p@postgres.railway.internal:5432/railway",
     });
   });
 
@@ -122,6 +132,8 @@ describe("variables de entorno del servidor", () => {
     [{ TRUST_PROXY_HOPS: "Infinity" }, /TRUST_PROXY_HOPS/],
     [{ TRUST_PROXY_HOPS: "" }, /TRUST_PROXY_HOPS/],
     [{ TRUST_PROXY_HOPS: "9" }, /TRUST_PROXY_HOPS/],
+    [{ DATABASE_URL: "mysql://x" }, /DATABASE_URL/],
+    [{ DATABASE_URL: "" }, /DATABASE_URL/],
   ])("rechaza %o", (env, error) => {
     expect(() => leerEntorno(env)).toThrow(error);
   });

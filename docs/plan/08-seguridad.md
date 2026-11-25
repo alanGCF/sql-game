@@ -17,7 +17,7 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 | Amenaza | Ejemplo | Controles |
 |---|---|---|
 | **Inyección SQL en el servidor** | Código o datos maliciosos en la partida | Consultas siempre parametrizadas (`pg` con `$1`), sin SQL dinámico; el JSON se guarda como `jsonb` validado |
-| **Adivinar códigos ajenos** | Fuerza bruta sobre `GET /api/partidas/:codigo` | ≈ 60 bits de entropía (CSPRNG), límite de tasa por IP, validación de formato antes de tocar la base, respuesta uniforme para inexistente, alertas por volumen |
+| **Adivinar códigos ajenos** | Fuerza bruta sobre `GET /api/partidas/:codigo` | 55 bits de entropía (11 símbolos CSPRNG + verificador), límite de tasa por IP, validación de formato antes de tocar la base, respuesta uniforme para inexistente, alertas por volumen |
 | **Sobrescribir partidas ajenas** | `PUT` con un código adivinado | Mismo control anterior; además `revision` monotónica |
 | **Robo de la base** | Fuga de datos | Solo se guarda `sha256(código)`; no hay datos personales salvo el nombre elegido; respaldos de Railway |
 | **Usar el servidor como almacenamiento gratis** | Partidas de 10 MB con basura | Cuerpo ≤ 64 KB, esquema Zod estricto (rechaza claves desconocidas), límites por campo (notas ≤ 200 × 500 car.), límite de creación 10/h por IP, retención de 60 días (D-18) |
