@@ -1,4 +1,12 @@
-import { type ClipboardEvent, type DragEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  type ClipboardEvent,
+  type DragEvent,
+  type KeyboardEvent,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useEscena } from "../game/store";
 import { type LineaTerminal, useTerminal } from "../game/terminalStore";
 import { parsearAnsi } from "./ansi";
@@ -33,6 +41,16 @@ export function Terminal() {
   const [indiceHistorial, setIndiceHistorial] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const finRef = useRef<HTMLDivElement>(null);
+  /** Cursor a colocar en cuanto React pinte la línea completada (no en un rAF que puede llegar tarde). */
+  const cursorPendiente = useRef<number | null>(null);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: se coloca el cursor cuando cambia la entrada.
+  useLayoutEffect(() => {
+    const c = cursorPendiente.current;
+    if (c === null) return;
+    cursorPendiente.current = null;
+    inputRef.current?.setSelectionRange(c, c);
+  }, [entrada]);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -51,15 +69,17 @@ export function Terminal() {
     const historial = shell.sesion.historial;
     if (e.key === "Tab") {
       e.preventDefault();
-      const cursor = inputRef.current?.selectionStart ?? entrada.length;
-      const r = shell.completar(entrada, cursor);
+      // Lo que hay en el campo ahora mismo (no el estado de React, que puede ir un render atrás).
+      const valor = e.currentTarget.value;
+      const cursor = e.currentTarget.selectionStart ?? valor.length;
+      const r = shell.completar(valor, cursor);
       if (r.candidatos.length) {
-        if (tabPrevio.current) listarCandidatos(entrada, r.candidatos);
+        if (tabPrevio.current) listarCandidatos(valor, r.candidatos);
         tabPrevio.current = true;
         return;
       }
+      cursorPendiente.current = r.cursor;
       setEntrada(r.linea);
-      requestAnimationFrame(() => inputRef.current?.setSelectionRange(r.cursor, r.cursor));
       tabPrevio.current = false;
       return;
     }
@@ -105,7 +125,12 @@ export function Terminal() {
             ref={inputRef}
             aria-label="Comando"
             value={entrada}
-            onChange={(e) => setEntrada(e.target.value)}
+            onChange={(e) => {
+              // Escribir (o pegar el valor de una prueba) rompe la secuencia de doble Tab.
+              tabPrevio.current = false;
+              cursorPendiente.current = null;
+              setEntrada(e.target.value);
+            }}
             onKeyDown={tecla}
             onPaste={bloquear}
             onDrop={bloquear}
