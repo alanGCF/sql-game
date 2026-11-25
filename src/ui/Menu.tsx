@@ -1,8 +1,9 @@
 import { type ClipboardEvent, type DragEvent, type FormEvent, useEffect, useRef, useState } from "react";
 import { usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
+import { ControlesAjustes } from "./Ajustes";
 
-type Paso = "inicio" | "nombre" | "creditos";
+type Paso = "inicio" | "nombre" | "ajustes" | "creditos";
 
 /** Menú de inicio (D-23): tu gafete de empleado sobre la escena desenfocada. */
 export function Menu() {
@@ -67,8 +68,20 @@ export function Menu() {
               >
                 Checar entrada con mi número
               </button>
+              <button type="button" onClick={() => setPaso("ajustes")}>
+                Ajustes
+              </button>
               <button type="button" onClick={() => setPaso("creditos")}>
                 Créditos
+              </button>
+            </div>
+          )}
+
+          {paso === "ajustes" && (
+            <div className="gafete-acciones">
+              <ControlesAjustes />
+              <button type="button" onClick={() => setPaso("inicio")}>
+                Regresar
               </button>
             </div>
           )}

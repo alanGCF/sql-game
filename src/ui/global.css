@@ -1,5 +1,6 @@
 :root {
   color-scheme: dark;
+  --escala: 1;
   --bg: #0e0f12;
   --text: #e8e4da;
   --acento: #e0702b;
@@ -45,7 +46,7 @@ body,
   flex-direction: column;
   overflow: hidden;
   z-index: 5;
-  font-size: clamp(13px, 1.9vh, 20px);
+  font-size: calc(clamp(13px, 1.9vh, 20px) * var(--escala));
 }
 .monitor-pestanas {
   flex: none;
@@ -90,7 +91,7 @@ body,
   background: var(--term-bg);
   color: var(--term-fg);
   font-family: var(--fuente-mono);
-  font-size: clamp(13px, 1.9vh, 20px);
+  font-size: inherit;
   line-height: 1.45;
   overflow: hidden;
 }
@@ -364,7 +365,7 @@ body,
   border-radius: 14px;
   background: rgb(12 16 18 / 88%);
   color: #f1ece2;
-  font-size: clamp(16px, 2.4vh, 27px);
+  font-size: calc(clamp(16px, 2.4vh, 27px) * var(--escala));
   line-height: 1.4;
   z-index: 8;
 }
@@ -402,7 +403,7 @@ body,
   background: #f7f4ee;
   color: #2b2622;
   box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
-  font-size: clamp(15px, 2.1vh, 23px);
+  font-size: calc(clamp(15px, 2.1vh, 23px) * var(--escala));
   z-index: 8;
 }
 .llamada-cabeza {
@@ -549,4 +550,83 @@ body,
 .gafete-creditos p {
   margin: 0;
   line-height: 1.45;
+}
+
+/* Ajustes (F3-08): tamaño de letra y contraste alto, aplicados desde src/game/ajustes.ts. */
+:root[data-letra="grande"] {
+  --escala: 1.2;
+}
+:root[data-letra="muy-grande"] {
+  --escala: 1.4;
+}
+:root[data-contraste="alto"] {
+  --term-bg: #000;
+  --term-fg: #fff;
+  --term-glosa: #ffd27a;
+  --term-prompt: #8ff0c0;
+}
+:root[data-contraste="alto"] .tickets {
+  --tk-suave: #1d2733;
+  --tk-borde: #5b6b7f;
+}
+:root[data-contraste="alto"] .subtitulo {
+  background: rgb(0 0 0 / 96%);
+  color: #fff;
+}
+.boton-ajustes {
+  position: fixed;
+  left: 14px;
+  top: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgb(255 255 255 / 30%);
+  background: rgb(14 15 18 / 80%);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 12;
+}
+.panel-ajustes {
+  position: fixed;
+  left: 14px;
+  top: 54px;
+  width: min(360px, 90vw);
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fbfaf6;
+  color: #2b2622;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+  z-index: 12;
+}
+.panel-ajustes > button {
+  margin-top: 10px;
+  font: inherit;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #c9b89b;
+  background: #fff;
+  color: #2b2622;
+  cursor: pointer;
+}
+.ajustes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  text-align: left;
+}
+.ajuste {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+fieldset.ajuste {
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0.4em 0.6em;
+  border: 1px solid #c9b89b;
+  border-radius: 8px;
+}
+fieldset.ajuste label {
+  margin-right: 0.8em;
 }

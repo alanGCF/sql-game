@@ -13,6 +13,7 @@
     "src/game/jornada.ts",
     "src/game/tickets.ts",
     "src/game/dialogos.ts",
+    "src/game/ajustes-datos.ts",
     "src/engine",
     "scripts/play.ts",
     "shared",

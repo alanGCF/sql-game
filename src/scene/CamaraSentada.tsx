@@ -1,6 +1,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { useAjustes } from "../game/ajustes";
 import { type Rect, useEscena, type Vista } from "../game/store";
 import { isTestMode } from "../test-hooks";
 import { MONITOR } from "./Cubiculo";
@@ -44,6 +45,9 @@ function quaternionMirando(desde: THREE.Vector3, hacia: THREE.Vector3): THREE.Qu
  * Cámara de jugador sentado: en la vista general gira hacia donde apunta el cursor;
  * al elegir un objeto, se acerca a su pose con una transición suave.
  */
+/** Sin deslizamiento de cámara en pruebas o con "reducir movimiento" (F3-08). */
+const sinMovimiento = () => isTestMode || useAjustes.getState().reducirMovimiento;
+
 export function CamaraSentada() {
   const { camera, pointer } = useThree();
   const vista = useEscena((s) => s.vista);
@@ -56,9 +60,6 @@ export function CamaraSentada() {
     haciaPos: THREE.Vector3;
     haciaRot: THREE.Quaternion;
   } | null>(null);
-  const reducirMovimiento = useRef(
-    isTestMode || window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
 
   // Cada cambio de vista arranca una transición desde la pose actual.
   useEffect(() => {
@@ -68,7 +69,7 @@ export function CamaraSentada() {
         ? new THREE.Quaternion().setFromEuler(euler.current)
         : quaternionMirando(POSES[vista].pos, POSES[vista].mira);
     transicion.current = {
-      t: reducirMovimiento.current ? DURACION_TRANSICION : 0,
+      t: sinMovimiento() ? DURACION_TRANSICION : 0,
       desdePos: camera.position.clone(),
       desdeRot: camera.quaternion.clone(),
       haciaPos,
@@ -97,7 +98,7 @@ export function CamaraSentada() {
     const py = conZonaMuerta(forzado?.y ?? pointer.y);
     const yaw = -px * GIRO_MAX;
     const pitch = REPOSO + (py >= 0 ? py * ARRIBA_MAX : py * ABAJO_MAX);
-    const k = reducirMovimiento.current ? 1 : 1 - Math.exp(-dt * 6);
+    const k = sinMovimiento() ? 1 : 1 - Math.exp(-dt * 6);
     euler.current.y += (yaw - euler.current.y) * k;
     euler.current.x += (pitch - euler.current.x) * k;
     camera.position.copy(OJOS);

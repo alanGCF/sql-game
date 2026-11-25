@@ -164,7 +164,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** Nueva partida, Continuar (el código llega en F4), Ajustes, Créditos; sobre la escena desenfocada.
 - **Listo cuando:** e2e de nueva partida hasta T1-M1; capturas aprobadas.
 
-### F3-08 · Ajustes básicos · `pendiente` · depende: F3-07
+### F3-08 · Ajustes básicos · `hecha (2026-11-25)` · depende: F3-07
 - **Hacer:** reducir movimiento, tamaño de letra de la terminal, contraste alto; se guardan en el navegador.
 - **Listo cuando:** e2e cambia cada ajuste y se conserva al recargar.
 

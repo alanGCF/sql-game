@@ -298,3 +298,25 @@ test("menú (gafete): primer día pide el nombre tecleado y empieza el turno", a
   await expect(page.getByTestId("dialogo")).toContainText("Eduardo Téllez · Sistemas");
   expect((await page.evaluate(() => window.__planta7?.partida?.()))?.nombre).toBe("Ale");
 });
+
+test("ajustes: letra, contraste y reducir movimiento se aplican y se conservan al recargar", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await abrir(page);
+  await page.getByRole("button", { name: "Ajustes" }).click();
+  const panel = page.getByRole("region", { name: "Ajustes" });
+  await panel.getByLabel("Muy grande").check();
+  await panel.getByLabel("Contraste alto").check();
+  await panel.getByLabel(/Reducir movimiento/).check();
+  const raiz = () =>
+    page.evaluate(() => [document.documentElement.dataset.letra, document.documentElement.dataset.contraste]);
+  expect(await raiz()).toEqual(["muy-grande", "alto"]);
+
+  await page.reload();
+  // Recargar la escena con WebGL por software tarda más cuando corre toda la suite.
+  await page.waitForFunction(() => window.__planta7?.ready === true, null, { timeout: 90_000 });
+  expect(await raiz()).toEqual(["muy-grande", "alto"]);
+  await page.getByRole("button", { name: "Ajustes" }).click();
+  await expect(page.getByRole("region", { name: "Ajustes" }).getByLabel(/Reducir movimiento/)).toBeChecked();
+});

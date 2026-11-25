@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useEscena } from "../game/store";
+import { ControlesAjustes } from "./Ajustes";
 import { Dialogos } from "./Dialogos";
 import { Menu } from "./Menu";
 import { Monitor } from "./Monitor";
@@ -48,6 +49,8 @@ export function Capas() {
   const vista = useEscena((s) => s.vista);
   const transicionando = useEscena((s) => s.transicionando);
   const setVista = useEscena((s) => s.setVista);
+  const enMenu = useEscena((s) => s.enMenu);
+  const [ajustes, setAjustes] = useState(false);
 
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => {
@@ -60,6 +63,24 @@ export function Capas() {
   return (
     <>
       <EtiquetaHover />
+      {!enMenu && (
+        <button
+          type="button"
+          className="boton-ajustes"
+          aria-expanded={ajustes}
+          onClick={() => setAjustes((v) => !v)}
+        >
+          Ajustes
+        </button>
+      )}
+      {!enMenu && ajustes && (
+        <section className="panel-ajustes" aria-label="Ajustes">
+          <ControlesAjustes />
+          <button type="button" onClick={() => setAjustes(false)}>
+            Cerrar
+          </button>
+        </section>
+      )}
       {vista === "monitor" && <Monitor />}
       {vista !== "general" && vista !== "monitor" && !transicionando && NOMBRES[vista] && (
         <div className="aviso-vista">{NOMBRES[vista]}</div>
