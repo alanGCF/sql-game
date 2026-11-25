@@ -132,7 +132,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 
 ---
 
-## F3 — Escena del cubículo con T1 jugable
+## F3 — Escena del cubículo con T1 jugable · `cerrada (2026-11-25)` *(revisión visual aprobada por el usuario; en producción con a6b1024)*
 
 Salida de la fase: se puede jugar T1 completo en el navegador desde el escritorio 3D (estilo C); revisión visual aprobada por el usuario. Las pistas por teléfono, la libreta y el código de partida llegan en F4. Las tareas marcadas **(consultar)** llevan decisiones de estética: se proponen 2–3 opciones con capturas antes de cerrarlas.
 

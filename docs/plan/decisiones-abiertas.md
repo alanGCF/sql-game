@@ -37,8 +37,11 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
 | D-21 | Look de la app Tickets | **A · mesa de ayuda corporativa** (clara, lista a la izquierda y detalle con respuesta a la derecha) |
 | D-22 | Diálogos, llamadas y visitas | **Llamadas: tarjeta a un lado (C)** con iniciales, nombre y extensión. **Todo lo demás: subtítulo abajo (A)** con el nombre y el **departamento** de quien habla (nunca la palabra "visita") |
+| D-24 | Límites de la API para un salón detrás de una sola IP | **Se quedan como están**: 10 partidas nuevas por hora por IP (o /56 de IPv6), 60 lecturas/guardados por minuto, 20 códigos inexistentes por hora |
 | D-23 | Menú de inicio | **C · tu gafete de empleado** sobre la escena desenfocada: "Primer día de trabajo", "Checar entrada con mi número" (el número de empleado es el código de partida, D-15), ajustes y créditos |
 
 ## Abiertas
 
-Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.
+| # | Decisión | Opciones | Bloquea |
+|---|---|---|---|
+| D-25 | Fuentes empaquetadas (OFL) | **Sí** a empaquetarlas (decidido 2026-11-25); falta elegir cuáles viéndolas: monoespaciada de la terminal (JetBrains Mono / IBM Plex Mono) y sans de la interfaz y las texturas | F4-05 (libreta) y la coherencia de las texturas entre sistemas |
