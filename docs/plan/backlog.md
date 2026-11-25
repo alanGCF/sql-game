@@ -168,7 +168,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** reducir movimiento, tamaño de letra de la terminal, contraste alto; se guardan en el navegador.
 - **Listo cuando:** e2e cambia cada ajuste y se conserva al recargar.
 
-### F3-09 · Capturas de referencia (`toHaveScreenshot`) · `pendiente` · depende: F3-06
+### F3-09 · Capturas de referencia (`toHaveScreenshot`) · `hecha (2026-11-25)` *(15 vistas a 1280×720 generadas y comparadas solo en CI, en el contenedor de Playwright fijado por digest; `[capturas]` en el último commit las regenera y un job sin dependencias las sube validadas. Para que las capturas fueran rápidas y estables, la escena se dibuja a demanda (ADR-018). El calendario ya encierra el día del turno (28 de oct en T1) y no trae estrellas de relleno)* · depende: F3-06
 - **Hacer:** vistas de `07-calidad-harness.md` §5 con tolerancias; CI las compara.
 - **Listo cuando:** CI en verde con las referencias aprobadas.
 

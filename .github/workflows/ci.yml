@@ -45,6 +45,116 @@ jobs:
             test-results
           retention-days: 7
 
+  # Capturas de referencia (F3-09): solo valen en el contenedor oficial de Playwright (mismas fuentes y
+  # Chromium). Un push a develop con "[capturas]" en el mensaje del último commit las regenera y las sube.
+  capturas:
+    name: Capturas de referencia (contenedor de Playwright)
+    if: ${{ !contains(github.event.head_commit.message, '[capturas]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Compara contra las referencias
+        if: ${{ hashFiles('tests/e2e/capturas.spec.ts-snapshots/*.png') != '' }}
+        run: npx playwright test tests/e2e/capturas.spec.ts --project desktop-720
+        env:
+          CAPTURAS: "1"
+      - if: failure()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: capturas-diferencias
+          path: test-results
+          retention-days: 7
+
+  capturas-generar:
+    name: Regenerar capturas de referencia
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' && contains(github.event.head_commit.message, '[capturas]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: |
+          rm -rf tests/e2e/capturas.spec.ts-snapshots
+          npx playwright test tests/e2e/capturas.spec.ts --project desktop-720 --update-snapshots=all
+        env:
+          CAPTURAS: "1"
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: capturas
+          path: tests/e2e/capturas.spec.ts-snapshots/
+          if-no-files-found: error
+          retention-days: 3
+
+  # Único job con escritura: no instala dependencias ni corre código del repo; solo copia PNG validados.
+  capturas-subir:
+    name: Subir capturas de referencia a develop
+    needs: capturas-generar
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: develop
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: capturas
+          path: ${{ runner.temp }}/capturas
+      - name: Valida que solo haya PNG con los nombres esperados
+        env:
+          DIR: ${{ runner.temp }}/capturas
+        run: |
+          set -eu
+          n=0
+          for f in "$DIR"/* "$DIR"/.[!.]*; do
+            [ -e "$f" ] || continue
+            nombre=$(basename "$f")
+            if [ -L "$f" ] || [ ! -f "$f" ]; then echo "no es un archivo normal: $nombre"; exit 1; fi
+            if ! printf '%s' "$nombre" | grep -Eq '^[a-z0-9-]+-desktop-720-linux\.png$'; then echo "nombre inesperado: $nombre"; exit 1; fi
+            if [ "$(head -c 8 "$f" | od -An -tx1 | tr -d ' \n')" != "89504e470d0a1a0a" ]; then echo "no es PNG: $nombre"; exit 1; fi
+            if [ "$(stat -c %s "$f")" -gt 3000000 ]; then echo "demasiado grande: $nombre"; exit 1; fi
+            n=$((n + 1))
+          done
+          [ "$n" -gt 0 ]
+      - name: Commit y push a develop
+        env:
+          DIR: ${{ runner.temp }}/capturas
+        run: |
+          set -eu
+          destino=tests/e2e/capturas.spec.ts-snapshots
+          rm -rf "$destino"
+          mkdir -p "$destino"
+          cp "$DIR"/*.png "$destino"/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A "$destino"
+          if git diff --cached --quiet; then echo "Las referencias no cambiaron."; exit 0; fi
+          git commit -m "F3-09: capturas de referencia regeneradas en CI" -m "Generadas en el contenedor de Playwright desde $GITHUB_SHA."
+          for i in 1 2 3; do
+            if git pull --rebase origin develop && git push origin HEAD:develop; then exit 0; fi
+            sleep 5
+          done
+          exit 1
+
   goldens:
     name: Goldens contra debian:stable (vigencia)
     runs-on: ubuntu-latest

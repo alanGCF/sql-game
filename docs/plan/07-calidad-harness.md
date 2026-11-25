@@ -76,10 +76,10 @@ Corre en cada build, en CI y en el hook al editar YAML. Severidad **error** (rom
 
 - **Modo de prueba `?test=1`:** cámara sin amortiguación, animaciones desactivadas o instantáneas, reloj de juego fijo, semilla fija, ambientales apagados, `window.__game` expone acciones de prueba (girar cámara a un ángulo, acercarse a un objeto, ejecutar comando).
 - **Proyecto `desktop-1080` (1920×1080) y `desktop-720` (1280×720).** WebGL por software (SwiftShader) en headless.
-- **Capturas de referencia** (`toHaveScreenshot`, tolerancia `maxDiffPixelRatio` 0.01–0.02) de: menú, cubículo al frente, mirando a izquierda/derecha/abajo, cada vista acercada (monitor, teléfono, libreta, pizarrón, calendario), terminal con salida, globo de pensamiento, diálogo de visita, llamada en curso.
+- **Capturas de referencia** (`tests/e2e/capturas.spec.ts`, `toHaveScreenshot`, tolerancia `maxDiffPixelRatio` 0.015, a 1280×720) de: menú, cubículo al frente con el briefing y de tarde, atardecer y noche, mirando a izquierda/derecha/escritorio, cada vista acercada (teléfono, libreta, pizarrón, calendario), terminal con salida, app Tickets, llamada en curso. Globo de pensamiento y visita con opciones se agregan cuando existan (F4). Se generan y comparan **solo en CI**, en el contenedor oficial de Playwright fijado por digest (mismas fuentes y Chromium); un push a `develop` con `[capturas]` en el mensaje del último commit las regenera y un job sin dependencias las sube validadas (solo PNG con nombre esperado).
 - **Flujos funcionales:** nuevo ingreso → código mostrado → T0 completo → recargar → checar entrada con el código → mismo estado; zoom in/out; pegar bloqueado en terminal y libreta; texto de libreta no seleccionable; teclado completo (`Tab`/`Enter`/`Esc`).
 - **Accesibilidad:** axe sobre las capas DOM sin violaciones *serious/critical*; subtítulos presentes para cada audio disparado.
-- **Rendimiento:** medición de FPS y draw calls con `renderer.info` en una vista fija (umbral relajado en SwiftShader; la medición real se hace en hardware en F9).
+- **Rendimiento:** medición de FPS y draw calls con `renderer.info` en una vista fija (umbral relajado en SwiftShader; la medición real se hace en hardware en F9). La escena se dibuja a demanda (ADR-018): quieta no gasta GPU, y las capturas salen en ~100 ms aun con WebGL por software.
 - **Revisión humana-agente:** la skill `revision-visual` además **abre las capturas** y las evalúa contra `docs/diseno/direccion-arte.md` (encuadre, legibilidad, contraste, que nada se salga o se encime). Las capturas del cambio se envían al usuario cuando hay decisiones estéticas.
 
 ## 6. CI (GitHub Actions)
@@ -90,7 +90,7 @@ En cada push a `develop` y `main` y en PRs:
 2. `npm run typecheck` · `npm run lint`
 3. `npm run test` (motor, servidor, contenido con 25 semillas)
 4. `npm run build` + `npm run size`
-5. `npm run e2e` (flujos + capturas)
+5. `npm run e2e` (flujos) y job `capturas` (referencias en el contenedor de Playwright)
 6. `npm audit --audit-level=high` · CodeQL (repo público; sube a Security y falla con hallazgos) · escaneo de secretos de GitHub
 7. Job `goldens` (`debian:stable`): recaptura y compara goldens (falla si el sistema real cambió)
 8. Job `imagen`: construye el Dockerfile, arranca el contenedor, comprueba `/healthz`, cabeceras, usuario `node` y que no pueda escribir su código
