@@ -10,7 +10,10 @@ const Id = z
   .min(1)
   .max(60)
   .regex(/^[a-z0-9_-]+$/);
-const Texto = (max: number) => z.string().max(max);
+// Sin NUL ni surrogates sueltos: Postgres jsonb los rechaza y serían un 503 a voluntad.
+const SURROGATE_SUELTO = /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/;
+export const textoSeguro = (s: string) => !s.includes("\u0000") && !SURROGATE_SUELTO.test(s);
+const Texto = (max: number) => z.string().max(max).refine(textoSeguro, "texto con caracteres inválidos");
 
 const EntradaDiff = z.strictObject({
   ruta: Texto(500).startsWith("/"),
@@ -39,7 +42,7 @@ const GuardadoMision = z.strictObject({
 export const PartidaEsquema = z.strictObject({
   formato: z.literal(1),
   semilla: z.number().int().min(0).max(0xffffffff),
-  nombre: z.string().trim().min(1).max(40),
+  nombre: z.string().trim().min(1).max(40).refine(textoSeguro, "texto con caracteres inválidos"),
   contenido: Texto(64),
   turno: z.number().int().min(0).max(14),
   completadas: z.record(Id, z.strictObject({ estrellas: z.number().int().min(1).max(3) })),

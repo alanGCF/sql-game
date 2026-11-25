@@ -17,9 +17,9 @@ El juego será público. Se asume que lo van a probar personas con conocimientos
 | Amenaza | Ejemplo | Controles |
 |---|---|---|
 | **Inyección SQL en el servidor** | Código o datos maliciosos en la partida | Consultas siempre parametrizadas (`pg` con `$1`), sin SQL dinámico; el JSON se guarda como `jsonb` validado |
-| **Adivinar códigos ajenos** | Fuerza bruta sobre `GET /api/partidas/:codigo` | 55 bits de entropía (11 símbolos CSPRNG + verificador), límite de tasa por IP, validación de formato antes de tocar la base, respuesta uniforme para inexistente, alertas por volumen |
+| **Adivinar códigos ajenos** | Fuerza bruta sobre `GET`/`PUT /api/partida` | 55 bits de entropía (11 símbolos CSPRNG + verificador), un solo presupuesto de 60/min por origen (IPv4 o /64 de IPv6) para leer y guardar, 20 códigos inexistentes por hora por origen y luego 429, sin `HEAD`, validación de formato antes de tocar la base, respuesta uniforme para inexistente, advertencia en el log al llegar al tope |
 | **Sobrescribir partidas ajenas** | `PUT` con un código adivinado | Mismo control anterior; además `revision` monotónica |
-| **Robo de la base** | Fuga de datos | Solo se guarda `sha256(código)`; no hay datos personales salvo el nombre elegido; respaldos de Railway |
+| **Robo de la base** | Fuga de datos | Solo se guarda HMAC-SHA256(código) con una clave que vive fuera de la base (`PARTIDAS_PEPPER`); no hay datos personales salvo el nombre elegido; respaldos de Railway |
 | **Usar el servidor como almacenamiento gratis** | Partidas de 10 MB con basura | Cuerpo ≤ 64 KB, esquema Zod estricto (rechaza claves desconocidas), límites por campo (notas ≤ 200 × 500 car.), límite de creación 10/h por IP, retención de 60 días (D-18) |
 | **Denegación de servicio** | Ráfagas de peticiones | `@fastify/rate-limit` con dos contadores por IP (página/API 300/min; `/assets/` 1200/min para salones detrás de un NAT), los 404 también cuentan, límites de cuerpo y tiempo de conexión, sin operaciones costosas por petición; protección del proxy de Railway; CDN delante si crece el tráfico |
 | **XSS** | Nombre o notas con `<script>` | React escapa por defecto; prohibido `dangerouslySetInnerHTML` (regla de lint); contenido Markdown de la libreta se compila en build, no del usuario; CSP estricta |

@@ -23,7 +23,7 @@ export default defineConfig({
     { name: "desktop-720", use: { browserName: "chromium", viewport: { width: 1280, height: 720 } } },
   ],
   webServer: {
-    command: `npm run build && PORT=${PORT} node dist/node/server/src/index.js`,
+    command: `npm run build && PARTIDAS_EN_MEMORIA=1 PORT=${PORT} node dist/node/server/src/index.js`,
     url: `http://127.0.0.1:${PORT}/healthz`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

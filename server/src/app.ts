@@ -1,5 +1,5 @@
 import fastifyHelmet from "@fastify/helmet";
-import fastifyRateLimit from "@fastify/rate-limit";
+import fastifyRateLimit, { normalizeIP } from "@fastify/rate-limit";
 import fastifyStatic from "@fastify/static";
 import Fastify, {
   type FastifyError,
@@ -12,8 +12,7 @@ import {
   LIMITE_TASA_ASSETS_POR_MINUTO,
   LIMITE_TASA_GLOBAL_POR_MINUTO,
 } from "../../shared/limites.js";
-import type { RepositorioPartidas } from "./partidas.js";
-import { rutasPartidas } from "./rutas-partidas.js";
+import { type OpcionesPartidas, rutasPartidas } from "./rutas-partidas.js";
 
 export interface AppOptions {
   /** Carpeta del build del cliente. Sin ella solo se sirve la API. */
@@ -25,8 +24,8 @@ export interface AppOptions {
   trustProxyHops?: number;
   rateLimitMax?: number;
   rateLimitAssetsMax?: number;
-  /** Almacén de partidas. `null`: sin base, la API contesta 503. Sin la opción no se registra la API. */
-  partidas?: RepositorioPartidas | null;
+  /** Almacén de partidas y clave del HMAC. `null`: sin base, la API contesta 503. Sin la opción no hay API. */
+  partidas?: OpcionesPartidas | null;
 }
 
 /** CSP estricta: todo del mismo origen; WASM permitido para sql.js. Cambiarla requiere ADR. */
@@ -112,7 +111,8 @@ export async function buildApp(opts: AppOptions = {}): Promise<FastifyInstance> 
   await app.register(fastifyRateLimit, {
     global: true,
     // Dos contadores por IP: archivos con hash de /assets/ y todo lo demás (página y API).
-    keyGenerator: (req) => `${req.ip}|${esAsset(req) ? "assets" : "general"}`,
+    // IPv6 agrupado por /64: si no, una sola conexión con millones de direcciones no tendría límite.
+    keyGenerator: (req) => `${normalizeIP(req.ip, 64)}|${esAsset(req) ? "assets" : "general"}`,
     max: (req) => (esAsset(req) ? maxAssets : maxGeneral),
     timeWindow: "1 minute",
   });

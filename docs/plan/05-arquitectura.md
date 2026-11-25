@@ -189,13 +189,15 @@ Ejemplo comentado: `docs/ejemplos/mision-ejemplo.yaml`.
 | Método y ruta | Qué hace | Límites |
 |---|---|---|
 | `GET /healthz` | Estado (sin datos internos) | — |
-| `POST /api/partidas` | Crea partida: genera código (CSPRNG) y semilla; guarda `sha256(código)` | 10/h por IP |
-| `GET /api/partidas/:codigo` | Devuelve la partida si el código existe | 30/min por IP; respuesta uniforme si no existe |
-| `PUT /api/partidas/:codigo` | Guarda checkpoint (cuerpo validado con Zod, versión de formato, `revision` para evitar sobrescrituras viejas) | 60/min por IP; ≤ 64 KB |
+| `POST /api/partidas` | Crea partida: genera código (CSPRNG) y semilla; guarda `HMAC-SHA256(código)` con la clave `PARTIDAS_PEPPER` | 10/h por origen |
+| `GET /api/partida` | Devuelve la partida del código de la cabecera `x-codigo-partida` | comparte 60/min por origen con `PUT`; respuesta uniforme si no existe |
+| `PUT /api/partida` | Guarda checkpoint (cuerpo validado con Zod, versión de formato, `revision` para evitar sobrescrituras viejas) | comparte 60/min con `GET`; ≤ 64 KB |
+
+Origen = IPv4, o el /64 de una IPv6. El código viaja en la cabecera `x-codigo-partida`, nunca en la URL (los logs del borde de Railway registran la ruta). Con 20 códigos inexistentes en una hora, ese origen recibe 429 en toda petición con código durante esa hora (y queda una advertencia en el log, sin los códigos). No hay `HEAD` en `/api/partida`.
 
 - **Código:** 12 caracteres del alfabeto Crockford base32 sin `I L O U`: 11 aleatorios con CSPRNG (55 bits) y un verificador Luhn mod 32 que detecta errores de tecleo antes de llamar al servidor (`shared/codigo.ts`). Al leerlo se aceptan minúsculas, guiones, `O`→`0` e `I`/`L`→`1`.
-- **Implementación (F4-11):** `server/src/rutas-partidas.ts` y `server/src/partidas.ts` (repositorio en memoria para desarrollo y pruebas, Postgres con `pg` en producción; mismo contrato probado contra los dos). Sin `DATABASE_URL`: memoria en desarrollo, 503 en producción. La tabla se crea en la primera operación; si la base no responde, la API contesta 503 y el sitio sigue.
-- **Almacenamiento:** tabla `partidas(codigo_hash bytea primary key, datos jsonb, revision int, creada timestamptz, actualizada timestamptz)`. Nunca se guarda el código en claro.
+- **Implementación (F4-11):** `server/src/rutas-partidas.ts` y `server/src/partidas.ts` (repositorio en memoria para desarrollo y pruebas, Postgres con `pg` en producción; mismo contrato probado contra los dos). Sin `DATABASE_URL` o `PARTIDAS_PEPPER`, la API contesta 503; la memoria solo se usa con `PARTIDAS_EN_MEMORIA=1` fuera de producción (desarrollo y e2e). Si la tabla no existe se crea en la primera operación (usuario dueño); con un usuario de permisos mínimos ya existe y solo se usa DML. Si la base no responde, la API contesta 503 y el sitio sigue. Textos con NUL o surrogates sueltos se rechazan en la validación (Postgres `jsonb` no los acepta).
+- **Almacenamiento:** tabla `partidas(codigo_hash bytea primary key, datos jsonb, revision int, creada timestamptz, actualizada timestamptz)`. Nunca se guarda el código en claro: `codigo_hash` es HMAC-SHA256 con una clave de 32 bytes que solo vive en el entorno del servidor (`PARTIDAS_PEPPER`), así que una copia de la base no permite recuperar códigos por fuerza bruta.
 - **Retención:** partidas sin actividad durante 60 días (2 meses) se borran con una tarea programada diaria (D-18). El juego avisa en el menú cuántos días le quedan a una partida inactiva.
 - **Sin cookies, sin sesiones, sin CORS** (mismo origen).
 - Detalle de controles: `08-seguridad.md`.

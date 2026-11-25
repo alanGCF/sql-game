@@ -9,6 +9,8 @@ import {
 import { generarCodigo } from "../../shared/codigo.js";
 import type { Partida } from "../../shared/partida.js";
 
+const PEPPER = Buffer.alloc(32, 3);
+
 const partida = (nombre = "Ale"): Partida => ({
   formato: 1,
   semilla: 7,
@@ -39,25 +41,27 @@ function contrato(nombre: string, preparar: () => Promise<Banco>, terminar: () =
     afterAll(terminar);
 
     it("crea, lee y no deja crear dos veces el mismo código", async () => {
-      const h = hashCodigo(generarCodigo());
+      const h = hashCodigo(generarCodigo(), PEPPER);
       expect(await b.repo.crear(h, partida())).toBe(true);
       expect(await b.repo.crear(h, partida("Otro"))).toBe(false);
       expect(await b.repo.leer(h)).toEqual({ datos: partida(), revision: 1 });
-      expect(await b.repo.leer(hashCodigo(generarCodigo()))).toBeNull();
+      expect(await b.repo.leer(hashCodigo(generarCodigo(), PEPPER))).toBeNull();
     });
 
     it("guarda solo con la revisión vigente y la incrementa", async () => {
-      const h = hashCodigo(generarCodigo());
+      const h = hashCodigo(generarCodigo(), PEPPER);
       await b.repo.crear(h, partida());
       expect(await b.repo.guardar(h, partida("Dos"), 1)).toEqual({ tipo: "ok", revision: 2 });
       expect(await b.repo.guardar(h, partida("Vieja"), 1)).toEqual({ tipo: "conflicto", revision: 2 });
       expect((await b.repo.leer(h))?.datos).toMatchObject({ nombre: "Dos" });
-      expect(await b.repo.guardar(hashCodigo(generarCodigo()), partida(), 1)).toEqual({ tipo: "no_existe" });
+      expect(await b.repo.guardar(hashCodigo(generarCodigo(), PEPPER), partida(), 1)).toEqual({
+        tipo: "no_existe",
+      });
     });
 
     it("borra solo las partidas con 60 días o más sin actividad", async () => {
-      const vieja = hashCodigo(generarCodigo());
-      const reciente = hashCodigo(generarCodigo());
+      const vieja = hashCodigo(generarCodigo(), PEPPER);
+      const reciente = hashCodigo(generarCodigo(), PEPPER);
       await b.repo.crear(vieja, partida());
       await b.repo.crear(reciente, partida());
       await b.envejecer(vieja, 61);
@@ -68,7 +72,7 @@ function contrato(nombre: string, preparar: () => Promise<Banco>, terminar: () =
     });
 
     it("guarda texto hostil como dato, sin interpretarlo", async () => {
-      const h = hashCodigo(generarCodigo());
+      const h = hashCodigo(generarCodigo(), PEPPER);
       const raro = partida("'); DROP TABLE partidas; --");
       await b.repo.crear(h, raro);
       expect((await b.repo.leer(h))?.datos).toEqual(raro);

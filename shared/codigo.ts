@@ -34,7 +34,8 @@ export function generarCodigo(aleatorio: (n: number) => Uint8Array = bytesSeguro
 
 /** Forma canónica (12 símbolos) o null si no es un código válido. Barato: corre antes de la base. */
 export function normalizarCodigo(entrada: string): string | null {
-  if (entrada.length > 40) return null;
+  // Solo ASCII imprimible: el toUpperCase de Unicode volvería "ı" en "I" y aceptaría variantes raras.
+  if (entrada.length > 40 || /[^\x20-\x7e]/.test(entrada)) return null;
   const s = entrada.toUpperCase().replace(/[\s-]/g, "").replace(/O/g, "0").replace(/[IL]/g, "1");
   if (s.length !== LARGO_CODIGO || ![...s].every((c) => ALFABETO.includes(c))) return null;
   return sumaLuhn(s, false) % BASE === 0 ? s : null;

@@ -48,6 +48,14 @@ describe("formato de partida (cliente y servidor)", () => {
     expect(r.ok).toBe(false);
   });
 
+  it("rechaza NUL y surrogates sueltos en cualquier texto (Postgres jsonb no los acepta)", () => {
+    for (const malo of ["A\u0000B", "A\ud800B", "\udc00"]) {
+      expect(leerPartida({ ...valida(), nombre: malo }).ok).toBe(false);
+      expect(leerPartida({ ...valida(), notas: [malo] }).ok).toBe(false);
+    }
+    expect(leerPartida({ ...valida(), notas: ["emoji 🦎 y acentos ñ á"] }).ok).toBe(true);
+  });
+
   it("el texto del jugador se guarda tal cual (se muestra como texto, nunca como HTML)", () => {
     const p = valida();
     p.notas = ["<img src=x onerror=alert(1)>"];

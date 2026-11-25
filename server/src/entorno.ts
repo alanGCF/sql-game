@@ -22,6 +22,13 @@ const Entorno = z.object({
     .regex(/^postgres(ql)?:\/\/\S+$/, "URL postgres://")
     .optional(),
   NODE_ENV: z.string().optional(),
+  // Clave del HMAC de los códigos: 32 bytes en hex, solo en el entorno (nunca en la base).
+  PARTIDAS_PEPPER: z
+    .string()
+    .regex(/^[0-9a-f]{64}$/i, "64 caracteres hex")
+    .optional(),
+  // Partidas en memoria (se pierden al reiniciar): solo si se pide explícitamente, y nunca en producción.
+  PARTIDAS_EN_MEMORIA: z.enum(["1"]).optional(),
 });
 
 export interface Config {
@@ -29,7 +36,9 @@ export interface Config {
   trustProxyHops: number;
   staticDir?: string;
   databaseUrl?: string;
+  pepper?: Buffer;
   produccion: boolean;
+  partidasEnMemoria: boolean;
 }
 
 export function leerEntorno(env: Readonly<Record<string, string | undefined>>): Config {
@@ -42,7 +51,9 @@ export function leerEntorno(env: Readonly<Record<string, string | undefined>>): 
     port: r.data.PORT,
     trustProxyHops: r.data.TRUST_PROXY_HOPS,
     produccion: r.data.NODE_ENV === "production",
+    partidasEnMemoria: r.data.PARTIDAS_EN_MEMORIA === "1",
   };
+  if (r.data.PARTIDAS_PEPPER) c.pepper = Buffer.from(r.data.PARTIDAS_PEPPER, "hex");
   if (r.data.STATIC_DIR) c.staticDir = r.data.STATIC_DIR;
   if (r.data.DATABASE_URL) c.databaseUrl = r.data.DATABASE_URL;
   return c;

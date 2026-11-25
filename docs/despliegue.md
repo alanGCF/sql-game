@@ -20,6 +20,7 @@ Un servicio web (imagen del `Dockerfile` en la raíz) y, desde F4, una base Post
 | `NODE_ENV` | `production` | Ya viene en la imagen |
 | `TRUST_PROXY_HOPS` | `1` | Saltos de proxy confiables para obtener la IP real (límite de tasa). Entero de 0 a 3; un valor inválido detiene el arranque. No lo cambies sin hacer la prueba del paso 4 |
 | `DATABASE_URL` | referencia a la variable de la base | Conexión a PostgreSQL para la API de partidas (F4-11). Sin ella, en producción la API contesta 503 y el resto del sitio sigue. La tabla `partidas` se crea sola en el primer uso. |
+| `PARTIDAS_PEPPER` | 64 caracteres hex (32 bytes aleatorios) | Clave del HMAC con que se guardan los códigos de partida. Genérala en tu computadora con `openssl rand -hex 32` y pégala directo en Railway (nunca en un chat ni en el repo). Sin ella la API de partidas contesta 503. **No la cambies después**: con otra clave, ningún código existente vuelve a encontrar su partida. |
 
 Nunca pongas secretos en el repositorio ni en el código del cliente.
 
@@ -60,3 +61,16 @@ Hazlo desde dos redes distintas (por ejemplo, Wi-Fi de casa y datos del celular)
 El plan incluye un crédito mensual de uso. Para no pasarte: un solo servicio web, una base pequeña, límites de tasa activos (ya configurados) y revisar el uso en el panel. Configura una alerta de uso en Railway.
 
 El tráfico de salida (descargas del juego) también cuenta. El límite por IP frena a un solo abusador, no a muchos a la vez. Si el sitio se vuelve popular, conviene poner un CDN o proxy con caché delante (por ejemplo, el plan gratuito de Cloudflare) para que los archivos de `/assets/`, que nunca cambian, no salgan de Railway en cada visita.
+
+## Usuario de base con permisos mínimos (F4-11, antes de anunciar el sitio)
+
+La app puede funcionar con el usuario dueño que da Railway, pero lo recomendado es que use uno que solo pueda leer y escribir la tabla `partidas`. Después del primer despliegue con la API (la tabla ya existe), en la consola de datos del servicio PostgreSQL:
+
+```sql
+CREATE ROLE rastro_app LOGIN PASSWORD '<contraseña generada con openssl rand -hex 24>';
+GRANT CONNECT ON DATABASE railway TO rastro_app;
+GRANT USAGE ON SCHEMA public TO rastro_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON partidas TO rastro_app;
+```
+
+Luego cambia `DATABASE_URL` del servicio web para que use `rastro_app` (misma host y base, otro usuario y contraseña). Con ese usuario la app no crea tablas: solo DML.

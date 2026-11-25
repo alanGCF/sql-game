@@ -105,7 +105,12 @@ describe("servidor", () => {
 
 describe("variables de entorno del servidor", () => {
   it("usa valores por omisión seguros", () => {
-    expect(leerEntorno({})).toEqual({ port: 3000, trustProxyHops: 1, produccion: false });
+    expect(leerEntorno({})).toEqual({
+      port: 3000,
+      trustProxyHops: 1,
+      produccion: false,
+      partidasEnMemoria: false,
+    });
   });
 
   it("acepta valores válidos", () => {
@@ -116,6 +121,8 @@ describe("variables de entorno del servidor", () => {
         STATIC_DIR: "/app/x",
         NODE_ENV: "production",
         DATABASE_URL: "postgresql://u:p@postgres.railway.internal:5432/railway",
+        PARTIDAS_PEPPER: "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f",
+        PARTIDAS_EN_MEMORIA: "1",
       }),
     ).toEqual({
       port: 8080,
@@ -123,6 +130,8 @@ describe("variables de entorno del servidor", () => {
       staticDir: "/app/x",
       produccion: true,
       databaseUrl: "postgresql://u:p@postgres.railway.internal:5432/railway",
+      pepper: Buffer.from("0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f", "hex"),
+      partidasEnMemoria: true,
     });
   });
 
@@ -134,6 +143,9 @@ describe("variables de entorno del servidor", () => {
     [{ TRUST_PROXY_HOPS: "9" }, /TRUST_PROXY_HOPS/],
     [{ DATABASE_URL: "mysql://x" }, /DATABASE_URL/],
     [{ DATABASE_URL: "" }, /DATABASE_URL/],
+    [{ PARTIDAS_PEPPER: "corto" }, /PARTIDAS_PEPPER/],
+    [{ PARTIDAS_PEPPER: "z".repeat(64) }, /PARTIDAS_PEPPER/],
+    [{ PARTIDAS_EN_MEMORIA: "si" }, /PARTIDAS_EN_MEMORIA/],
   ])("rechaza %o", (env, error) => {
     expect(() => leerEntorno(env)).toThrow(error);
   });

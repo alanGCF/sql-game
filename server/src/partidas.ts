@@ -1,10 +1,11 @@
-import { createHash } from "node:crypto";
+import { createHmac } from "node:crypto";
 import pg from "pg";
 import type { Partida } from "../../shared/partida.js";
 
 /**
- * Almacén de partidas (05-arquitectura.md §Servidor, 08-seguridad.md). Solo se guarda sha256(código):
- * el código en claro nunca llega a la base ni a los logs. `revision` crece en cada guardado y evita que un
+ * Almacén de partidas (05-arquitectura.md §Servidor, 08-seguridad.md). Solo se guarda HMAC-SHA256(código)
+ * con una clave del servidor (PARTIDAS_PEPPER, fuera de la base): con una fuga de la base no se pueden
+ * recuperar códigos por fuerza bruta. El código en claro nunca llega a la base ni a los logs de la app. `revision` crece en cada guardado y evita que un
  * checkpoint viejo pise uno nuevo.
  */
 export interface Guardada {
@@ -28,7 +29,14 @@ export interface RepositorioPartidas {
   cerrar(): Promise<void>;
 }
 
-export const hashCodigo = (codigo: string): Buffer => createHash("sha256").update(codigo).digest();
+export const hashCodigo = (codigo: string, pepper: Buffer): Buffer =>
+  createHmac("sha256", pepper).update(codigo).digest();
+
+/** Solo el código de error (SQLSTATE o errno, p. ej. 53300, ECONNREFUSED): nunca mensajes ni direcciones. */
+export function codigoDeError(e: unknown): string {
+  const code = (e as { code?: unknown } | null)?.code;
+  return typeof code === "string" && /^[A-Z0-9_]{1,16}$/.test(code) ? code : "desconocido";
+}
 
 const DIA_MS = 86_400_000;
 
@@ -80,30 +88,42 @@ CREATE TABLE IF NOT EXISTS partidas (
 CREATE INDEX IF NOT EXISTS partidas_actualizada ON partidas (actualizada);
 `;
 
+const LOTE_RETENCION = 1000;
+
 /**
- * Postgres con consultas siempre parametrizadas. La tabla se crea en la primera operación; si la base no
- * responde, la operación falla (la API contesta 503) y la siguiente vuelve a intentar: el sitio no se cae.
+ * Postgres con consultas siempre parametrizadas. Si la tabla no existe, se crea en la primera operación
+ * (con el usuario dueño); con un usuario de permisos mínimos la tabla ya existe y solo se usa DML. Si la
+ * base no responde, la operación falla (la API contesta 503) y la siguiente vuelve a intentar.
  */
-export function repositorioPostgres(url: string): RepositorioPartidas {
+export function repositorioPostgres(
+  url: string,
+  alFallar: (codigo: string) => void = () => {},
+): RepositorioPartidas {
   const pool = new pg.Pool({
     connectionString: url,
     max: 5,
     connectionTimeoutMillis: 5_000,
     idleTimeoutMillis: 30_000,
     statement_timeout: 5_000,
+    // Del lado del cliente: una conexión medio abierta no cuelga la consulta ni agota el pool.
+    query_timeout: 6_000,
+    keepAlive: true,
     application_name: "rastro-en-el-log",
   });
   // Un cliente inactivo que pierde la conexión emite "error"; sin este manejador tumbaría el proceso.
-  pool.on("error", () => {});
+  pool.on("error", (e) => alFallar(codigoDeError(e)));
   let tabla: Promise<void> | null = null;
   const lista = () => {
-    tabla ??= pool.query(MIGRACION).then(
-      () => undefined,
-      (e: unknown) => {
-        tabla = null;
-        throw e;
-      },
-    );
+    tabla ??= pool
+      .query<{ t: string | null }>("SELECT to_regclass('public.partidas') AS t")
+      .then((r) => (r.rows[0]?.t ? undefined : pool.query(MIGRACION)))
+      .then(
+        () => undefined,
+        (e: unknown) => {
+          tabla = null;
+          throw e;
+        },
+      );
     return tabla;
   };
   return {
@@ -141,11 +161,18 @@ export function repositorioPostgres(url: string): RepositorioPartidas {
     },
     async borrarInactivas(dias) {
       await lista();
-      const r = await pool.query(
-        "DELETE FROM partidas WHERE actualizada < now() - make_interval(days => $1)",
-        [dias],
-      );
-      return r.rowCount ?? 0;
+      // Por lotes: cada DELETE cabe en el statement_timeout aunque se hayan acumulado muchas.
+      let total = 0;
+      for (let i = 0; i < 1000; i++) {
+        const r = await pool.query(
+          `DELETE FROM partidas WHERE codigo_hash IN (
+             SELECT codigo_hash FROM partidas WHERE actualizada < now() - make_interval(days => $1) LIMIT $2)`,
+          [dias, LOTE_RETENCION],
+        );
+        total += r.rowCount ?? 0;
+        if ((r.rowCount ?? 0) < LOTE_RETENCION) break;
+      }
+      return total;
     },
     async cerrar() {
       await pool.end();

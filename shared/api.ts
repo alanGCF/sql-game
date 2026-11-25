@@ -1,13 +1,13 @@
 import { z } from "zod";
-import type { Partida } from "./partida.js";
+import { type Partida, textoSeguro } from "./partida.js";
 
 /**
  * Cuerpos y respuestas de /api/partidas (ADR-010, ADR-013): los valida el servidor y los usa el cliente.
  * La partida dentro de PUT se valida aparte con `leerPartida` (tamaño, migraciones y esquema estricto).
  */
 export const CrearPartidaCuerpo = z.strictObject({
-  nombre: z.string().trim().min(1).max(40),
-  contenido: z.string().max(64),
+  nombre: z.string().trim().min(1).max(40).refine(textoSeguro),
+  contenido: z.string().max(64).refine(textoSeguro),
 });
 
 export const GuardarPartidaCuerpo = z.strictObject({

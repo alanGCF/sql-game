@@ -55,6 +55,13 @@ describe("código de partida (D-15)", () => {
     expect(detectados / cambios).toBeGreaterThan(0.99);
   });
 
+  it("solo acepta ASCII (toUpperCase de Unicode convertiría ı en I)", () => {
+    const c = generarCodigo((n) => new Uint8Array(n).fill(1)); // "11111111111" + verificador
+    expect(normalizarCodigo(c)).toBe(c);
+    expect(normalizarCodigo(c.replace("1", "ı"))).toBeNull();
+    expect(normalizarCodigo(`${c}\u200b`)).toBeNull();
+  });
+
   it("rechaza lo que no es un código antes de tocar la base", () => {
     for (const malo of [
       "",
