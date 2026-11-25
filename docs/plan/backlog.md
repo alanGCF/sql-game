@@ -152,7 +152,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 - **Hacer:** textura del pizarrón generada con los pendientes de la misión y del turno; tachado al cumplirse.
 - **Listo cuando:** captura del pizarrón antes y después de cumplir un objetivo.
 
-### F3-05 · Diálogos: briefing, llamadas y visitas en globos (consultar) · `pendiente` · depende: F3-01
+### F3-05 · Diálogos: briefing, llamadas y visitas en globos (consultar) · `hecha (2026-11-25)` *(D-22: llamadas en tarjeta, lo demás en subtítulo con departamento; varios globos por evento y el efecto `pensamiento` pasan a F4)* · depende: F3-01
 - **Hacer:** capa DOM de diálogo con nombre del personaje, avance con clic o Enter, accesible por teclado; muestra el briefing y los efectos de la cola. Ampliar el esquema de efectos con varios globos por evento y un efecto `pensamiento` del protagonista (pedido de la revisión narrativa de T1).
 - **Listo cuando:** e2e recorre el briefing de T1-M1; capturas aprobadas.
 

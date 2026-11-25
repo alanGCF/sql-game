@@ -352,3 +352,97 @@ body,
   color: #fff;
   cursor: pointer;
 }
+
+/* Diálogos (D-22). Subtítulo: lo dicho en persona, con departamento. Tarjeta: llamadas. */
+.subtitulo {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  width: min(1200px, 90vw);
+  padding: 0.9em 1.3em 2.2em;
+  border-radius: 14px;
+  background: rgb(12 16 18 / 88%);
+  color: #f1ece2;
+  font-size: clamp(16px, 2.4vh, 27px);
+  line-height: 1.4;
+  z-index: 8;
+}
+.subtitulo p {
+  margin: 0;
+}
+.subtitulo-quien {
+  color: #f4b860;
+  font-size: 0.8em;
+  font-weight: 700;
+  margin-bottom: 0.2em !important;
+}
+.dialogo-siguiente {
+  font: inherit;
+  font-size: 0.6em;
+  padding: 0.2em 0.6em;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.subtitulo .dialogo-siguiente {
+  position: absolute;
+  right: 1em;
+  bottom: 0.6em;
+}
+.llamada {
+  position: fixed;
+  right: 2vw;
+  top: 12vh;
+  width: min(560px, 40vw);
+  overflow: hidden;
+  border-radius: 16px;
+  background: #f7f4ee;
+  color: #2b2622;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+  font-size: clamp(15px, 2.1vh, 23px);
+  z-index: 8;
+}
+.llamada-cabeza {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.8em 1em;
+  background: #23665a;
+  color: #fff;
+}
+.llamada-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 50%;
+  background: #fff;
+  color: #23665a;
+  font-weight: 800;
+}
+.llamada-nombre {
+  display: block;
+  font-weight: 700;
+}
+.llamada-detalle {
+  display: block;
+  font-size: 0.75em;
+}
+.llamada-texto {
+  margin: 0;
+  padding: 0.9em 1em;
+  line-height: 1.45;
+}
+.llamada-pie {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 1em 0.9em;
+}
+.llamada .dialogo-siguiente {
+  border-color: #b9ad9b;
+  color: #4a4038;
+}

@@ -9,7 +9,7 @@ import type { Variables } from "../engine/vars";
 /** Lo que la interfaz tiene que mostrar, en orden. */
 export type EventoJornada =
   | { tipo: "mision_iniciada"; mision: string; titulo: string; favor: boolean }
-  | { tipo: "dialogo"; mision: string; quien: string; texto: string }
+  | { tipo: "dialogo"; mision: string; entrega: Mision["entrega"]; quien: string; texto: string }
   | { tipo: "objetivo_cumplido"; mision: string; objetivo: string; pendiente: string }
   | { tipo: "efecto"; mision: string; efecto: Efecto }
   | { tipo: "mision_completada"; mision: string; estrellas: 1 | 2 | 3; favor: boolean }
@@ -107,7 +107,8 @@ export class Jornada {
       colocarSesion: !favor,
     });
     this.cola.push({ tipo: "mision_iniciada", mision: m.id, titulo: m.titulo, favor });
-    for (const b of mc.briefing()) this.cola.push({ tipo: "dialogo", mision: m.id, ...b });
+    for (const b of mc.briefing())
+      this.cola.push({ tipo: "dialogo", mision: m.id, entrega: m.entrega, ...b });
     return mc;
   }
 

@@ -167,3 +167,39 @@ test("la app Tickets responde tecleando, comenta la respuesta equivocada y no de
   await expect(page.getByTestId("pensamiento")).toContainText("Mejor lo escribo yo");
   await expect(respuesta).toHaveValue("");
 });
+
+test("diálogos: el briefing va en subtítulo con el departamento y la llamada en tarjeta", async ({
+  page,
+}) => {
+  await abrir(page);
+  const dialogo = page.getByTestId("dialogo");
+  await expect(dialogo).toHaveClass(/subtitulo/);
+  await expect(dialogo).toContainText("Eduardo Téllez · Sistemas");
+  await expect(dialogo).not.toContainText(/visita/i);
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText("La terminal siempre está parada");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toBeHidden();
+
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  await input.fill("ls tickets | wc -l");
+  await input.press("Enter");
+  const ultima = page.getByTestId("terminal").locator(".terminal-linea").last();
+  await expect(ultima).toHaveText(/^\d+$/);
+  const n = (await ultima.textContent())?.trim() ?? "";
+  await page.evaluate(
+    (valor) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", valor),
+      ]),
+    n,
+  );
+  await expect(dialogo).toHaveClass(/llamada/);
+  await expect(dialogo).toContainText("Eduardo Téllez");
+  await expect(dialogo).toContainText("Llamada · ext. 214");
+  await dialogo.getByRole("button", { name: /Siguiente/ }).click();
+  await expect(dialogo).toHaveClass(/subtitulo/);
+  await expect(dialogo).toContainText("Ing. Karla Ibáñez · Calidad");
+});

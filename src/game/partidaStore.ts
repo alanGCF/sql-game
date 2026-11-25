@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { ResultadoLinea } from "../engine";
 import { isTestMode } from "../test-hooks";
 import { contenidoComun, turnoInicial } from "./contenido";
+import { type Dialogo, dialogosDe } from "./dialogos";
 import { type EventoJornada, Jornada } from "./jornada";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
 
@@ -44,6 +45,9 @@ interface EstadoPartida {
   pendientes: Pendiente[];
   /** Tickets de la app Tickets (incluye los ya resueltos del turno). */
   tickets: Ticket[];
+  /** Diálogos por mostrar, en orden (el primero es el que está en pantalla). */
+  dialogos: Dialogo[];
+  avanzarDialogo: () => void;
   /** Eventos para la interfaz (diálogos, objetivos, efectos), los más recientes al final. */
   eventos: EventoJornada[];
   ejecutar: (linea: string) => Promise<ResultadoLinea>;
@@ -61,6 +65,7 @@ function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
     eventos: [...s.eventos, ...eventos].slice(-MAX_EVENTOS),
     pendientes: pendientesDe(j),
     tickets: unirTickets(s.tickets, ticketsDe(activas(j), personajes)),
+    dialogos: [...s.dialogos, ...dialogosDe(eventos, personajes)],
   };
 }
 const inicial = Jornada.iniciar(turnoInicial(), contenidoComun().mundo, semillaNueva());
@@ -69,7 +74,13 @@ export const usePartida = create<EstadoPartida>()((set, get) => ({
   jornada: inicial,
   pendientes: pendientesDe(inicial),
   tickets: ticketsDe(activas(inicial), personajes),
-  eventos: inicial.tomarEventos(),
+  ...(() => {
+    const eventos = inicial.tomarEventos();
+    return { eventos, dialogos: dialogosDe(eventos, personajes) };
+  })(),
+  avanzarDialogo() {
+    set({ dialogos: get().dialogos.slice(1) });
+  },
   async ejecutar(linea) {
     const { jornada } = get();
     const { resultado, eventos } = await jornada.ejecutar(linea);

@@ -10,6 +10,7 @@ import { Capas } from "./ui/Capas";
 setTestHook("setVista", (v) => useEscena.getState().setVista(v as Vista));
 setTestHook("mirar", (x, y) => useEscena.getState().setMirarForzado({ x, y }));
 setTestHook("responder", (m, o, v) => usePartida.getState().responder(m, o, v));
+setTestHook("dialogo", () => usePartida.getState().dialogos[0] ?? null);
 setTestHook("pizarron", () => {
   const { pendientes } = usePartida.getState();
   return {
