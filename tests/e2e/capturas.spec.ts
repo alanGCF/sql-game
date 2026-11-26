@@ -80,6 +80,18 @@ test("vistas acercadas: teléfono, libreta, pizarrón y calendario", async ({ pa
   }
 });
 
+test("teléfono (D-28 A): aparato y directorio, marcando y en llamada con Eduardo", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
+  await expect(page.getByTestId("telefono")).toBeVisible();
+  await page.keyboard.type("214");
+  await captura(page, "telefono-marcando.png");
+  await page.keyboard.press("Enter");
+  await expect(page.getByTestId("dialogo")).toContainText("¿Qué ocupas?");
+  await captura(page, "telefono-llamada.png");
+});
+
 test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);

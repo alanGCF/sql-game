@@ -61,7 +61,7 @@ Paleta base: gris claro de mampara, madera clara del escritorio, blanco cálido 
 ## Capas DOM (interfaz)
 
 - **Monitor:** sistema operativo ficticio de la planta (barra superior con apps: Terminal, Tickets, Correo, Datos, Red). Terminal con **JetBrains Mono** (OFL, D-25), tamaño ajustable. Interfaz y texturas con **Atkinson Hyperlegible** (OFL, D-25, pensada para baja visión). Las dos van empaquetadas: se ven igual en cualquier sistema.
-- **Teléfono:** pantallita del aparato + directorio + teclado numérico; subtítulos de la llamada abajo de la pantalla.
+- **Teléfono (D-28 A):** la escena se oscurece un poco; el aparato de plástico oscuro (pantallita verde con letra mono, teclas claras con letras, "Llamar" verde y "Colgar" rojo) y a su lado el directorio impreso pegado con dos tiras de cinta. La llamada se ve en la tarjeta de D-22, a la derecha.
 - **Libreta:** hojas con renglones, letra manuscrita para entradas automáticas (fuente OFL tipo manuscrita legible) y letra normal para notas del jugador.
 - **Diálogos de visitas:** globo con nombre del personaje y opciones de respuesta.
 - **Globo de pensamiento:** nube distinta a la de diálogo, cerca del centro inferior.

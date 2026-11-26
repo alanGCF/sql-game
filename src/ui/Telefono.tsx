@@ -30,12 +30,9 @@ const AVISOS: Record<Aviso, readonly [string, string]> = {
   no_contesta: ["Sin respuesta", "No contestan"],
 };
 
-/** Variante de la consulta F4-01 (?tel=a|b|c); se queda solo la que elija el usuario. */
-const VARIANTE = new URLSearchParams(window.location.search).get("tel") ?? "a";
-
 /**
- * Teléfono al acercarse (F4-01, 04-mecanicas.md §Teléfono): pantallita, teclado numérico y directorio de
- * extensiones. Se marca con las teclas del teclado o con clic; Enter o "Llamar" marca; Esc cuelga.
+ * Teléfono al acercarse (F4-01, 04-mecanicas.md §Teléfono; D-28 opción A): el aparato de plástico oscuro
+ * con pantallita y teclado, y a su lado el directorio impreso pegado con cinta; la escena se oscurece un poco. Se marca con las teclas del teclado o con clic; Enter o "Llamar" marca; Esc cuelga.
  */
 export function Telefono() {
   const [marcado, setMarcadoEstado] = useState("");
@@ -125,36 +122,25 @@ export function Telefono() {
 
   return (
     <>
-      {VARIANTE !== "c" && <div className="telefono-fondo" aria-hidden="true" />}
-      <section
-        ref={raiz}
-        className={`telefono telefono-${VARIANTE}`}
-        aria-label="Teléfono"
-        tabIndex={-1}
-        data-testid="telefono"
-      >
-        {VARIANTE !== "c" && (
-          <div className="telefono-directorio">
-            <h3>Extensiones</h3>
-            <table>
-              <tbody>
-                {contactos.map((c) => (
-                  <tr key={c.id}>
-                    <th scope="row">
-                      {c.corto}
-                      {c.departamento && c.departamento !== c.corto && <small> ({c.departamento})</small>}
-                    </th>
-                    <td>{c.extension}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div className="telefono-fondo" aria-hidden="true" />
+      <section ref={raiz} className="telefono" aria-label="Teléfono" tabIndex={-1} data-testid="telefono">
+        <div className="telefono-directorio">
+          <h3>Extensiones</h3>
+          <table>
+            <tbody>
+              {contactos.map((c) => (
+                <tr key={c.id}>
+                  <th scope="row">
+                    {c.corto}
+                    {c.departamento && c.departamento !== c.corto && <small> ({c.departamento})</small>}
+                  </th>
+                  <td>{c.extension}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <div className="telefono-aparato">
-          {VARIANTE === "b" && (
-            <header className="telefono-franja">Teléfono · ext. {extensionPropia(personajes)}</header>
-          )}
           <output className="telefono-pantalla" aria-live="polite" data-testid="telefono-pantalla">
             <span>{linea1}</span>
             <span className="telefono-pantalla-grande">{linea2}</span>

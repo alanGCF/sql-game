@@ -37,6 +37,7 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
 | D-21 | Look de la app Tickets | **A · mesa de ayuda corporativa** (clara, lista a la izquierda y detalle con respuesta a la derecha) |
 | D-22 | Diálogos, llamadas y visitas | **Llamadas: tarjeta a un lado (C)** con iniciales, nombre y extensión. **Todo lo demás: subtítulo abajo (A)** con el nombre y el **departamento** de quien habla (nunca la palabra "visita") |
+| D-28 | Vista del teléfono (F4-01) | **A · aparato y hoja de papel**: la escena se oscurece un poco; el teléfono de plástico oscuro con pantalla verde y teclas con letras, y a su lado el directorio impreso pegado con cinta. La llamada va en la tarjeta de D-22 |
 | D-27 | Entrega del número de empleado al empezar | **A + C**: tarjeta de Recursos Humanos con el número grande, "Anótalo en un papel" y "Ya lo anoté" (los diálogos esperan); además un post-it con el número en el monitor y Eduardo lo menciona en su primer diálogo. El gafete del escritorio trae nombre y número enmascarado (D-26) |
 | D-26 | Computadoras compartidas (salones) | **C**: botón "No soy yo: olvidar esta partida en esta computadora" (con confirmación; la partida sigue en el servidor con su número) y el gafete muestra solo los últimos 4 caracteres del número, salvo con "Mostrar mi número" |
 | D-25 | Fuentes empaquetadas (OFL) | **JetBrains Mono** para la terminal y **Atkinson Hyperlegible** para la interfaz y las texturas, empaquetadas (elegidas viendo las muestras) |
@@ -45,12 +46,4 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-### D-28 · Vista del teléfono (F4-01)
-
-Al acercarse al teléfono: pantallita, teclado numérico y directorio de extensiones (sale de `personajes.yaml`). La llamada se ve en la tarjeta de D-22.
-
-- **A · aparato y hoja de papel:** la escena se oscurece un poco; el teléfono de plástico oscuro con pantalla verde y teclas con letras, y a su lado el directorio impreso pegado con cinta. *(Recomendada: se siente objeto del escritorio y se lee grande.)*
-- **B · tarjeta de la interfaz:** una sola tarjeta como la de Recursos Humanos: franja verde "Teléfono · ext. 210", teclado redondo y el directorio a un lado.
-- **C · en la escena:** la cámara encuadra el teléfono y el directorio de la mampara (textura 3D); encima solo un panel chico con pantalla y teclado. Pide modelar teclas en el teléfono 3D y mover la lonchera.
-
-Bloquea: cerrar F4-01 (capturas aprobadas). Mientras tanto sigue F4-02 con la lógica de llamadas.
+Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.

@@ -720,9 +720,12 @@ fieldset.ajuste label {
   margin-right: 0.8em;
 }
 
-/* Teléfono (F4-01): pantallita, teclado y directorio. Variantes a/b/c en consulta. */
+/* Teléfono (F4-01, D-28 opción A): pantallita, teclado y directorio. */
 .telefono {
   position: fixed;
+  left: 8vw;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 6;
   display: flex;
   align-items: center;
@@ -837,13 +840,8 @@ fieldset.ajuste label {
   font-weight: 700;
 }
 
-/* A: el aparato de plástico oscuro y el directorio impreso, pegado con cinta. */
-.telefono-a {
-  left: 8vw;
-  top: 50%;
-  transform: translateY(-50%);
-}
-.telefono-a .telefono-aparato {
+/* El aparato de plástico oscuro y el directorio impreso, pegado con cinta. */
+.telefono .telefono-aparato {
   width: 15em;
   padding: 1.1em;
   border-radius: 18px;
@@ -852,25 +850,25 @@ fieldset.ajuste label {
     0 14px 40px rgb(0 0 0 / 45%),
     inset 0 1px 0 rgb(255 255 255 / 8%);
 }
-.telefono-a .telefono-pantalla {
+.telefono .telefono-pantalla {
   padding: 0.6em 0.8em;
   border-radius: 8px;
   background: #a9c2a3;
   color: #12210f;
   box-shadow: inset 0 2px 6px rgb(0 0 0 / 35%);
 }
-.telefono-a .telefono-teclado button {
+.telefono .telefono-teclado button {
   border: 0;
   border-radius: 10px;
   background: linear-gradient(#f2efe8, #d9d4c9);
   color: #23201c;
   box-shadow: 0 3px 0 #9d978b;
 }
-.telefono-a .telefono-teclado button:active:not(:disabled) {
+.telefono .telefono-teclado button:active:not(:disabled) {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #9d978b;
 }
-.telefono-a .telefono-directorio {
+.telefono .telefono-directorio {
   position: relative;
   background: #fffdf7;
   color: #1f1c18;
@@ -878,8 +876,8 @@ fieldset.ajuste label {
   transform: rotate(-1.5deg);
   box-shadow: 0 8px 22px rgb(0 0 0 / 35%);
 }
-.telefono-a .telefono-directorio::before,
-.telefono-a .telefono-directorio::after {
+.telefono .telefono-directorio::before,
+.telefono .telefono-directorio::after {
   content: "";
   position: absolute;
   top: -0.6em;
@@ -887,89 +885,13 @@ fieldset.ajuste label {
   height: 1.2em;
   background: rgb(236 226 190 / 80%);
 }
-.telefono-a .telefono-directorio::before {
+.telefono .telefono-directorio::before {
   left: 1em;
   transform: rotate(-6deg);
 }
-.telefono-a .telefono-directorio::after {
+.telefono .telefono-directorio::after {
   right: 1em;
   transform: rotate(5deg);
-}
-
-/* B: tarjeta de la interfaz, como la de Recursos Humanos y la de llamada. */
-.telefono-b {
-  left: 4vw;
-  top: 50%;
-  transform: translateY(-50%);
-  align-items: stretch;
-  flex-direction: row-reverse;
-  gap: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #fbf8f2;
-  color: #2b2622;
-  box-shadow: 0 20px 60px rgb(0 0 0 / 45%);
-}
-.telefono-b .telefono-aparato {
-  width: 15em;
-  padding: 0 1.2em 1.2em;
-}
-.telefono-franja {
-  margin: 0 -1.2em;
-  padding: 0.8em 1.2em;
-  background: #1f6b5a;
-  color: #fff;
-  font-weight: 700;
-}
-.telefono-b .telefono-pantalla {
-  padding: 0.5em 0.8em;
-  border-radius: 10px;
-  background: #23302c;
-  color: #d7f0e2;
-}
-.telefono-b .telefono-teclado button {
-  border: 1px solid #d8cfbf;
-  border-radius: 50%;
-  width: 3.1em;
-  justify-self: center;
-  background: #fff;
-  color: #2b2622;
-}
-.telefono-b .telefono-directorio {
-  align-self: stretch;
-  background: #f1ebdf;
-  padding: 1em 1.2em;
-  border-right: 1px solid #e2d8c6;
-}
-.telefono-b .telefono-directorio h3 {
-  color: #1f6b5a;
-}
-
-/* C: el teléfono y el directorio de la mampara se ven en la escena; solo un panel chico encima. */
-.telefono-c {
-  right: 3vw;
-  bottom: 12vh;
-}
-.telefono-c .telefono-aparato {
-  width: 13em;
-  padding: 0.9em;
-  border-radius: 14px;
-  background: rgb(14 15 18 / 82%);
-  border: 1px solid rgb(255 255 255 / 12%);
-  backdrop-filter: blur(4px);
-}
-.telefono-c .telefono-pantalla {
-  padding: 0.4em 0.7em;
-  border-radius: 8px;
-  background: #0b1110;
-  color: var(--term-prompt);
-}
-.telefono-c .telefono-teclado button {
-  height: 2.6em;
-  border: 1px solid rgb(255 255 255 / 18%);
-  border-radius: 8px;
-  background: rgb(255 255 255 / 8%);
-  color: var(--text);
 }
 
 /* Opciones de respuesta en un diálogo (F4-02): una por renglón, con su número. */

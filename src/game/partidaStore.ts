@@ -6,7 +6,7 @@ import { isTestMode } from "../test-hooks";
 import { almacenIndexedDb } from "./almacen-idb";
 import { crearApiPartidas, type Motivo } from "./api";
 import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
-import { type Dialogo, dialogoDe, dialogosDe, type OpcionDialogo } from "./dialogos";
+import { type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type EventoJornada, Jornada } from "./jornada";
 import { useEscena } from "./store";
