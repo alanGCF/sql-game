@@ -29,6 +29,27 @@ export interface Dialogo {
   saliente?: true;
   /** Opciones de respuesta del jugador (F4-02): en lugar de "Siguiente", se elige una. */
   opciones?: OpcionDialogo[];
+  /** Llamada entrante a la que pertenece la línea (F4-04): contestarla o perderla va junta. */
+  entrante?: string;
+  /** Primera línea de una llamada entrante que todavía suena (falta contestar). */
+  timbre?: true;
+}
+
+/**
+ * Llamadas entrantes (F4-04): las líneas seguidas en tarjeta de una misma persona forman una llamada que
+ * suena; la primera lleva `timbre` hasta que la contestas. Las que hizo el jugador (saliente) no suenan.
+ */
+export function conTimbre(dialogos: readonly Dialogo[], nuevoId: () => string): Dialogo[] {
+  let actual: { id: string; quien: string } | null = null;
+  return dialogos.map((d) => {
+    if (d.forma !== "llamada" || d.saliente || d.entrante) {
+      actual = null;
+      return d;
+    }
+    if (actual?.quien === d.quien) return { ...d, entrante: actual.id };
+    actual = { id: nuevoId(), quien: d.quien };
+    return { ...d, entrante: actual.id, timbre: true };
+  });
 }
 
 /** Un diálogo suelto (fuera de los eventos de una misión), con el nombre y el departamento del personaje. */

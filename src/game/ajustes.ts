@@ -32,6 +32,8 @@ function aplicar(a: Ajustes): void {
   const raiz = document.documentElement;
   raiz.dataset.letra = a.letra;
   raiz.dataset.contraste = a.contrasteAlto ? "alto" : "normal";
+  // Las animaciones de CSS (p. ej. el teléfono que suena) se apagan con "reducir movimiento".
+  raiz.dataset.movimiento = a.reducirMovimiento ? "reducido" : "normal";
 }
 aplicar(useAjustes.getState());
 useAjustes.subscribe(aplicar);

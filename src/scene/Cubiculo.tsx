@@ -1,13 +1,17 @@
 import { RoundedBox } from "@react-three/drei";
-import { DoubleSide } from "three";
+import { useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
+import { DoubleSide, type Group, type MeshStandardMaterial } from "three";
 import { enmascararCodigo } from "../../shared/codigo";
 import { inicioTurno } from "../engine/calendario";
+import { useAjustes } from "../game/ajustes";
 import { contenidoComun } from "../game/contenido";
 import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
 import { favoresPizarron, renglonesPizarron } from "../game/pizarron";
 import { useEscena } from "../game/store";
 import { directorio } from "../game/telefono";
+import { isTestMode } from "../test-hooks";
 import { Mat, useTexturaCanvas } from "./contexto";
 import { Interactivo } from "./Interactivo";
 import {
@@ -176,18 +180,54 @@ function Monitor() {
   );
 }
 
+/**
+ * Teléfono de escritorio. Cuando suena una llamada entrante vibra y parpadea (F4-04; quieto con "reducir
+ * movimiento"): pide cuadros solo mientras suena (ADR-018). La luz roja queda prendida si hay buzón.
+ */
 function Telefono() {
+  const sonando = usePartida((s) => s.dialogos[0]?.timbre === true);
+  const contestar = usePartida((s) => s.contestar);
+  const conBuzon = usePartida((s) => s.buzon.length > 0);
+  const quieto = useAjustes((s) => s.reducirMovimiento) || isTestMode;
+  const invalidate = useThree((s) => s.invalidate);
+  const cuerpo = useRef<Group>(null);
+  const luz = useRef<MeshStandardMaterial>(null);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: un cuadro nuevo cuando cambia el estado del teléfono.
+  useEffect(() => {
+    invalidate();
+  }, [sonando, conBuzon, quieto, invalidate]);
+
+  useFrame(({ clock }) => {
+    const g = cuerpo.current;
+    const m = luz.current;
+    if (!g || !m) return;
+    const t = clock.elapsedTime;
+    if (sonando && !quieto) {
+      // Ráfagas de timbre: vibra medio segundo, descansa medio segundo.
+      g.rotation.z = Math.sin(t * 2 * Math.PI) > 0 ? Math.sin(t * 70) * 0.025 : 0;
+      m.emissiveIntensity = Math.sin(t * 12) > 0 ? 2.2 : 0.15;
+      invalidate();
+      return;
+    }
+    g.rotation.z = 0;
+    m.emissiveIntensity = sonando || conBuzon ? 1.6 : 0;
+  });
+
   return (
-    <Interactivo nombre="Teléfono" vista="telefono">
+    // Levantar el auricular: el clic acerca la vista y, si suena, contesta.
+    <Interactivo nombre={sonando ? "Teléfono (suena)" : "Teléfono"} vista="telefono" alClic={contestar}>
       <group position={[-0.5, ESCRITORIO_Y, -0.45]} rotation={[0, 0.45, 0]}>
-        <CajaRedonda pos={[0, 0.025, 0]} tam={[0.19, 0.05, 0.17]} color={C.plasticoOscuro} />
-        <CajaRedonda pos={[0, 0.062, -0.045]} tam={[0.2, 0.03, 0.05]} color="#1f2124" />
-        <Caja pos={[0.02, 0.052, 0.035]} tam={[0.09, 0.004, 0.07]} color="#c9ccc6" />
-        <Caja pos={[-0.055, 0.052, 0.04]} tam={[0.04, 0.004, 0.025]} color="#7fa392" />
-        <mesh position={[-0.08, 0.065, 0.06]}>
-          <sphereGeometry args={[0.008, 8, 8]} />
-          <Mat color="#c0392b" emisivo="#ff3b30" intensidadEmisiva={1.2} />
-        </mesh>
+        <group ref={cuerpo}>
+          <CajaRedonda pos={[0, 0.025, 0]} tam={[0.19, 0.05, 0.17]} color={C.plasticoOscuro} />
+          <CajaRedonda pos={[0, 0.062, -0.045]} tam={[0.2, 0.03, 0.05]} color="#1f2124" />
+          <Caja pos={[0.02, 0.052, 0.035]} tam={[0.09, 0.004, 0.07]} color="#c9ccc6" />
+          <Caja pos={[-0.055, 0.052, 0.04]} tam={[0.04, 0.004, 0.025]} color="#7fa392" />
+          <mesh position={[-0.08, 0.065, 0.06]}>
+            <sphereGeometry args={[0.008, 8, 8]} />
+            <meshStandardMaterial ref={luz} color="#7a1f17" emissive="#ff3b30" emissiveIntensity={0} />
+          </mesh>
+        </group>
       </group>
     </Interactivo>
   );

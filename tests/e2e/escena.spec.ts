@@ -199,6 +199,10 @@ test("diálogos: el briefing va en subtítulo con el departamento y la llamada e
       ]),
     n,
   );
+  // F4-04: la llamada suena hasta que contestas.
+  await expect(dialogo).toHaveClass(/llamada-sonando/);
+  await expect(dialogo).toContainText("Llamada entrante · ext. 214");
+  await dialogo.getByRole("button", { name: /Contestar/ }).click();
   await expect(dialogo).toHaveClass(/llamada/);
   await expect(dialogo).toContainText("Eduardo Téllez");
   await expect(dialogo).toContainText("Llamada · ext. 214");
@@ -622,4 +626,57 @@ test("pistas (F4-03): tres comandos con error seguidos te hacen pensar en marcar
   await input.fill("ls nada");
   await input.press("Enter");
   await expect(page.getByTestId("pensamiento")).toHaveText("Igual y le marco a Eduardo…");
+});
+
+async function cerrarT1M1SinContestar(page: Page) {
+  await abrir(page);
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  await input.fill("ls tickets | wc -l");
+  await input.press("Enter");
+  const ultima = page.getByTestId("terminal").locator(".terminal-linea").last();
+  await expect(ultima).toHaveText(/^\d+$/);
+  const n = (await ultima.textContent())?.trim() ?? "";
+  await page.evaluate(
+    (valor) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", valor),
+      ]),
+    n,
+  );
+  await expect(dialogo).toHaveClass(/llamada-sonando/);
+}
+
+test("llamada entrante (F4-04): se contesta con Enter", async ({ page }) => {
+  await cerrarT1M1SinContestar(page);
+  const dialogo = page.getByTestId("dialogo");
+  await expect(dialogo).toContainText("[Suena tu teléfono]");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText("Ya te ubicas");
+  expect(await page.evaluate(() => window.__planta7?.buzon?.())).toBe(0);
+});
+
+test("llamada entrante (F4-04): si nadie contesta, queda en el buzón y se escucha desde el teléfono", async ({
+  page,
+}) => {
+  await cerrarT1M1SinContestar(page);
+  const dialogo = page.getByTestId("dialogo");
+  await page.evaluate(() => window.__planta7?.dejarSonar?.());
+  expect(await page.evaluate(() => window.__planta7?.buzon?.())).toBe(1);
+  // Lo que venía después de la llamada sigue (Karla deja su ticket).
+  await expect(dialogo).toContainText("Ing. Karla Ibáñez · Calidad");
+  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
+  const telefono = page.getByTestId("telefono");
+  await expect(page.getByTestId("telefono-pantalla")).toContainText("Buzón 1");
+  await telefono.getByRole("button", { name: /Buzón \(1\)/ }).click();
+  await expect(dialogo).toContainText("Buzón · ext. 214");
+  await expect(dialogo).toContainText("Ya te ubicas");
+  expect(await page.evaluate(() => window.__planta7?.buzon?.())).toBe(0);
+  await page.keyboard.press("Escape");
+  await expect(dialogo).toBeHidden();
+  await expect(telefono.getByRole("button", { name: /Buzón/ })).toBeHidden();
 });

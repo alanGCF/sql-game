@@ -21,6 +21,10 @@ export interface TestHooks {
   pizarron?: () => { renglones: string[]; favores: string[] };
   /** Pistas anotadas en la libreta (F4-03), en orden. */
   pistas?: () => { objetivo: string; nivel: number; texto: string }[];
+  /** La llamada que suena se va al buzón sin esperar (F4-04). */
+  dejarSonar?: () => void;
+  /** Mensajes en el buzón del teléfono. */
+  buzon?: () => number;
   /** Fija la hora que muestra la escena ("HH:MM", 24:00 = medianoche) para capturas de la ventana. */
   hora?: (hhmm: string) => void;
 }

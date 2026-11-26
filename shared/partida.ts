@@ -54,6 +54,12 @@ const PistaAnotada = z.strictObject({
   texto: Texto(600),
 });
 
+/** Un mensaje en el buzón del teléfono: una llamada entrante que no contestaste (F4-04). */
+const MensajeBuzon = z.strictObject({
+  quien: Id,
+  lineas: z.array(Texto(600)).min(1).max(6),
+});
+
 export const PartidaEsquema = z.strictObject({
   formato: z.literal(1),
   semilla: z.number().int().min(0).max(0xffffffff),
@@ -77,10 +83,13 @@ export const PartidaEsquema = z.strictObject({
     .default({}),
   /** Pistas recibidas, en orden (F4-03). Falta en guardados viejos. */
   pistas: z.array(PistaAnotada).max(300).default([]),
+  /** Llamadas entrantes perdidas, por escuchar (F4-04). Falta en guardados viejos. */
+  buzon: z.array(MensajeBuzon).max(20).default([]),
 });
 
 export type Partida = z.infer<typeof PartidaEsquema>;
 export type PistaAnotada = z.infer<typeof PistaAnotada>;
+export type MensajeBuzon = z.infer<typeof MensajeBuzon>;
 
 /** Partida recién creada: sin mundo ni misión todavía (el cliente arranca el primer turno con la semilla). */
 export function partidaNueva(semilla: number, nombre: string, contenido: string): Partida {
@@ -100,6 +109,7 @@ export function partidaNueva(semilla: number, nombre: string, contenido: string)
     mision: null,
     llamadas: {},
     pistas: [],
+    buzon: [],
   };
 }
 

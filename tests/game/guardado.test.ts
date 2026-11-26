@@ -21,7 +21,15 @@ const t1 = compilarContenido(
 const CODIGO = generarCodigo((n) => new Uint8Array(n).fill(7));
 const OTRO = `${CODIGO.slice(0, 11)}${CODIGO[11] === "0" ? "1" : "0"}`;
 
-const base = { semilla: 5, nombre: "Ale", contenido: "v1", xp: 0, notas: [] as string[], pistas: [] };
+const base = {
+  semilla: 5,
+  nombre: "Ale",
+  contenido: "v1",
+  xp: 0,
+  notas: [] as string[],
+  pistas: [],
+  buzon: [],
+};
 
 function almacenMemoria(): AlmacenLocal & { dato: unknown } {
   return {

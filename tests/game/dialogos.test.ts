@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cargarPersonajes } from "../../scripts/lib/contenido";
-import { dialogosDe } from "../../src/game/dialogos";
+import { conTimbre, type Dialogo, dialogosDe } from "../../src/game/dialogos";
 import type { EventoJornada } from "../../src/game/jornada";
 
 const personajes = cargarPersonajes().personajes;
@@ -21,5 +21,41 @@ describe("diálogos en pantalla (D-22)", () => {
       ["llamada", "Eduardo Téllez", "Llamada · ext. 214"],
       ["subtitulo", 'Jesús "Don Chuy" Ortega', "Mantenimiento"],
     ]);
+  });
+});
+
+describe("llamadas entrantes (F4-04)", () => {
+  const d = (quien: string, forma: "llamada" | "subtitulo", texto: string) =>
+    dialogosDe(
+      [
+        forma === "llamada"
+          ? { tipo: "dialogo", mision: "m", entrega: "llamada", quien, texto }
+          : { tipo: "dialogo", mision: "m", entrega: "visita", quien, texto },
+      ],
+      personajes,
+    )[0] as Dialogo;
+
+  it("agrupa las líneas seguidas de una llamada de la misma persona; la primera suena", () => {
+    let n = 0;
+    const r = conTimbre(
+      [
+        d("companero", "llamada", "a"),
+        d("companero", "llamada", "b"),
+        d("karla", "subtitulo", "c"),
+        d("companero", "llamada", "d"),
+      ],
+      () => `ll-${++n}`,
+    );
+    expect(r.map((x) => [x.texto, x.entrante ?? null, x.timbre ?? false])).toEqual([
+      ["a", "ll-1", true],
+      ["b", "ll-1", false],
+      ["c", null, false],
+      ["d", "ll-2", true],
+    ]);
+  });
+
+  it("las líneas de una llamada que hizo el jugador no suenan", () => {
+    const saliente = { ...d("companero", "llamada", "a"), saliente: true as const };
+    expect(conTimbre([saliente], () => "x")[0]).toEqual(saliente);
   });
 });

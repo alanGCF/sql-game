@@ -107,7 +107,7 @@ test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await captura(page, "monitor-tickets.png");
 });
 
-test("llamada en tarjeta al cerrar T1-M1", async ({ page }) => {
+test("llamada entrante y en tarjeta al cerrar T1-M1", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);
   await page.evaluate(() =>
@@ -121,6 +121,11 @@ test("llamada en tarjeta al cerrar T1-M1", async ({ page }) => {
   await expect(ultima).toHaveText(/^\d+$/);
   const n = (await ultima.textContent())?.trim() ?? "";
   await page.evaluate((v) => window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v), n);
-  await expect(page.getByTestId("dialogo")).toHaveClass(/llamada/);
+  const dialogo = page.getByTestId("dialogo");
+  // F4-04: primero suena; Enter contesta.
+  await expect(dialogo).toHaveClass(/llamada-sonando/);
+  await captura(page, "llamada-entrante.png");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).not.toHaveClass(/llamada-sonando/);
   await captura(page, "llamada.png");
 });

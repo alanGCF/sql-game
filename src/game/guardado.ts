@@ -1,5 +1,11 @@
 import { normalizarCodigo } from "../../shared/codigo";
-import { leerPartida, type Partida, type PistaAnotada, partidaNueva } from "../../shared/partida";
+import {
+  leerPartida,
+  type MensajeBuzon,
+  type Partida,
+  type PistaAnotada,
+  partidaNueva,
+} from "../../shared/partida";
 import type { ApiPartidas, Motivo } from "./api";
 import type { EstadoJornada, Jornada } from "./jornada";
 
@@ -44,6 +50,7 @@ export interface DatosPartida {
   xp: number;
   notas: string[];
   pistas: PistaAnotada[];
+  buzon: MensajeBuzon[];
 }
 
 export function aPartida(j: Jornada, d: DatosPartida): Partida {
@@ -66,6 +73,7 @@ export function aPartida(j: Jornada, d: DatosPartida): Partida {
     mision: e.mision,
     llamadas: e.llamadas,
     pistas: d.pistas,
+    buzon: d.buzon,
   };
 }
 

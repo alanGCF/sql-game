@@ -1,12 +1,12 @@
 import { create } from "zustand";
-import { esPartidaNueva, type Partida, type PistaAnotada } from "../../shared/partida";
+import { esPartidaNueva, type MensajeBuzon, type Partida, type PistaAnotada } from "../../shared/partida";
 import type { ResultadoLinea } from "../engine";
 import { QUIEN_DA_PISTAS } from "../engine/llamadas";
 import { isTestMode } from "../test-hooks";
 import { almacenIndexedDb } from "./almacen-idb";
 import { crearApiPartidas, type Motivo } from "./api";
 import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
-import { type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
+import { conTimbre, type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type EventoJornada, Jornada } from "./jornada";
 import { useEscena } from "./store";
@@ -92,6 +92,14 @@ interface EstadoPartida {
   elegirOpcion: (i: number) => Promise<void>;
   /** Pistas que dio Eduardo, en orden: la libreta las muestra (F4-03). */
   pistas: PistaAnotada[];
+  /** Llamadas entrantes que no contestaste, por escuchar (F4-04). */
+  buzon: MensajeBuzon[];
+  /** Contesta la llamada que está sonando (F4-04). */
+  contestar: () => void;
+  /** La llamada que sonaba se fue al buzón (nadie contestó a tiempo). */
+  perderLlamada: () => void;
+  /** Escucha el mensaje más viejo del buzón (en la tarjeta de llamada). */
+  escucharBuzon: () => void;
   /** Cuelga la llamada que hizo el jugador (quita lo que faltaba de ella). */
   colgar: () => void;
 }
@@ -130,13 +138,19 @@ function lineasDeLlamada(
   }));
 }
 
+const MAX_BUZON = 20;
+let entrantes = 0;
+/** Diálogos de los eventos, con las llamadas entrantes agrupadas y sonando (F4-04). */
+const dialogosConTimbre = (eventos: EventoJornada[]) =>
+  conTimbre(dialogosDe(eventos, personajes), () => `entrante-${++entrantes}`);
+
 function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
   return {
     minuto: Math.floor(j.minutoDelDia()),
     eventos: [...s.eventos, ...eventos].slice(-MAX_EVENTOS),
     pendientes: pendientesDe(j),
     tickets: unirTickets(s.tickets, ticketsDe(activas(j), personajes)),
-    dialogos: [...s.dialogos, ...dialogosDe(eventos, personajes)],
+    dialogos: [...s.dialogos, ...dialogosConTimbre(eventos)],
   };
 }
 
@@ -149,7 +163,7 @@ function desdeJornada(j: Jornada) {
     pendientes: pendientesDe(j),
     tickets: ticketsDe(activas(j), personajes),
     eventos,
-    dialogos: dialogosDe(eventos, personajes),
+    dialogos: dialogosConTimbre(eventos),
   };
 }
 
@@ -187,6 +201,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       xp: previa?.xp ?? 0,
       notas: previa?.notas ?? [],
       pistas: s.pistas,
+      buzon: s.buzon,
     });
   };
   const refrescarGuardado = () => set({ guardado: estadoGuardado() });
@@ -208,7 +223,14 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
   };
 
   const cargar = (p: Partida, codigo: string | null) => {
-    set({ ...desdeJornada(jornadaDe(p)), nombre: p.nombre, semilla: p.semilla, codigo, pistas: p.pistas });
+    set({
+      ...desdeJornada(jornadaDe(p)),
+      nombre: p.nombre,
+      semilla: p.semilla,
+      codigo,
+      pistas: p.pistas,
+      buzon: p.buzon,
+    });
     void guardian.guardarLocal(partidaActual()).then(refrescarGuardado);
   };
 
@@ -237,7 +259,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     const previos = s.dialogos.filter((d) => !d.saliente);
     set({
       ...actualizado(jornada, s, eventos),
-      dialogos: [...previos, ...lineas, ...dialogosDe(eventos, personajes)],
+      dialogos: [...previos, ...lineas, ...dialogosConTimbre(eventos)],
     });
     guardar(eventos);
     return "contesta";
@@ -264,6 +286,37 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     guardado: "sin_partida",
     numeroPorAnotar: null,
     pistas: [],
+    buzon: [],
+    contestar() {
+      const [actual, ...resto] = get().dialogos;
+      if (!actual?.timbre) return;
+      const { timbre: _, ...contestada } = actual;
+      set({ dialogos: [contestada, ...resto] });
+    },
+    perderLlamada() {
+      const { dialogos, buzon } = get();
+      const id = dialogos[0]?.timbre ? dialogos[0].entrante : undefined;
+      if (!id) return;
+      const perdida = dialogos.filter((d) => d.entrante === id);
+      const mensaje = { quien: perdida[0]?.quien ?? "", lineas: perdida.map((d) => d.texto) };
+      set({
+        dialogos: dialogos.filter((d) => d.entrante !== id),
+        buzon: [...buzon, mensaje].slice(-MAX_BUZON),
+      });
+      guardar([]);
+    },
+    escucharBuzon() {
+      const { buzon, dialogos } = get();
+      const [mensaje, ...resto] = buzon;
+      if (!mensaje) return;
+      const ext = personajes[mensaje.quien]?.extension;
+      const lineas = lineasDeLlamada(mensaje.quien, mensaje.lineas).map((d) => ({
+        ...d,
+        detalle: `Buzón${ext !== undefined ? ` · ext. ${ext}` : ""}`,
+      }));
+      set({ buzon: resto, dialogos: [...dialogos.filter((d) => !d.saliente), ...lineas] });
+      guardar([]);
+    },
     anotado() {
       set({ numeroPorAnotar: null });
     },
@@ -378,7 +431,15 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       guardadoProgramado = null;
       await guardian.olvidar();
       const j = Jornada.iniciar(turnoInicial(), mundo, isTestMode ? 1 : semillaAleatoria());
-      set({ ...desdeJornada(j), nombre: "", codigo: null, semilla: 0, guardado: "sin_partida" });
+      set({
+        ...desdeJornada(j),
+        nombre: "",
+        codigo: null,
+        semilla: 0,
+        guardado: "sin_partida",
+        pistas: [],
+        buzon: [],
+      });
     },
     async continuar() {
       const local = await guardian.cargarLocal();

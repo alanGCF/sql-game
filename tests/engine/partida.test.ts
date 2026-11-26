@@ -25,6 +25,7 @@ const valida = (): Partida => ({
   },
   llamadas: { companero: 1 },
   pistas: [{ mision: "t1-m02-el-leeme", objetivo: "leer-leeme", nivel: 1, texto: "¿Ya viste qué hay ahí?" }],
+  buzon: [{ quien: "companero", lineas: ["¡Eso! Ya te ubicas."] }],
 });
 
 describe("formato de partida (cliente y servidor)", () => {
@@ -33,10 +34,11 @@ describe("formato de partida (cliente y servidor)", () => {
   });
 
   it("un guardado de antes de F4-02/03 (sin llamadas ni pistas) se lee con la paciencia completa", () => {
-    const { llamadas: _, pistas: __, ...vieja } = valida();
+    const { llamadas: _, pistas: __, buzon: ___, ...vieja } = valida();
     const r = leerPartida(vieja);
     expect(r.ok && r.partida.llamadas).toEqual({});
     expect(r.ok && r.partida.pistas).toEqual([]);
+    expect(r.ok && r.partida.buzon).toEqual([]);
   });
 
   it.each<[string, (p: Record<string, unknown>) => void]>([
@@ -49,6 +51,7 @@ describe("formato de partida (cliente y servidor)", () => {
     ["id con caracteres raros", (p) => (p.flags = ["<script>"])],
     ["llamadas fuera de rango", (p) => (p.llamadas = { companero: 1000 })],
     ["llamadas a un contacto raro", (p) => (p.llamadas = { "<x>": 1 })],
+    ["buzón con un mensaje vacío", (p) => (p.buzon = [{ quien: "companero", lineas: [] }])],
     ["pista de nivel 4", (p) => (p.pistas = [{ mision: "m", objetivo: "o", nivel: 4, texto: "x" }])],
     [
       "llamadas a demasiados contactos",

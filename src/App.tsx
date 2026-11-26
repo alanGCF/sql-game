@@ -36,6 +36,9 @@ setTestHook("pistas", () =>
   usePartida.getState().pistas.map(({ objetivo, nivel, texto }) => ({ objetivo, nivel, texto })),
 );
 
+setTestHook("dejarSonar", () => usePartida.getState().perderLlamada());
+setTestHook("buzon", () => usePartida.getState().buzon.length);
+
 export function App() {
   return (
     <div className="juego">

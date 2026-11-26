@@ -190,7 +190,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** "Necesito una pista" en la llamada a Eduardo; elige el pendiente si hay varios; empujón → concepto → comando exacto (uno por llamada, `MisionEnCurso.pista`); no gasta paciencia (D-14); se anota en la libreta (Pistas); 3 fallos seguidos del mismo objetivo → pensamiento "Igual y le marco a Eduardo…"; las estrellas lo reflejan.
 - **Listo cuando:** e2e pide las tres pistas de T1-M1 y las ve en la libreta; prueba de que no gasta paciencia.
 
-### F4-04 · Llamadas entrantes y buzón · `pendiente` · depende: F4-02
+### F4-04 · Llamadas entrantes y buzón · `hecha (2026-11-26)` *(las líneas seguidas en tarjeta de una persona forman una llamada que suena (`conTimbre`); tarjeta "Llamada entrante" con subtítulo del timbre; contestar con Enter, botón o clic en el teléfono 3D; el teléfono vibra y parpadea pidiendo cuadros solo mientras suena, quieto con "reducir movimiento" (y la animación de la tarjeta se apaga con `data-movimiento`); a los 20 s se va al buzón (luz roja), lo demás sigue; "Buzón (n)" en la vista del teléfono; buzón guardado en la partida; e2e contestada y perdida; capturas `llamada-entrante` y `llamada`)* · depende: F4-02
 - **Hacer:** efecto `llamada` del motor hace sonar el teléfono (vibra y parpadea, con `invalidate`); contestar con clic o tecla; sin contestar → luz de buzón y mensaje para después. Respeta "reducir movimiento".
 - **Listo cuando:** e2e de una llamada entrante contestada y otra perdida que queda en el buzón.
 

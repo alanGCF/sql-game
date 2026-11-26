@@ -94,7 +94,7 @@ Hay varias frases por caso para que no se repitan. El globo no gasta pistas ni a
 - La llamada se ve en la tarjeta de llamada (D-22). La última línea trae "Colgar"; `Esc` cuelga antes de tiempo (y un segundo `Esc` levanta la vista).
 - Contactos: Eduardo (214), Don Chuy (301), Karla (402), Conmutador (0), Comedor (150), Vigilancia (900), Gerencia (100). Detalle y voces en `02-trama.md`.
 - **Paciencia por turno:** llamadas 1–2 → charla, rumor o aviso; 3 → "¿No tienes trabajo? Ponte a trabajar"; 4+ → no contesta (la pantallita dice "Sin respuesta" y el jugador lo piensa en un globo). Gerencia gasta paciencia al doble (su paciencia es 1). Lo que dice cada contacto vive en `content/llamadas/<contacto>.yaml`: primero lo del turno y lo que pide una bandera, luego lo general, sin repetir dentro del turno. Algunas conversaciones traen **opciones de respuesta** (botones con número; las teclas 1–3 también eligen). Una llamada contestada toma 2 minutos de reloj y deja la bandera `llamo_<contacto>` (T0 pide marcarle a Eduardo). La paciencia gastada se guarda en la partida.
-- **Llamadas entrantes:** el teléfono suena; contestas con clic. Si no contestas, se prende la luz de buzón.
+- **Llamadas entrantes:** el teléfono suena (vibra y parpadea su luz; quieto con "reducir movimiento") y la tarjeta de llamada dice "Llamada entrante" con "[Suena tu teléfono]" como subtítulo del timbre. Contestas con `Enter`, con el botón "Contestar" o con clic en el teléfono. Si en 20 s nadie contesta, la llamada se va al **buzón**: se prende la luz roja del teléfono y lo que seguía en la cola (p. ej. el ticket de Karla) continúa. En la vista del teléfono, "Buzón (n)" reproduce el mensaje más viejo en la tarjeta ("Buzón · ext. 214"); `Esc` lo corta. El buzón se guarda en la partida (hasta 20 mensajes).
 - Las conversaciones son diálogos con subtítulos y, a veces, opciones de respuesta.
 
 ## Pistas: Eduardo por teléfono
@@ -198,7 +198,7 @@ Objetivo: que nadie pase el juego memorizando respuestas, sin cambiar la histori
 - Al cargar se reconstruye el mundo desde las diferencias, el reloj y el avance de la misión en curso, sin repetir sus diálogos; un favor a medias empieza de nuevo.
 - En el menú, si hay partida en el navegador, el gafete muestra su nombre y número y lo principal es "Checar entrada como …"; con "Checar entrada con otro número" se teclea un código (se aceptan guiones y minúsculas; el verificador detecta errores de tecleo antes de llamar al servidor).
 - Computadoras compartidas (D-26): el gafete muestra solo los últimos 4 caracteres del número (`••••-••••-PL4D`) salvo con "Mostrar mi número", y "No soy yo: olvidar esta partida en esta computadora" la borra del navegador tras confirmar (si no tiene número, avisa que se pierde).
-- Contenido: semilla, progreso (misiones, estrellas, XP, logros, banderas, favores), estado del mundo como diferencias respecto al mundo base, notas del jugador, paciencia de contactos del turno.
+- Contenido: semilla, progreso (misiones, estrellas, XP, logros, banderas, favores), estado del mundo como diferencias respecto al mundo base, notas del jugador, paciencia de contactos del turno, pistas recibidas y buzón.
 - Formato versionado con migraciones. Tamaño máximo de una partida: 64 KB.
 
 ## Menú

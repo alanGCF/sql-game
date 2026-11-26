@@ -12,6 +12,9 @@ function iniciales(nombre: string): string {
     .join("");
 }
 
+/** Cuánto suena una llamada entrante antes de irse al buzón. */
+const SUENA_MS = 20_000;
+
 /**
  * Diálogos (D-22): las llamadas en una tarjeta a un lado; lo demás, como subtítulo abajo con el
  * departamento de quien habla. Se avanza con Enter (con el campo vacío) o con el botón.
@@ -23,7 +26,16 @@ export function Dialogos() {
   const cuelga = usePartida((s) => s.dialogos[0]?.saliente === true && s.dialogos[1]?.saliente !== true);
   const avanzar = usePartida((s) => s.avanzarDialogo);
   const elegir = usePartida((s) => s.elegirOpcion);
+  const contestar = usePartida((s) => s.contestar);
+  const perder = usePartida((s) => s.perderLlamada);
   const enMenu = useEscena((s) => s.enMenu);
+
+  // Una llamada entrante suena un rato; si nadie contesta, se va al buzón (F4-04).
+  useEffect(() => {
+    if (!actual?.timbre || enMenu) return;
+    const t = window.setTimeout(perder, SUENA_MS);
+    return () => window.clearTimeout(t);
+  }, [actual, enMenu, perder]);
 
   useEffect(() => {
     if (!actual || enMenu) return;
@@ -40,14 +52,42 @@ export function Dialogos() {
         return;
       e.preventDefault();
       e.stopPropagation();
-      if (opcion) void elegir(n - 1);
+      if (actual.timbre) contestar();
+      else if (opcion) void elegir(n - 1);
       else if (opciones === 0) avanzar();
     };
     window.addEventListener("keydown", tecla, true);
     return () => window.removeEventListener("keydown", tecla, true);
-  }, [actual, avanzar, elegir, enMenu]);
+  }, [actual, avanzar, elegir, contestar, enMenu]);
 
   if (!actual || enMenu) return null;
+  if (actual.timbre) {
+    const ext = actual.detalle.replace(/^Llamada/, "Llamada entrante");
+    return (
+      <section
+        className="llamada llamada-sonando"
+        data-testid="dialogo"
+        aria-live="assertive"
+        aria-label={`Llamada entrante de ${actual.nombre}`}
+      >
+        <div className="llamada-cabeza">
+          <span className="llamada-avatar" aria-hidden="true">
+            {iniciales(actual.nombre)}
+          </span>
+          <span>
+            <span className="llamada-nombre">{actual.nombre}</span>
+            <span className="llamada-detalle">{ext}</span>
+          </span>
+        </div>
+        <p className="llamada-texto">[Suena tu teléfono]</p>
+        <div className="llamada-pie">
+          <button type="button" className="dialogo-contestar" onClick={contestar}>
+            Contestar <kbd>Enter</kbd>
+          </button>
+        </div>
+      </section>
+    );
+  }
   const boton = actual.opciones?.length ? (
     <ol className="dialogo-opciones" aria-label="Responder">
       {actual.opciones.map((o, i) => (

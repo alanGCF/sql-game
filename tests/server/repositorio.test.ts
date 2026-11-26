@@ -27,6 +27,7 @@ const partida = (nombre = "Ale"): Partida => ({
   mision: null,
   llamadas: {},
   pistas: [],
+  buzon: [],
 });
 
 interface Banco {

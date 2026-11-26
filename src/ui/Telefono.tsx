@@ -39,6 +39,8 @@ export function Telefono() {
   const [aviso, setAviso] = useState<Aviso | null>(null);
   const llamar = usePartida((s) => s.llamar);
   const colgar = usePartida((s) => s.colgar);
+  const mensajes = usePartida((s) => s.buzon.length);
+  const escucharBuzon = usePartida((s) => s.escucharBuzon);
   const minuto = usePartida((s) => s.minuto);
   const enLlamada = usePartida((s) => s.dialogos.find((d) => d.saliente)?.quien ?? null);
   const contactos = useMemo(() => directorio(personajes), []);
@@ -115,7 +117,7 @@ export function Telefono() {
       ? AVISOS[aviso]
       : marcado
         ? ["Marcar", marcado]
-        : [`Ext. ${extensionPropia(personajes)}`, horaTexto(minuto)];
+        : [`Ext. ${extensionPropia(personajes)}${mensajes ? ` · Buzón ${mensajes}` : ""}`, horaTexto(minuto)];
 
   // El clic no se queda con el foco: así Enter sigue marcando y no repite la última tecla.
   const sinFoco = (e: React.MouseEvent) => e.preventDefault();
@@ -168,14 +170,26 @@ export function Telefono() {
                 Colgar <kbd>Esc</kbd>
               </button>
             ) : (
-              <button
-                type="button"
-                className="telefono-llamar"
-                onMouseDown={sinFoco}
-                onClick={() => void marcar()}
-              >
-                Llamar <kbd>Enter</kbd>
-              </button>
+              <>
+                {mensajes > 0 && (
+                  <button
+                    type="button"
+                    className="telefono-buzon"
+                    onMouseDown={sinFoco}
+                    onClick={escucharBuzon}
+                  >
+                    <span className="telefono-luz" aria-hidden="true" /> Buzón ({mensajes})
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="telefono-llamar"
+                  onMouseDown={sinFoco}
+                  onClick={() => void marcar()}
+                >
+                  Llamar <kbd>Enter</kbd>
+                </button>
+              </>
             )}
           </div>
         </div>
