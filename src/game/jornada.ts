@@ -203,7 +203,6 @@ export class Jornada {
       llamada: n,
       paciencia,
       flags: this.flags,
-      semilla: this.semilla,
     });
     if (llamada.tipo !== "no_contesta") {
       this.shell.mundo.reloj.avanzar(SEGUNDOS_POR_LLAMADA);

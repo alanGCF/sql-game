@@ -20,7 +20,6 @@ const elegir = (n: number, extra: { turno?: number; flags?: string[]; paciencia?
     llamada: n,
     paciencia: extra.paciencia ?? 2,
     flags: new Set(extra.flags ?? []),
-    semilla: 7,
   });
 
 describe("llamadas salientes y paciencia (F4-02)", () => {
@@ -50,10 +49,12 @@ describe("llamadas salientes y paciencia (F4-02)", () => {
     expect(ids(elegir(5, { turno: 2, paciencia: 9 }))).toBe("otra");
   });
 
-  it("'ponte a trabajar' sale de su lista con la semilla y el turno (determinista)", () => {
+  it("'ponte a trabajar' sale de su lista según el turno (determinista)", () => {
     const a = elegir(3);
     expect(a).toEqual(elegir(3));
-    expect(a.tipo === "ponte_a_trabajar" && guion.ponte_a_trabajar.includes(a.texto)).toBe(true);
+    expect(a.tipo === "ponte_a_trabajar" && a.texto).toBe(guion.ponte_a_trabajar[1]);
+    const b = elegir(3, { turno: 2 });
+    expect(b.tipo === "ponte_a_trabajar" && b.texto).toBe(guion.ponte_a_trabajar[0]);
   });
 });
 

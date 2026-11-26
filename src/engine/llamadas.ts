@@ -5,7 +5,7 @@ import type { Personajes } from "./mision/curriculo";
  * Llamadas que hace el jugador desde el teléfono (F4-02, 02-trama.md §Teléfono): cada contacto tiene un guion
  * en content/llamadas/<contacto>.yaml y una paciencia por turno. Llamadas 1..paciencia platican (charla,
  * rumor, aviso), la siguiente es "ponte a trabajar" y de ahí en adelante no contesta. Gerencia gasta al doble:
- * su paciencia es 1. Sin DOM ni azar fuera de la semilla.
+ * su paciencia es 1. Sin DOM ni azar: lo mismo en las mismas condiciones.
  */
 const Texto280 = z.string().min(1).max(280, "máximo 280 caracteres por globo");
 const Turno = z.union([z.number().int().min(0).max(13), z.literal("TE")]);
@@ -69,7 +69,6 @@ export interface ContextoLlamada {
   llamada: number;
   paciencia: number;
   flags: ReadonlySet<string>;
-  semilla: number;
 }
 
 const especifica = (c: Conversacion) => c.turnos !== undefined || c.requiere !== undefined;
@@ -77,8 +76,9 @@ const especifica = (c: Conversacion) => c.turnos !== undefined || c.requiere !==
 export function elegirLlamada(guion: GuionLlamadas, ctx: ContextoLlamada): Llamada {
   if (ctx.llamada > ctx.paciencia + 1) return { tipo: "no_contesta", texto: guion.no_contesta };
   if (ctx.llamada === ctx.paciencia + 1) {
+    // Cambia de turno en turno; no usa la semilla (no hace falta variar por partida).
     const t = typeof ctx.turno === "number" ? ctx.turno : 14;
-    const i = (ctx.semilla + t) % guion.ponte_a_trabajar.length;
+    const i = t % guion.ponte_a_trabajar.length;
     return { tipo: "ponte_a_trabajar", texto: guion.ponte_a_trabajar[i] as string };
   }
   const vale = guion.conversaciones.filter(
