@@ -12,6 +12,7 @@
   --fuente-mono: "JetBrains Mono", ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace;
   /* D-25: Atkinson Hyperlegible (OFL, empaquetada en src/ui/fuentes.ts). */
   --fuente-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --fuente-mano: "Patrick Hand", "Comic Sans MS", cursive;
 }
 html,
 body,
@@ -756,12 +757,12 @@ fieldset.ajuste label {
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5em;
 }
-.telefono-teclado button,
-.telefono-acciones button {
+.telefono-tecla,
+.telefono-accion {
   font: inherit;
   cursor: pointer;
 }
-.telefono-teclado button {
+.telefono-tecla {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -769,7 +770,7 @@ fieldset.ajuste label {
   height: 3.1em;
   line-height: 1;
 }
-.telefono-teclado button:disabled {
+.telefono-tecla:disabled {
   cursor: default;
   opacity: 0.55;
 }
@@ -782,7 +783,7 @@ fieldset.ajuste label {
   letter-spacing: 0.08em;
   min-height: 1em;
 }
-.telefono-acciones button {
+.telefono-accion {
   width: 100%;
   padding: 0.65em;
   font-weight: 700;
@@ -803,7 +804,8 @@ fieldset.ajuste label {
   background: #c0392b;
   color: #fff;
 }
-.telefono button:focus-visible {
+.telefono-tecla:focus-visible,
+.telefono-accion:focus-visible {
   outline: 3px solid var(--acento);
   outline-offset: 2px;
 }
@@ -857,14 +859,14 @@ fieldset.ajuste label {
   color: #12210f;
   box-shadow: inset 0 2px 6px rgb(0 0 0 / 35%);
 }
-.telefono .telefono-teclado button {
+.telefono .telefono-tecla {
   border: 0;
   border-radius: 10px;
   background: linear-gradient(#f2efe8, #d9d4c9);
   color: #23201c;
   box-shadow: 0 3px 0 #9d978b;
 }
-.telefono .telefono-teclado button:active:not(:disabled) {
+.telefono .telefono-tecla:active:not(:disabled) {
   transform: translateY(2px);
   box-shadow: 0 1px 0 #9d978b;
 }
@@ -996,4 +998,308 @@ fieldset.ajuste label {
   border-radius: 50%;
   background: #ff3b30;
   box-shadow: 0 0 6px #ff3b30;
+}
+
+/* Libreta (F4-05): papel con renglones; lo del juego a mano (Patrick Hand), tus notas en letra normal.
+   Variantes a/b en consulta (D-29). */
+.libreta-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: rgb(10 12 16 / 50%);
+}
+.libreta {
+  --papel: #fdfbf3;
+  --renglon: #c3d3ea;
+  --tinta: #1d3557;
+  --margen: #e8a0a0;
+  --linea: 1.9em;
+  position: fixed;
+  z-index: 6;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  color: var(--tinta);
+  font-size: calc(clamp(14px, 2.1vh, 21px) * var(--escala));
+}
+.libreta-pestanas {
+  display: flex;
+  gap: 0.3em;
+}
+.libreta-pestana {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85em;
+  padding: 0.45em 1em;
+  border: 0;
+  cursor: pointer;
+  color: #2b2622;
+  filter: saturate(0.75);
+}
+.libreta-pestana-historia {
+  background: #f2c46d;
+}
+.libreta-pestana-comandos {
+  background: #8cc7a1;
+}
+.libreta-pestana-pistas {
+  background: #f29e8e;
+}
+.libreta-pestana-notas {
+  background: #9ec1e6;
+}
+.libreta-hoja {
+  position: relative;
+  overflow-y: auto;
+  background-color: var(--papel);
+  background-image: repeating-linear-gradient(
+    var(--papel) 0 calc(var(--linea) - 1px),
+    var(--renglon) calc(var(--linea) - 1px) var(--linea)
+  );
+  background-attachment: local;
+  line-height: var(--linea);
+  padding: var(--linea) 1.4em var(--linea) 3.2em;
+  box-shadow: 0 14px 40px rgb(0 0 0 / 45%);
+}
+.libreta-hoja::before {
+  content: "";
+  position: absolute;
+  left: 2.4em;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--margen);
+}
+.libreta-apuntes,
+.libreta-indice,
+.libreta-mis-notas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.apunte,
+.libreta-fecha,
+.libreta-vacia,
+.libreta-indice-boton,
+.libreta-pagina p,
+.libreta-pagina li,
+.libreta-pagina h3,
+.libreta-pagina h4 {
+  font-family: var(--fuente-mano);
+  font-size: 1.15em;
+}
+.libreta-fecha {
+  margin: 0;
+  font-weight: 400;
+  color: #8a5a2b;
+}
+.libreta-vacia {
+  margin: 0;
+  color: #7a6a55;
+}
+.apunte {
+  margin: 0;
+}
+.libreta-etiqueta {
+  display: block;
+  font-size: 0.8em;
+  color: #8a5a2b;
+}
+/* Escritura a mano: el renglón se descubre de izquierda a derecha. */
+@keyframes escribir {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+:root:not([data-movimiento="reducido"]) .apunte-nuevo {
+  animation: escribir 0.9s steps(24) both;
+}
+.libreta-comandos {
+  display: grid;
+  grid-template-columns: 7em 1fr;
+  gap: 1em;
+}
+.libreta-indice-boton {
+  font-size: 1.1em;
+  background: none;
+  border: 0;
+  padding: 0 0.2em;
+  color: var(--tinta);
+  cursor: pointer;
+  line-height: var(--linea);
+}
+.libreta-indice-boton[aria-pressed="true"] {
+  text-decoration: underline wavy #8cc7a1;
+}
+.libreta-pagina h3,
+.libreta-pagina h4,
+.libreta-pagina p,
+.libreta-pagina ul {
+  margin: 0;
+}
+.libreta-pagina h4 {
+  color: #8a5a2b;
+}
+.libreta-pagina ul {
+  padding-left: 1.2em;
+}
+.libreta-pagina code {
+  font-family: var(--fuente-mono);
+  font-size: 0.8em;
+}
+.libreta-pagina pre {
+  margin: 0;
+  padding: 0 0.6em;
+  font-family: var(--fuente-mono);
+  font-size: 0.78em;
+  line-height: var(--linea);
+  background: rgb(29 53 87 / 6%);
+  white-space: pre-wrap;
+}
+.libreta-notas-titulo {
+  display: block;
+  font-weight: 700;
+}
+.libreta-nota-nueva {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  line-height: 1.5;
+  padding: 0.4em 0.6em;
+  border: 1px solid #b9ad9b;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1a1a;
+  resize: vertical;
+}
+.libreta-notas-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8em;
+  color: #5c4d3b;
+}
+.libreta-anotar {
+  font: inherit;
+  font-weight: 700;
+  padding: 0.3em 0.9em;
+  border: 0;
+  border-radius: 8px;
+  background: #1f6b5a;
+  color: #fff;
+  cursor: pointer;
+}
+.libreta-anotar:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.libreta-notas-pie kbd {
+  font-family: var(--fuente-mono);
+  font-size: 0.75em;
+  margin-left: 0.3em;
+}
+.libreta-mis-notas li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6em;
+  border-bottom: 1px dashed var(--renglon);
+}
+.libreta-borrar {
+  background: none;
+  border: 0;
+  color: #a33;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+/* A: libreta de reportero, una hoja grande con la espiral arriba y las pestañas encima. */
+.libreta-a {
+  left: 50%;
+  top: 6vh;
+  bottom: 12vh;
+  width: min(720px, 90vw);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+}
+.libreta-a .libreta-pestana {
+  border-radius: 8px 8px 0 0;
+}
+.libreta-a .libreta-hoja {
+  flex: 1;
+  border-radius: 0 6px 6px 6px;
+  border-top: 14px solid #3b4148;
+  background-clip: padding-box;
+}
+
+/* B: libreta abierta, dos páginas con la espiral al centro y las pestañas al costado. */
+.libreta-b {
+  left: 50%;
+  top: 8vh;
+  bottom: 12vh;
+  width: min(1040px, 92vw);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+}
+.libreta-b .libreta-pestanas {
+  flex-direction: column;
+  margin-top: 2em;
+}
+.libreta-b .libreta-pestana {
+  border-radius: 0 8px 8px 0;
+  text-align: left;
+}
+.libreta-b .libreta-hoja {
+  flex: 1;
+  align-self: stretch;
+  border-radius: 6px;
+  column-count: 2;
+  column-gap: 4.4em;
+  column-fill: auto;
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 1.2em),
+      #3b4148 calc(50% - 1.2em) calc(50% + 1.2em),
+      transparent calc(50% + 1.2em)
+    ),
+    repeating-linear-gradient(
+      var(--papel) 0 calc(var(--linea) - 1px),
+      var(--renglon) calc(var(--linea) - 1px) var(--linea)
+    );
+}
+.libreta-b .libreta-comandos {
+  column-span: all;
+  grid-template-columns: 1fr 1fr;
+  gap: 4.4em;
+}
+.libreta-b .libreta-notas {
+  column-span: all;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 4.4em;
+}
+.libreta-b .libreta-notas .libreta-mis-notas {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+}
+
+/* Estados de la libreta al final: ganan sobre las variantes. */
+.libreta-pestana[aria-selected="true"] {
+  filter: none;
+  box-shadow: 0 0 0 2px #2b2622 inset;
+}
+.libreta-pestana:focus-visible,
+.libreta-indice-boton:focus-visible,
+.libreta-anotar:focus-visible,
+.libreta-borrar:focus-visible,
+.libreta-nota-nueva:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
 }

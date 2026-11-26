@@ -272,3 +272,24 @@ describe("jornada: pistas de Eduardo por teléfono (F4-03)", () => {
     expect(() => j.pista("t1-m02-el-leeme", "x")).toThrow(/no está activa/);
   });
 });
+
+describe("jornada: libreta (F4-05)", () => {
+  it("al terminar una misión entran sus apuntes, en orden y con las variables de la partida", async () => {
+    const j = Jornada.iniciar(t1, mundo, 7);
+    expect(j.libreta()).toEqual([]);
+    const m1 = t1.misiones[0] as Mision;
+    await resolver(j, m1);
+    const l = j.libreta();
+    expect(l.map((e) => [e.pestana, e.concepto ?? null])).toEqual([
+      ["comandos", "linux.nav.pwd"],
+      ["comandos", "linux.nav.ls"],
+      ["historia", null],
+    ]);
+    expect(l.every((e) => e.mision === m1.id)).toBe(true);
+    await resolver(j, t1.misiones[1] as Mision);
+    await resolver(j, t1.misiones[2] as Mision);
+    const historia = j.libreta().filter((e) => e.pestana === "historia");
+    expect(historia.at(-1)?.texto).toMatch(/La Línea 3 lleva \d+ paros/);
+    expect(historia.every((e) => !e.texto?.includes("{{"))).toBe(true);
+  });
+});

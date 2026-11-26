@@ -46,4 +46,12 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.
+### D-29 · Libreta: disposición y letra manuscrita (F4-05)
+
+Pestañas Historia, Comandos, Pistas y Mis notas sobre papel con renglones. Lo que escribe el juego va a mano; tus notas, en letra normal.
+
+- **Disposición A · libreta de reportero:** una hoja grande con la espiral arriba y las pestañas encima.
+- **Disposición B · libreta abierta:** dos páginas con la espiral al centro y las pestañas al costado; a la izquierda el índice o la nota nueva, a la derecha la página. *(Recomendada: aprovecha la pantalla ancha.)*
+- **Letra:** Patrick Hand *(recomendada, la más legible en números y rutas)*, Kalam o Caveat (las tres OFL).
+
+Bloquea: cerrar F4-05 (capturas aprobadas). Mientras tanto queda B con Patrick Hand.

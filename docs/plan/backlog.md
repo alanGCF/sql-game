@@ -194,7 +194,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** efecto `llamada` del motor hace sonar el teléfono (vibra y parpadea, con `invalidate`); contestar con clic o tecla; sin contestar → luz de buzón y mensaje para después. Respeta "reducir movimiento".
 - **Listo cuando:** e2e de una llamada entrante contestada y otra perdida que queda en el buzón.
 
-### F4-05 · Libreta: pestañas Historia, Comandos, Pistas y Mis notas (consultar) · `pendiente` · depende: F2-10
+### F4-05 · Libreta: pestañas Historia, Comandos, Pistas y Mis notas (consultar) · `en consulta (D-29)` *(capa con pestañas; apuntes de misiones terminadas (`Jornada.libreta`) con variables; páginas de comandos de `content/libreta/comandos/` con markdown mínimo sin HTML; pistas de Eduardo; Mis notas sin pegar, 200 × 500, guardadas con la partida; nada se selecciona ni copia; animación de escritura que respeta "reducir movimiento"; Patrick Hand empaquetada; e2e de apuntes, pista, copiar/pegar bloqueados y nota guardada. Falta: elegir disposición y letra en D-29 y sus capturas)* · depende: F2-10
 - **Hacer:** capa de libreta de espiral con pestañas; entradas automáticas con letra manuscrita (fuente OFL registrada en `assets.md`) y animación de escritura; Comandos desde `content/libreta/comandos/` al aprenderlos; Mis notas tecleadas (sin pegar, 200 × 500 caracteres); texto no seleccionable ni copiable.
 - **Listo cuando:** e2e: pegar bloqueado, copiar bloqueado, nota guardada; capturas aprobadas.
 

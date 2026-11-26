@@ -117,7 +117,13 @@ Objeto físico en el escritorio; se abre como libreta de espiral con pestañas:
 | **Pistas** | El juego | Pistas que te dio Eduardo |
 | **Mis notas** | El jugador | Notas libres tecleadas (sin pegar), hasta 200 notas de 500 caracteres |
 
-Las entradas automáticas aparecen con animación de escritura a mano y un sonido de lápiz. Es el sustituto del "manual": el jugador lo consulta sin salir del escritorio.
+Las entradas automáticas aparecen con animación de escritura a mano (los renglones se descubren de izquierda a derecha; sin animación con "reducir movimiento") y un sonido de lápiz (F4-10). Es el sustituto del "manual": el jugador lo consulta sin salir del escritorio.
+
+- **Historia:** la sección `libreta` (pestaña `historia`) de cada misión o favor terminado, con las variables de la partida, bajo "Turno N · día".
+- **Comandos:** cada concepto de `libreta` (pestaña `comandos`) abre la página del primer comando de su sintaxis en `content/libreta/comandos/` (índice a un lado, página al otro). Las páginas se dibujan con un markdown mínimo, nunca como HTML.
+- **Pistas:** las que dio Eduardo (`pistas` de la partida), con la misión y el nivel.
+- **Mis notas:** se teclean (pegar y soltar texto están bloqueados), `Ctrl+Enter` o "Anotar" guarda, × borra; hasta 200 de 500 caracteres; se guardan con la partida.
+- Nada de la libreta se puede seleccionar ni copiar (`user-select: none` y `copy`/`cut` bloqueados).
 
 ## Pizarrón y post-its
 

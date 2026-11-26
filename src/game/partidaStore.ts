@@ -8,7 +8,7 @@ import { crearApiPartidas, type Motivo } from "./api";
 import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
 import { conTimbre, type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
-import { type EventoJornada, Jornada } from "./jornada";
+import { type ApunteLibreta, type EventoJornada, Jornada } from "./jornada";
 import { useEscena } from "./store";
 import { marcar, type ResultadoMarcar } from "./telefono";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
@@ -94,6 +94,13 @@ interface EstadoPartida {
   pistas: PistaAnotada[];
   /** Llamadas entrantes que no contestaste, por escuchar (F4-04). */
   buzon: MensajeBuzon[];
+  /** Apuntes automáticos de la libreta (Historia y Comandos) de lo terminado en el turno (F4-05). */
+  apuntes: ApunteLibreta[];
+  /** Mis notas: lo que el jugador teclea en la libreta (hasta 200 de 500 caracteres). */
+  notas: string[];
+  /** Agrega una nota tecleada; false si está vacía o ya no caben. */
+  agregarNota: (texto: string) => boolean;
+  borrarNota: (i: number) => void;
   /** Contesta la llamada que está sonando (F4-04). */
   contestar: () => void;
   /** La llamada que sonaba se fue al buzón (nadie contestó a tiempo). */
@@ -139,6 +146,8 @@ function lineasDeLlamada(
 }
 
 const MAX_BUZON = 20;
+export const MAX_NOTAS = 200;
+export const LARGO_NOTA = 500;
 let entrantes = 0;
 /** Diálogos de los eventos, con las llamadas entrantes agrupadas y sonando (F4-04). */
 const dialogosConTimbre = (eventos: EventoJornada[]) =>
@@ -146,6 +155,7 @@ const dialogosConTimbre = (eventos: EventoJornada[]) =>
 
 function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
   return {
+    apuntes: j.libreta(),
     minuto: Math.floor(j.minutoDelDia()),
     eventos: [...s.eventos, ...eventos].slice(-MAX_EVENTOS),
     pendientes: pendientesDe(j),
@@ -159,6 +169,7 @@ function desdeJornada(j: Jornada) {
   const eventos = j.tomarEventos();
   return {
     jornada: j,
+    apuntes: j.libreta(),
     minuto: Math.floor(j.minutoDelDia()),
     pendientes: pendientesDe(j),
     tickets: ticketsDe(activas(j), personajes),
@@ -199,7 +210,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       nombre: s.nombre,
       contenido: versionContenido(),
       xp: previa?.xp ?? 0,
-      notas: previa?.notas ?? [],
+      notas: s.notas,
       pistas: s.pistas,
       buzon: s.buzon,
     });
@@ -230,6 +241,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       codigo,
       pistas: p.pistas,
       buzon: p.buzon,
+      notas: p.notas,
     });
     void guardian.guardarLocal(partidaActual()).then(refrescarGuardado);
   };
@@ -287,6 +299,19 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     numeroPorAnotar: null,
     pistas: [],
     buzon: [],
+    notas: [],
+    agregarNota(texto) {
+      const limpia = texto.trim().slice(0, LARGO_NOTA);
+      const { notas } = get();
+      if (!limpia || notas.length >= MAX_NOTAS) return false;
+      set({ notas: [...notas, limpia] });
+      guardar([]);
+      return true;
+    },
+    borrarNota(i) {
+      set({ notas: get().notas.filter((_, k) => k !== i) });
+      guardar([]);
+    },
     contestar() {
       const [actual, ...resto] = get().dialogos;
       if (!actual?.timbre) return;
@@ -439,6 +464,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
         guardado: "sin_partida",
         pistas: [],
         buzon: [],
+        notas: [],
       });
     },
     async continuar() {

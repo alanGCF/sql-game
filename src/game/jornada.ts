@@ -5,7 +5,7 @@ import type { TurnoCompilado } from "../engine/mision/compilar";
 import type { Mision } from "../engine/mision/esquema";
 import { type Avance, type AvanceMision, type Efecto, MisionEnCurso } from "../engine/mision/runtime";
 import { crearShellBase, type MundoBase } from "../engine/mundo-base";
-import type { Variables } from "../engine/vars";
+import { plantilla, type Variables } from "../engine/vars";
 import type { Vfs } from "../engine/vfs";
 import { aplicarDiferencias, type DiffVfs, diferencias } from "../engine/vfs-diff";
 
@@ -23,6 +23,14 @@ export type EventoJornada =
  * principales en orden, favores que se activan al iniciar la misión de su `disponible_desde`, y una
  * cola de eventos para la interfaz. Sin DOM ni React.
  */
+/** Un apunte automático de la libreta (F4-05): de la sección `libreta` de una misión terminada. */
+export interface ApunteLibreta {
+  mision: string;
+  pestana: "historia" | "comandos" | "pistas";
+  concepto?: string;
+  texto?: string;
+}
+
 /** Lo que se guarda de un turno a medias (F4-12): el mundo como diferencias contra el mundo base. */
 export interface EstadoJornada {
   reloj: number;
@@ -209,6 +217,23 @@ export class Jornada {
       await this.decidir(`llamo_${contacto}`);
     }
     return { llamada, eventos: this.tomarEventos() };
+  }
+
+  /**
+   * Apuntes de la libreta de las misiones y favores terminados en el turno, en el orden en que se terminaron,
+   * con las variables de la partida ya puestas (F4-05).
+   */
+  // shortcut: solo el turno en curso; los apuntes de turnos anteriores se guardarán en la partida con T2.
+  libreta(): ApunteLibreta[] {
+    const todas = [...this.turno.misiones, ...this.turno.favores];
+    return [...this.hechas.keys()].flatMap((id) =>
+      (todas.find((m) => m.id === id)?.libreta ?? []).map((e) => ({
+        mision: id,
+        pestana: e.pestana,
+        ...(e.concepto ? { concepto: e.concepto } : {}),
+        ...(e.texto ? { texto: plantilla(e.texto, this.vars) } : {}),
+      })),
+    );
   }
 
   /** Objetivos sin cumplir de la misión en curso y de los favores activos: de qué se puede pedir pista. */

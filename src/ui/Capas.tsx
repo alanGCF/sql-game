@@ -3,6 +3,7 @@ import { usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
 import { ControlesAjustes } from "./Ajustes";
 import { Dialogos } from "./Dialogos";
+import { Libreta } from "./Libreta";
 import { Menu } from "./Menu";
 import { Monitor } from "./Monitor";
 import { NumeroEmpleado } from "./NumeroEmpleado";
@@ -41,7 +42,6 @@ function Pensamiento() {
 }
 
 const NOMBRES: Record<string, string> = {
-  libreta: "Libreta de apuntes (llega en F4)",
   pizarron: "Pizarrón de pendientes",
   calendario: "Calendario",
 };
@@ -86,6 +86,7 @@ export function Capas() {
       )}
       {vista === "monitor" && <Monitor />}
       {vista === "telefono" && !transicionando && <Telefono />}
+      {vista === "libreta" && !transicionando && <Libreta />}
       {vista !== "general" && vista !== "monitor" && !transicionando && NOMBRES[vista] && (
         <div className="aviso-vista">{NOMBRES[vista]}</div>
       )}

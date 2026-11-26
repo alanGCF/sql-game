@@ -9,6 +9,8 @@ interface Comun {
   mundo: MundoBase;
   /** Guiones de llamadas por contacto (content/llamadas, F4-02). */
   llamadas: Record<string, GuionLlamadas>;
+  /** Páginas de comandos de la libreta y qué página abre cada concepto (F4-05). */
+  libreta: { paginas: Record<string, string>; conceptos: Record<string, string> };
 }
 const comun = import.meta.glob<Comun>("../../.generated/contenido/comun.json", {
   eager: true,

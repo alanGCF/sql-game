@@ -31,14 +31,17 @@ test("las fuentes empaquetadas (D-25) cargan del mismo origen y se aplican", asy
   const r = await page.evaluate(async () => {
     await document.fonts.load('400 16px "Atkinson Hyperlegible"');
     await document.fonts.load('400 16px "JetBrains Mono"');
+    await document.fonts.load('400 16px "Patrick Hand"');
     return {
       ui: document.fonts.check('400 16px "Atkinson Hyperlegible"'),
       mono: document.fonts.check('400 16px "JetBrains Mono"'),
+      mano: document.fonts.check('400 16px "Patrick Hand"'),
       cuerpo: getComputedStyle(document.body).fontFamily,
     };
   });
   expect(r.ui).toBe(true);
   expect(r.mono).toBe(true);
+  expect(r.mano).toBe(true);
   expect(r.cuerpo).toContain("Atkinson Hyperlegible");
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
   const terminal = await page.getByTestId("terminal").evaluate((e) => getComputedStyle(e).fontFamily);

@@ -295,8 +295,8 @@ export function Menu() {
                 nombre o apodo que escribas.
               </p>
               <p>
-                Fuentes: Atkinson Hyperlegible (Braille Institute of America) y JetBrains Mono (JetBrains),
-                con licencia SIL Open Font License 1.1.
+                Fuentes: Atkinson Hyperlegible (Braille Institute of America), JetBrains Mono (JetBrains) y
+                Patrick Hand (Patrick Wagesreiter), con licencia SIL Open Font License 1.1.
               </p>
               <button type="button" onClick={() => setPaso("inicio")}>
                 Regresar

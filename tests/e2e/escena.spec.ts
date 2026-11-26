@@ -680,3 +680,75 @@ test("llamada entrante (F4-04): si nadie contesta, queda en el buzón y se escuc
   await expect(dialogo).toBeHidden();
   await expect(telefono.getByRole("button", { name: /Buzón/ })).toBeHidden();
 });
+
+test("libreta (F4-05): apuntes de la misión, comando aprendido y pista en su pestaña", async ({ page }) => {
+  await cerrarT1M1SinContestar(page);
+  await page.keyboard.press("Enter");
+  while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
+  // Una pista de T1-M2 por teléfono.
+  await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
+  await page.keyboard.type("214");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("1");
+  if (await page.getByRole("list", { name: "Responder" }).isVisible()) await page.keyboard.press("1");
+  await page.keyboard.press("Escape");
+  await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
+  const libreta = page.getByTestId("libreta");
+  await expect(libreta).toContainText("Mi carpeta en el servidor es /home/becario");
+  await libreta.getByRole("tab", { name: "Comandos" }).click();
+  await expect(libreta.getByRole("button", { name: "pwd" })).toBeVisible();
+  await libreta.getByRole("button", { name: "pwd" }).click();
+  await expect(libreta).toContainText("Para qué sirve");
+  await libreta.getByRole("tab", { name: "Pistas" }).click();
+  await expect(libreta).toContainText("pista 1 de 3");
+  const [pista] = await page.evaluate(() => window.__planta7?.pistas?.() ?? []);
+  await expect(libreta).toContainText(pista?.texto ?? "(sin pista)");
+});
+
+test("libreta (F4-05): no se copia, no se pega y la nota tecleada se guarda con la partida", async ({
+  page,
+}) => {
+  await empezarPrimerDia(page, "Ale");
+  await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
+  const libreta = page.getByTestId("libreta");
+  // Copiar: bloqueado y el texto no se puede seleccionar.
+  const copiado = await libreta.evaluate((el) => {
+    const e = new ClipboardEvent("copy", { bubbles: true, cancelable: true });
+    el.dispatchEvent(e);
+    return e.defaultPrevented;
+  });
+  expect(copiado).toBe(true);
+  expect(await libreta.evaluate((el) => getComputedStyle(el).userSelect)).toBe("none");
+  await libreta.getByRole("tab", { name: "Mis notas" }).click();
+  const nota = page.getByLabel("Nota nueva");
+  await nota.dispatchEvent("paste");
+  await expect(page.getByTestId("pensamiento")).toContainText("Mejor lo escribo yo");
+  await expect(nota).toHaveValue("");
+  await nota.pressSequentially("ls -a muestra los ocultos");
+  await nota.press("Control+Enter");
+  await expect(nota).toHaveValue("");
+  await expect(libreta.getByText("ls -a muestra los ocultos")).toBeVisible();
+  // Se guarda con la partida (en el navegador, agrupado): al recargar y seguir, ahí está.
+  const notasGuardadas = () =>
+    page.evaluate(
+      () =>
+        new Promise<string>((listo) => {
+          const r = indexedDB.open("rastro-en-el-log");
+          r.onsuccess = () => {
+            const g = r.result.transaction("partida").objectStore("partida").get("actual");
+            g.onsuccess = () => listo(JSON.stringify(g.result?.partida?.notas ?? []));
+            g.onerror = () => listo("[]");
+          };
+          r.onerror = () => listo("[]");
+        }),
+    );
+  await expect.poll(notasGuardadas).toContain("ls -a muestra los ocultos");
+  await page.reload();
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  await page.getByRole("button", { name: /Checar entrada como Ale/ }).click();
+  await expect(page.getByTestId("menu")).toBeHidden();
+  while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
+  await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
+  await page.getByTestId("libreta").getByRole("tab", { name: "Mis notas" }).click();
+  await expect(page.getByTestId("libreta")).toContainText("ls -a muestra los ocultos");
+});

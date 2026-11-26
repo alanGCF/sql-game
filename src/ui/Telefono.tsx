@@ -152,6 +152,7 @@ export function Telefono() {
               <button
                 key={d}
                 type="button"
+                className="telefono-tecla"
                 aria-label={d}
                 onMouseDown={sinFoco}
                 onClick={() => teclear(d)}
@@ -166,7 +167,12 @@ export function Telefono() {
           </div>
           <div className="telefono-acciones">
             {enLlamada ? (
-              <button type="button" className="telefono-colgar" onMouseDown={sinFoco} onClick={colgar}>
+              <button
+                type="button"
+                className="telefono-accion telefono-colgar"
+                onMouseDown={sinFoco}
+                onClick={colgar}
+              >
                 Colgar <kbd>Esc</kbd>
               </button>
             ) : (
@@ -174,7 +180,7 @@ export function Telefono() {
                 {mensajes > 0 && (
                   <button
                     type="button"
-                    className="telefono-buzon"
+                    className="telefono-accion telefono-buzon"
                     onMouseDown={sinFoco}
                     onClick={escucharBuzon}
                   >
@@ -183,7 +189,7 @@ export function Telefono() {
                 )}
                 <button
                   type="button"
-                  className="telefono-llamar"
+                  className="telefono-accion telefono-llamar"
                   onMouseDown={sinFoco}
                   onClick={() => void marcar()}
                 >
