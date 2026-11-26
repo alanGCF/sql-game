@@ -8,6 +8,7 @@ import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
 import { type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type EventoJornada, Jornada } from "./jornada";
+import { marcar, type ResultadoMarcar, SALUDOS } from "./telefono";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
 
 /** Un renglón del pizarrón: objetivo de la misión en curso o de un favor activo. */
@@ -83,6 +84,10 @@ interface EstadoPartida {
   /** Número recién creado que el jugador debe anotar (tarjeta de Recursos Humanos, D-27). */
   numeroPorAnotar: string | null;
   anotado: () => void;
+  /** Teléfono (F4-01): marca una extensión; si contesta, su llamada entra a los diálogos. */
+  llamar: (marcado: string) => ResultadoMarcar;
+  /** Cuelga la llamada que hizo el jugador (quita lo que faltaba de ella). */
+  colgar: () => void;
 }
 
 // shortcut: el aviso de Eduardo pasa al contenido del Turno 0 (F4-14), donde él te recibe.
@@ -185,6 +190,19 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     ...desdeJornada(inicial),
     avanzarDialogo() {
       set({ dialogos: get().dialogos.slice(1) });
+    },
+    llamar(marcado) {
+      const r = marcar(marcado, personajes);
+      if (r.tipo !== "contesta") return r;
+      const linea: Dialogo = {
+        ...dialogoDe(r.id, SALUDOS[r.id] ?? "¿Bueno?", true, personajes),
+        saliente: true,
+      };
+      set({ dialogos: [...get().dialogos.filter((d) => !d.saliente), linea] });
+      return r;
+    },
+    colgar() {
+      set({ dialogos: get().dialogos.filter((d) => !d.saliente) });
     },
     async ejecutar(linea) {
       const { jornada } = get();

@@ -90,7 +90,8 @@ Hay varias frases por caso para que no se repitan. El globo no gasta pistas ni a
 
 ## Teléfono
 
-- Al acercarte ves el teléfono, el **directorio de extensiones** (pegado en la mampara) y un teclado numérico. Marcas tecleando o con clic en los números.
+- Al acercarte ves el teléfono, el **directorio de extensiones** (pegado en la mampara) y un teclado numérico. Marcas tecleando o con clic en los números; `Enter` o "Llamar" marca y `Retroceso` borra. La pantallita muestra tu extensión (210) y la hora, lo que vas marcando y con quién hablas. Tu propia extensión da **ocupado**; una que no está en el directorio, **no existe**. El directorio sale de `content/personajes.yaml` (campo `corto`), igual que la hoja de la mampara.
+- La llamada se ve en la tarjeta de llamada (D-22). La última línea trae "Colgar"; `Esc` cuelga antes de tiempo (y un segundo `Esc` levanta la vista).
 - Contactos: Eduardo (214), Don Chuy (301), Karla (402), Conmutador (0), Comedor (150), Vigilancia (900), Gerencia (100). Detalle y voces en `02-trama.md`.
 - **Paciencia por turno:** llamadas 1–2 → charla, rumor o aviso; 3 → "¿No tienes trabajo? Ponte a trabajar"; 4+ → no contesta. Gerencia gasta paciencia al doble.
 - **Llamadas entrantes:** el teléfono suena; contestas con clic. Si no contestas, se prende la luz de buzón.

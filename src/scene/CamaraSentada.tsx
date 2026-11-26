@@ -23,11 +23,18 @@ type Pose = { pos: THREE.Vector3; mira: THREE.Vector3 };
 
 const POSES: Record<Exclude<Vista, "general">, Pose> = {
   monitor: { pos: new THREE.Vector3(0, 1.06, -0.04), mira: new THREE.Vector3(...MONITOR.centro) },
-  telefono: { pos: new THREE.Vector3(-0.38, 1.05, 0.02), mira: new THREE.Vector3(-0.46, 0.76, -0.32) },
+  telefono: { pos: new THREE.Vector3(-0.38, 1.05, 0.02), mira: new THREE.Vector3(-0.34, 0.82, -0.32) },
   libreta: { pos: new THREE.Vector3(0.28, 1.08, 0.08), mira: new THREE.Vector3(0.3, 0.75, -0.13) },
   pizarron: { pos: new THREE.Vector3(0.3, 1.13, -0.3), mira: new THREE.Vector3(0.87, 1.12, -0.3) },
   calendario: { pos: new THREE.Vector3(-0.38, 1.13, -0.25), mira: new THREE.Vector3(-0.87, 1.12, -0.25) },
 };
+
+// shortcut: pose de la variante C de la consulta F4-01; se va al decidir.
+if (new URLSearchParams(window.location.search).get("tel") === "c")
+  POSES.telefono = {
+    pos: new THREE.Vector3(-0.26, 1.1, -0.04),
+    mira: new THREE.Vector3(-0.66, 0.8, -0.52),
+  };
 
 /** Quita la zona muerta del centro y reescala el resto a -1..1. */
 function conZonaMuerta(v: number): number {

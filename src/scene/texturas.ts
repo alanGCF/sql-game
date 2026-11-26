@@ -319,22 +319,22 @@ export function dibujarFoto(ctx: CanvasRenderingContext2D, w: number, h: number)
   ctx.fill();
 }
 
-export function dibujarDirectorio(ctx: CanvasRenderingContext2D, w: number, h: number) {
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "#222";
-  ctx.font = `bold 24px ${SANS}`;
-  ctx.fillText("EXTENSIONES", 16, 34);
-  ctx.font = `20px ${MONO}`;
-  const filas = [
-    "Eduardo (Sist.) 214",
-    "Don Chuy (Mtto) 301",
-    "Karla (Calidad) 402",
-    "Comedor         150",
-    "Vigilancia      900",
-    "Conmutador        0",
-  ];
-  filas.forEach((f, i) => {
-    ctx.fillText(f, 16, 74 + i * 30);
-  });
+/** Directorio de extensiones pegado en la mampara (F4-01): sale de personajes.yaml, como el del teléfono. */
+export function dibujarDirectorio(filas: ReadonlyArray<readonly [string, string]>) {
+  return (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#222";
+    ctx.font = `bold 24px ${SANS}`;
+    ctx.fillText("EXTENSIONES", 16, 34);
+    ctx.font = `19px ${MONO}`;
+    filas.forEach(([quien, ext], i) => {
+      const y = 70 + i * 27;
+      ctx.textAlign = "left";
+      ctx.fillText(quien, 16, y);
+      ctx.textAlign = "right";
+      ctx.fillText(ext, w - 16, y);
+    });
+    ctx.textAlign = "left";
+  };
 }

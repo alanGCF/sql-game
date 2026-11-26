@@ -9,6 +9,8 @@ export interface Dialogo {
   /** "Llamada · ext. 214" en las llamadas; el departamento en los subtítulos. */
   detalle: string;
   texto: string;
+  /** Línea de una llamada que hizo el jugador desde el teléfono (F4-01): colgar la quita. */
+  saliente?: true;
 }
 
 /** Un diálogo suelto (fuera de los eventos de una misión), con el nombre y el departamento del personaje. */

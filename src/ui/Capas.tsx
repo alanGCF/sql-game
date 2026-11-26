@@ -6,6 +6,7 @@ import { Dialogos } from "./Dialogos";
 import { Menu } from "./Menu";
 import { Monitor } from "./Monitor";
 import { NumeroEmpleado } from "./NumeroEmpleado";
+import { Telefono } from "./Telefono";
 
 function EtiquetaHover() {
   const hover = useEscena((s) => s.hover);
@@ -40,7 +41,6 @@ function Pensamiento() {
 }
 
 const NOMBRES: Record<string, string> = {
-  telefono: "Teléfono (llega en F4)",
   libreta: "Libreta de apuntes (llega en F4)",
   pizarron: "Pizarrón de pendientes",
   calendario: "Calendario",
@@ -85,6 +85,7 @@ export function Capas() {
         </section>
       )}
       {vista === "monitor" && <Monitor />}
+      {vista === "telefono" && !transicionando && <Telefono />}
       {vista !== "general" && vista !== "monitor" && !transicionando && NOMBRES[vista] && (
         <div className="aviso-vista">{NOMBRES[vista]}</div>
       )}

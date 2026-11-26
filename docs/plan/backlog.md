@@ -178,7 +178,7 @@ Salida de la fase: se puede jugar T1 completo en el navegador desde el escritori
 
 Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código en otra computadora; playtest ronda 1; release interno v0.1 en Railway. Toda animación por cuadro pide sus cuadros con `invalidate` (ADR-018). Las tareas **(consultar)** llevan decisiones de estética o funcionalidad: se proponen 2–3 opciones con capturas antes de cerrarlas.
 
-### F4-01 · Teléfono: vista con directorio y teclado numérico (consultar) · `pendiente` · depende: F3-06
+### F4-01 · Teléfono: vista con directorio y teclado numérico (consultar) · `en consulta (D-28)` *(capa con pantallita, teclado y directorio desde `personajes.yaml`; marcar con teclas o clic, ocupado y no existe; la llamada en la tarjeta de D-22 con "Colgar"; Esc cuelga; e2e con teclado y con clic. Falta: elegir A, B o C y sus capturas)* · depende: F3-06
 - **Hacer:** capa DOM al acercarse al teléfono: pantallita, teclado numérico (clic o teclas), directorio de extensiones de `02-trama.md`; marcar una extensión inicia la llamada; colgar con Esc.
 - **Listo cuando:** e2e marca 214 con teclado y con clic; capturas aprobadas.
 

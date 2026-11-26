@@ -2,10 +2,12 @@ import { RoundedBox } from "@react-three/drei";
 import { DoubleSide } from "three";
 import { enmascararCodigo } from "../../shared/codigo";
 import { inicioTurno } from "../engine/calendario";
+import { contenidoComun } from "../game/contenido";
 import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
 import { favoresPizarron, renglonesPizarron } from "../game/pizarron";
 import { useEscena } from "../game/store";
+import { directorio } from "../game/telefono";
 import { Mat, useTexturaCanvas } from "./contexto";
 import { Interactivo } from "./Interactivo";
 import {
@@ -21,6 +23,10 @@ import {
 } from "./texturas";
 
 /** Medidas en metros. El jugador está sentado en (0, 1.18, 0.45) mirando hacia -z. */
+const DIBUJO_DIRECTORIO = dibujarDirectorio(
+  directorio(contenidoComun().personajes.personajes).map((c) => [c.corto, c.extension] as const),
+);
+
 export const ESCRITORIO_Y = 0.74;
 export const MONITOR = { centro: [0, 1.06, -0.415] as const, ancho: 0.52, alto: 0.31 };
 /** Ventana del fondo, sobre las mamparas y a la izquierda del reloj de pared. */
@@ -280,7 +286,7 @@ function ObjetosEscritorio() {
     `${nombre}|${numero}`,
   );
   const foto = useTexturaCanvas(200, 160, dibujarFoto);
-  const directorio = useTexturaCanvas(320, 260, dibujarDirectorio);
+  const hojaDirectorio = useTexturaCanvas(320, 260, DIBUJO_DIRECTORIO);
   return (
     <group>
       {/* Gafete */}
@@ -356,7 +362,7 @@ function ObjetosEscritorio() {
       {/* Directorio pegado en la mampara izquierda */}
       <mesh position={[-0.87, 0.95, -0.62]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[0.2, 0.16]} />
-        <Mat color="#ffffff" mapa={directorio} />
+        <Mat color="#ffffff" mapa={hojaDirectorio} />
       </mesh>
       {/* Lámpara de escritorio */}
       <group position={[-0.42, ESCRITORIO_Y, -0.7]}>

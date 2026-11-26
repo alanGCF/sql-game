@@ -19,6 +19,8 @@ function iniciales(nombre: string): string {
 export function Dialogos() {
   const actual = usePartida((s) => s.dialogos[0]);
   const ultimo = usePartida((s) => s.dialogos.length === 1);
+  // La última línea de una llamada que hiciste termina la llamada (F4-01).
+  const cuelga = usePartida((s) => s.dialogos[0]?.saliente === true && s.dialogos[1]?.saliente !== true);
   const avanzar = usePartida((s) => s.avanzarDialogo);
   const enMenu = useEscena((s) => s.enMenu);
 
@@ -43,7 +45,7 @@ export function Dialogos() {
   if (!actual || enMenu) return null;
   const boton = (
     <button type="button" className="dialogo-siguiente" onClick={avanzar}>
-      {ultimo ? "Cerrar" : "Siguiente"} <kbd>Enter</kbd>
+      {cuelga ? "Colgar" : ultimo ? "Cerrar" : "Siguiente"} <kbd>Enter</kbd>
     </button>
   );
   if (actual.forma === "llamada") {

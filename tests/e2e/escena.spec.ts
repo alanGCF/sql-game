@@ -475,3 +475,55 @@ test("número de empleado (F4-13, D-27): tarjeta de Recursos Humanos y Eduardo l
   }
   expect(textos.some((t) => t.includes("Eduardo") && t.includes("número de empleado"))).toBe(true);
 });
+
+async function alTelefono(page: Page) {
+  await abrir(page);
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
+  await expect(page.getByTestId("telefono")).toBeVisible();
+}
+
+test("teléfono (F4-01): marca 214 con el teclado, contesta Eduardo y Esc cuelga", async ({ page }) => {
+  await alTelefono(page);
+  const pantalla = page.getByTestId("telefono-pantalla");
+  await expect(pantalla).toContainText("Ext. 210");
+  await page.keyboard.type("2149");
+  await expect(pantalla).toContainText("2149");
+  await page.keyboard.press("Backspace");
+  await expect(pantalla).toContainText("Marcar214");
+  await page.keyboard.press("Enter");
+  await expect(pantalla).toContainText("En llamada");
+  const dialogo = page.getByTestId("dialogo");
+  await expect(dialogo).toHaveClass(/llamada/);
+  await expect(dialogo).toContainText("Eduardo Téllez");
+  await expect(dialogo.getByRole("button", { name: /Colgar/ })).toBeVisible();
+  // Mientras hablas, las teclas no marcan.
+  await page.keyboard.type("9");
+  await expect(pantalla).not.toContainText("9");
+  await page.keyboard.press("Escape");
+  await expect(dialogo).toBeHidden();
+  await expect(pantalla).toContainText("Ext. 210");
+  // El primer Esc colgó; el segundo levanta la vista.
+  await page.keyboard.press("Escape");
+  await expect(page.getByTestId("telefono")).toBeHidden();
+});
+
+test("teléfono (F4-01): marca 214 con clic; tu extensión da ocupado y otra no existe", async ({ page }) => {
+  await alTelefono(page);
+  const telefono = page.getByTestId("telefono");
+  const pantalla = page.getByTestId("telefono-pantalla");
+  for (const d of ["2", "1", "0"]) await telefono.getByRole("button", { name: d, exact: true }).click();
+  await telefono.getByRole("button", { name: /Llamar/ }).click();
+  await expect(pantalla).toContainText("Ocupado");
+  for (const d of ["7", "7", "7"]) await telefono.getByRole("button", { name: d, exact: true }).click();
+  await page.keyboard.press("Enter");
+  await expect(pantalla).toContainText("No existe");
+  for (const d of ["2", "1", "4"]) await telefono.getByRole("button", { name: d, exact: true }).click();
+  await telefono.getByRole("button", { name: /Llamar/ }).click();
+  const dialogo = page.getByTestId("dialogo");
+  await expect(dialogo).toContainText("Eduardo Téllez");
+  await dialogo.getByRole("button", { name: /Colgar/ }).click();
+  await expect(dialogo).toBeHidden();
+  await expect(pantalla).toContainText("Ext. 210");
+});

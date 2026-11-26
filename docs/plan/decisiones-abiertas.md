@@ -45,4 +45,12 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.
+### D-28 · Vista del teléfono (F4-01)
+
+Al acercarse al teléfono: pantallita, teclado numérico y directorio de extensiones (sale de `personajes.yaml`). La llamada se ve en la tarjeta de D-22.
+
+- **A · aparato y hoja de papel:** la escena se oscurece un poco; el teléfono de plástico oscuro con pantalla verde y teclas con letras, y a su lado el directorio impreso pegado con cinta. *(Recomendada: se siente objeto del escritorio y se lee grande.)*
+- **B · tarjeta de la interfaz:** una sola tarjeta como la de Recursos Humanos: franja verde "Teléfono · ext. 210", teclado redondo y el directorio a un lado.
+- **C · en la escena:** la cámara encuadra el teléfono y el directorio de la mampara (textura 3D); encima solo un panel chico con pantalla y teclado. Pide modelar teclas en el teléfono 3D y mover la lonchera.
+
+Bloquea: cerrar F4-01 (capturas aprobadas). Mientras tanto sigue F4-02 con la lógica de llamadas.
