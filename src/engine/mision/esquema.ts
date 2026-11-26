@@ -162,10 +162,20 @@ const Parche = z.discriminatedUnion("tipo", [
   z.strictObject({ tipo: z.literal("sql"), sentencias: z.string() }),
 ]);
 
+/** Lo que dice alguien en un evento: un globo, o de 2 a 4 seguidos (F4-06; 02-trama.md, regla 3). */
+const Globos = z.union([Texto280, z.array(Texto280).min(2).max(4)]);
+
+/** Los globos de un texto de efecto, siempre como lista. */
+export function globos(texto: string | readonly string[]): string[] {
+  return typeof texto === "string" ? [texto] : [...texto];
+}
+
 const Efecto = z.discriminatedUnion("tipo", [
-  z.strictObject({ tipo: z.literal("mensaje"), de: z.string(), texto: Texto280 }),
-  z.strictObject({ tipo: z.literal("llamada_entrante"), de: z.string(), texto: Texto280 }),
-  z.strictObject({ tipo: z.literal("visita"), de: z.string(), texto: Texto280 }),
+  z.strictObject({ tipo: z.literal("mensaje"), de: z.string(), texto: Globos }),
+  z.strictObject({ tipo: z.literal("llamada_entrante"), de: z.string(), texto: Globos }),
+  z.strictObject({ tipo: z.literal("visita"), de: z.string(), texto: Globos }),
+  /** Lo que piensa el protagonista, en su nube (F4-06). */
+  z.strictObject({ tipo: z.literal("pensamiento"), texto: Globos }),
   z.strictObject({ tipo: z.literal("flag"), nombre: z.string() }),
   z.strictObject({ tipo: z.literal("postit"), texto: Texto280 }),
   z.strictObject({ tipo: z.literal("wall"), de: z.string(), texto: z.string() }),

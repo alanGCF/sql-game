@@ -1303,3 +1303,29 @@ fieldset.ajuste label {
   outline: 3px solid var(--acento);
   outline-offset: 2px;
 }
+
+/* Pensamiento como diálogo (F4-06): la misma nube, con su botón para seguir. */
+.dialogo-pensamiento {
+  z-index: 8;
+  display: flex;
+  align-items: flex-end;
+  gap: 1em;
+  font-size: calc(clamp(15px, 2.1vh, 22px) * var(--escala));
+}
+.dialogo-pensamiento-texto {
+  margin: 0;
+}
+.dialogo-pensamiento .dialogo-siguiente {
+  flex: none;
+  font-style: normal;
+}
+.dialogo-pensamiento::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  bottom: -26px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fbf8f1;
+}

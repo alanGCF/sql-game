@@ -1,5 +1,6 @@
 import { type Curriculo, codigoDeId, compararMisiones, type Personajes } from "./curriculo";
 import type { Mision } from "./esquema";
+import { globos } from "./esquema";
 import type { Hallazgo } from "./harness";
 
 /** Reglas del harness que usan el currículo y los personajes (C6, C7, C9, C10, C15, C16, C18). */
@@ -22,7 +23,9 @@ function textosVisibles(m: Mision): string[] {
   return [
     ...m.briefing.map((b) => b.texto),
     ...m.objetivos.flatMap((o) => [o.pendiente, ...o.pistas]),
-    ...Object.values(m.eventos ?? {}).flatMap((es) => es.flatMap((e) => ("texto" in e ? [e.texto] : []))),
+    ...Object.values(m.eventos ?? {}).flatMap((es) =>
+      es.flatMap((e) => ("texto" in e ? globos(e.texto) : [])),
+    ),
   ];
 }
 

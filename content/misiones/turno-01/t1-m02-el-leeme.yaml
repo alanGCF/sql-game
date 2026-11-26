@@ -99,6 +99,10 @@ eventos:
   al_completar:
     - tipo: visita
       de: don_chuy
-      texto: ¿Qué tanto lees, joven? «No confíes en los números del turno nocturno»... Esa muchacha siempre fue rara, pero nunca se equivocaba. Al rato vengo, que traigo un pendiente con la Línea 3.
+      texto:
+        - ¿Qué tanto lees, joven? «No confíes en los números del turno nocturno»…
+        - Esa muchacha siempre fue rara, pero nunca se equivocaba. Al rato vengo, que traigo un pendiente con la Línea 3.
+    - tipo: pensamiento
+      texto: ¿Cuáles números? Primer turno y ya heredé un misterio.
     - tipo: flag
       nombre: leyo_leeme

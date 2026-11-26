@@ -125,6 +125,20 @@ export function Dialogos() {
       </section>
     );
   }
+  if (actual.forma === "pensamiento") {
+    // F4-06: lo que piensa el protagonista, en la nube (direccion-arte.md), en orden con los demás globos.
+    return (
+      <section
+        className="pensamiento dialogo-pensamiento"
+        data-testid="dialogo"
+        aria-live="polite"
+        aria-label="Lo que piensas"
+      >
+        <p className="dialogo-pensamiento-texto">{actual.texto}</p>
+        {boton}
+      </section>
+    );
+  }
   return (
     <section className="subtitulo" data-testid="dialogo" aria-live="polite">
       <p className="subtitulo-quien">

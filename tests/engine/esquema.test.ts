@@ -74,3 +74,30 @@ describe("esquema de misión (regla C1)", () => {
     expect(e.join("\n")).toMatch(patron);
   });
 });
+
+describe("efectos con varios globos y pensamiento (F4-06)", () => {
+  const conEfectos = (efectos: unknown[]) => {
+    const m = ejemplo();
+    m.eventos = { al_completar: efectos };
+    return validarMision(m);
+  };
+
+  it("llamada, visita y mensaje aceptan 1 globo o una lista de 2 a 4; pensamiento igual", () => {
+    expect(
+      conEfectos([
+        { tipo: "visita", de: "don_chuy", texto: "Uno." },
+        { tipo: "llamada_entrante", de: "companero", texto: ["Uno.", "Dos."] },
+        { tipo: "mensaje", de: "karla", texto: ["a", "b", "c", "d"] },
+        { tipo: "pensamiento", texto: "¿Quién será R.?" },
+        { tipo: "pensamiento", texto: ["Mmm.", "¿Quién será R.?"] },
+      ]).ok,
+    ).toBe(true);
+  });
+
+  it("rechaza listas de 1 o de más de 4 globos y globos de más de 280 caracteres", () => {
+    expect(conEfectos([{ tipo: "visita", de: "don_chuy", texto: ["solo uno"] }]).ok).toBe(false);
+    expect(conEfectos([{ tipo: "visita", de: "don_chuy", texto: ["a", "b", "c", "d", "e"] }]).ok).toBe(false);
+    expect(conEfectos([{ tipo: "pensamiento", texto: ["a", "x".repeat(281)] }]).ok).toBe(false);
+    expect(conEfectos([{ tipo: "pensamiento", de: "jugador", texto: "a" }]).ok).toBe(false);
+  });
+});

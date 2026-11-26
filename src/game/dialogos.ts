@@ -1,4 +1,5 @@
 import type { Personajes } from "../engine/mision/curriculo";
+import { globos } from "../engine/mision/esquema";
 import type { EventoJornada } from "./jornada";
 
 /** Lo que hace una opción además de contestar (F4-03): pedir pista, elegir de qué, o platicar. */
@@ -19,7 +20,8 @@ export interface OpcionDialogo {
 
 /** Un globo en pantalla (D-22): llamadas en tarjeta a un lado; lo demás, subtítulo con el departamento. */
 export interface Dialogo {
-  forma: "llamada" | "subtitulo";
+  /** Llamada en tarjeta, subtítulo (D-22) o pensamiento del protagonista en su nube (F4-06). */
+  forma: "llamada" | "subtitulo" | "pensamiento";
   quien: string;
   nombre: string;
   /** "Llamada · ext. 214" en las llamadas; el departamento en los subtítulos. */
@@ -81,8 +83,16 @@ export function dialogosDe(
     if (e.tipo === "dialogo") return [crear(e.quien, e.texto, e.entrega === "llamada")];
     if (e.tipo !== "efecto") return [];
     const f = e.efecto;
-    if (f.tipo === "llamada_entrante") return [crear(f.de, f.texto, true)];
-    if (f.tipo === "visita" || f.tipo === "mensaje") return [crear(f.de, f.texto, false)];
+    if (f.tipo === "llamada_entrante") return globos(f.texto).map((t) => crear(f.de, t, true));
+    if (f.tipo === "visita" || f.tipo === "mensaje") return globos(f.texto).map((t) => crear(f.de, t, false));
+    if (f.tipo === "pensamiento")
+      return globos(f.texto).map((texto) => ({
+        forma: "pensamiento" as const,
+        quien: "jugador",
+        nombre: "Tú",
+        detalle: "",
+        texto,
+      }));
     return [];
   });
 }

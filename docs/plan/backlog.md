@@ -198,7 +198,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** capa de libreta de espiral con pestañas; entradas automáticas con letra manuscrita (fuente OFL registrada en `assets.md`) y animación de escritura; Comandos desde `content/libreta/comandos/` al aprenderlos; Mis notas tecleadas (sin pegar, 200 × 500 caracteres); texto no seleccionable ni copiable.
 - **Listo cuando:** e2e: pegar bloqueado, copiar bloqueado, nota guardada; capturas aprobadas.
 
-### F4-06 · Varios globos por evento y efecto `pensamiento` · `pendiente` · depende: F3-05
+### F4-06 · Varios globos por evento y efecto `pensamiento` · `hecha (2026-11-26)` *(el `texto` de `mensaje`, `llamada_entrante`, `visita` y el nuevo `pensamiento` es un globo o una lista de 2 a 4; cada globo es un diálogo en orden; el pensamiento sale en la nube del protagonista con "Siguiente"; T1 parte en dos globos sus líneas largas y suma dos pensamientos (tras la visita de Don Chuy en T1-M2 y al encontrar `.r/hola`); harness y `npm run play` al día; e2e del pensamiento tras T1-M2)* · depende: F3-05
 - **Hacer:** ampliar el esquema de efectos (pedido de la revisión narrativa de T1) y mostrar el pensamiento en la nube de `direccion-arte.md`.
 - **Listo cuando:** harness con los efectos nuevos y e2e del pensamiento disparado por un evento.
 

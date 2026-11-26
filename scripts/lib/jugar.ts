@@ -1,6 +1,7 @@
 // Lógica de `npm run play -- --mision <id>`: presentar la misión, procesar una línea del jugador
 // (comando o ?orden) y correr la solución. play.ts solo maneja argumentos, la sesión y la entrada.
 import { codigoDeId } from "../../src/engine/mision/curriculo";
+import { globos } from "../../src/engine/mision/esquema";
 import { respuestaEsperada } from "../../src/engine/mision/harness";
 import type { Avance, Efecto, MisionEnCurso } from "../../src/engine/mision/runtime";
 import { plantilla } from "../../src/engine/vars";
@@ -45,7 +46,9 @@ function efecto(e: Efecto): string | null {
     case "mensaje":
     case "llamada_entrante":
     case "visita":
-      return `[${e.tipo.replace("_", " ")}] ${nombre(e.de)}: ${e.texto}`;
+      return `[${e.tipo.replace("_", " ")}] ${nombre(e.de)}: ${globos(e.texto).join(" / ")}`;
+    case "pensamiento":
+      return `[pensamiento] ${globos(e.texto).join(" / ")}`;
     case "postit":
       return `[post-it] ${e.texto}`;
     case "wall":

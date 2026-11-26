@@ -102,4 +102,6 @@ eventos:
   al_cumplir:ir-linea3:
     - tipo: llamada_entrante
       de: companero
-      texto: Te marco rapidito, que ando en piso. La flecha para arriba te repite tus comandos anteriores, Tab te completa nombres y history te enseña todo lo que has tecleado. Tus dedos te lo van a agradecer.
+      texto:
+        - Te marco de volada, que ando en piso.
+        - La flecha para arriba te repite tus comandos anteriores, Tab te completa nombres y history te enseña todo lo que has tecleado. Tus dedos te lo van a agradecer.

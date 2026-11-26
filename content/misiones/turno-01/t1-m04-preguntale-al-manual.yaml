@@ -88,7 +88,11 @@ eventos:
   al_cumplir:leer-hola:
     - tipo: flag
       nombre: vio_carpeta_r
+    - tipo: pensamiento
+      texto: "Escondida, pero no tanto: solo había que leer el manual. R. quería que alguien la encontrara, y me tocó a mí."
   al_completar:
     - tipo: llamada_entrante
       de: companero
-      texto: ¿Encontraste algo de Rebeca? Ahorita no me cuentes, ando en piso con la pantalla de la Línea 1. Mañana me platicas con calma. Ya casi es hora de checar salida; buen primer turno.
+      texto:
+        - ¿Encontraste algo de Rebeca? Ahorita no me cuentes, ando en piso con la pantalla de la Línea 1.
+        - Mañana me platicas con calma. Ya casi es hora de checar salida; buen primer turno.

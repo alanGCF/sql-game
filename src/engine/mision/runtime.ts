@@ -164,7 +164,9 @@ export class MisionEnCurso {
   }
 
   private efectoConTexto(e: Efecto): Efecto {
-    return "texto" in e ? { ...e, texto: this.texto(e.texto) } : e;
+    if (!("texto" in e)) return e;
+    const t = e.texto;
+    return { ...e, texto: typeof t === "string" ? this.texto(t) : t.map((x) => this.texto(x)) } as Efecto;
   }
 
   async ejecutar(linea: string): Promise<ResultadoLinea & Avance> {

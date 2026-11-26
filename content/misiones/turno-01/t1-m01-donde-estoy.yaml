@@ -104,4 +104,6 @@ eventos:
   al_completar:
     - tipo: llamada_entrante
       de: companero
-      texto: ¡Eso! Ya te ubicas. Oye, ese LEEME.txt lo dejó la ingeniera que estaba antes. Karla, de Calidad, ya te dejó un ticket sobre él; ahorita te busca.
+      texto:
+        - ¡Eso! Ya te ubicas.
+        - Oye, ese LEEME.txt lo dejó la ingeniera que estaba antes. Karla, de Calidad, ya te dejó un ticket sobre él; ahorita te busca.

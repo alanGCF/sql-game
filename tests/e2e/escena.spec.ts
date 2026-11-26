@@ -206,6 +206,10 @@ test("diálogos: el briefing va en subtítulo con el departamento y la llamada e
   await expect(dialogo).toHaveClass(/llamada/);
   await expect(dialogo).toContainText("Eduardo Téllez");
   await expect(dialogo).toContainText("Llamada · ext. 214");
+  // F4-06: la llamada trae dos globos.
+  await expect(dialogo).toContainText("¡Eso! Ya te ubicas.");
+  await dialogo.getByRole("button", { name: /Siguiente/ }).click();
+  await expect(dialogo).toContainText("ese LEEME.txt lo dejó la ingeniera");
   await dialogo.getByRole("button", { name: /Siguiente/ }).click();
   await expect(dialogo).toHaveClass(/subtitulo/);
   await expect(dialogo).toContainText("Ing. Karla Ibáñez · Calidad");
@@ -751,4 +755,36 @@ test("libreta (F4-05): no se copia, no se pega y la nota tecleada se guarda con 
   await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
   await page.getByTestId("libreta").getByRole("tab", { name: "Mis notas" }).click();
   await expect(page.getByTestId("libreta")).toContainText("ls -a muestra los ocultos");
+});
+
+test("pensamiento (F4-06): al cerrar T1-M2, Don Chuy en dos globos y luego lo que piensas, en tu nube", async ({
+  page,
+}) => {
+  await cerrarT1M1SinContestar(page);
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  const input = page.getByLabel("Comando");
+  await input.fill("grep -r Karla tickets");
+  await input.press("Enter");
+  const linea = (await page.getByTestId("terminal").locator(".terminal-linea").last().textContent()) ?? "";
+  const folio = /T-(\d+)/.exec(linea)?.[1] ?? "";
+  await input.fill("cat LEEME.txt");
+  await input.press("Enter");
+  await page.evaluate(
+    (f) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m02-el-leeme", "responder-folio", f),
+        window.__planta7?.responder?.("t1-m02-el-leeme", "responder-firma", "R"),
+      ]),
+    folio,
+  );
+  await expect(dialogo).toContainText("¿Qué tanto lees, joven?");
+  await expect(dialogo).toContainText("Mantenimiento");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText("nunca se equivocaba");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toHaveClass(/dialogo-pensamiento/);
+  await expect(dialogo).toContainText("Primer turno y ya heredé un misterio");
+  await page.keyboard.press("Enter");
+  await expect(dialogo.filter({ hasText: "heredé un misterio" })).toHaveCount(0);
 });

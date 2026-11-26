@@ -60,4 +60,6 @@ eventos:
   al_completar:
     - tipo: visita
       de: don_chuy
-      texto: ¡Ándale, gracias! Toma, pa' tu escritorio, una tuerca de scrap de la Línea 1. Pa' un freno ya no sirve, pero de pisapapeles cumple.
+      texto:
+        - ¡Ándale, gracias!
+        - Toma, pa' tu escritorio, una tuerca de scrap de la Línea 1. Pa' un freno ya no sirve, pero de pisapapeles cumple.

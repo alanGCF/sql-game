@@ -59,3 +59,21 @@ describe("llamadas entrantes (F4-04)", () => {
     expect(conTimbre([saliente], () => "x")[0]).toEqual(saliente);
   });
 });
+
+describe("varios globos y pensamiento (F4-06)", () => {
+  it("un efecto con lista de globos da un diálogo por globo; el pensamiento va en su nube", () => {
+    const eventos: EventoJornada[] = [
+      {
+        tipo: "efecto",
+        mision: "m",
+        efecto: { tipo: "visita", de: "don_chuy", texto: ["¿Qué tanto lees?", "Al rato vengo."] },
+      },
+      { tipo: "efecto", mision: "m", efecto: { tipo: "pensamiento", texto: "¿Quién será R.?" } },
+    ];
+    expect(dialogosDe(eventos, personajes).map((d) => [d.forma, d.quien, d.texto])).toEqual([
+      ["subtitulo", "don_chuy", "¿Qué tanto lees?"],
+      ["subtitulo", "don_chuy", "Al rato vengo."],
+      ["pensamiento", "jugador", "¿Quién será R.?"],
+    ]);
+  });
+});

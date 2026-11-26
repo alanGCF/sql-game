@@ -54,7 +54,7 @@ describe("misión en curso (ejemplo T1-M02)", () => {
     expect((await m.responder("responder-conteo", String(Number(n) + 1))).correcta).toBe(false);
     const fin = await m.responder("responder-conteo", n);
     expect(fin.completada).toBe(true);
-    expect(fin.efectos.map((e) => e.tipo)).toEqual(["llamada_entrante", "flag"]);
+    expect(fin.efectos.map((e) => e.tipo)).toEqual(["visita", "pensamiento", "flag"]);
     expect(m.flags.has("leyo_leeme")).toBe(true);
     expect(m.estrellas()).toBe(3);
   });
