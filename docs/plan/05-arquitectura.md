@@ -31,7 +31,8 @@ Decisiones y razones: `docs/decisiones/adr.md`. Las versiones exactas viven en `
 ├─ CLAUDE.md · docs/ · .claude/
 ├─ shared/                       # Zod: formato de partida, API, límites (cliente y servidor)
 ├─ content/                      # TODO el contenido como datos
-│  ├─ curriculo.yaml · personajes.yaml · contactos.yaml · rumores/ · visitas/
+│  ├─ curriculo.yaml · personajes.yaml (contactos: extensión, `corto`, paciencia) · visitas/
+│  ├─ llamadas/<contacto>.yaml   # llamadas que haces tú: conversaciones (por turno o bandera), opciones, paciencia
 │  ├─ mundo/variables.yaml       # variables de partida (generadores con semilla)
 │  ├─ mundo/hosts/<host>.yaml    # mundo base por host: usuarios, grupos y archivos
 │  ├─ mundo/db/                  # generadores de mes.db (F5)

@@ -48,14 +48,3 @@ export function marcar(marcado: string, personajes: Personajes["personajes"]): R
   const c = directorio(personajes).find((d) => d.extension === marcado);
   return c ? { tipo: "contesta", id: c.id } : { tipo: "no_existe" };
 }
-
-// shortcut: lo que dice cada contacto al contestar vive aquí hasta F4-02 (content/llamadas/ con paciencia).
-export const SALUDOS: Record<string, string> = {
-  companero: "¿Qué pasó? Ando en piso, pero dime. Si te atoras con algo, márcame y te echo la mano.",
-  don_chuy: "Mantenimiento, habla Ortega. Ahorita ando con una prensa, mijo; luego platicamos.",
-  karla: "Calidad, Karla. Estoy por entrar a junta; si es de un ticket, déjamelo en la app.",
-  trevino: "Treviño. Ando con Corporativo; si no es urgente, mándame un correo.",
-  comedor: "Comedor, buenas tardes. Hoy hay discada y frijoles charros; la cena es a las nueve.",
-  vigilancia: "Caseta… ¿bueno? Todo tranquilo por acá, joven.",
-  conmutador: "Conmutador, buenas tardes. Las extensiones están en el directorio de su mampara.",
-};

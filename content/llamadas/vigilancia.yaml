@@ -1,0 +1,13 @@
+# Llamadas que le haces a la caseta de vigilancia (ext. 900), F4-02. Rumores, nunca respuestas.
+contacto: vigilancia
+conversaciones:
+  - id: t1-nocturno
+    turnos: [1]
+    lineas:
+      - Caseta… ¿bueno? Ah, el de sistemas. Todo tranquilo, joven. Tranquilo hasta que llega el turno de la noche; esos entran y salen a cada rato.
+  - id: general-camaras
+    lineas:
+      - Caseta de vigilancia. Aquí nomás viendo las cámaras, joven. Ni una mosca.
+ponte_a_trabajar:
+  - ¿Otra vez? Joven, yo cuido la puerta, no soy operadora. Ponte a trabajar.
+no_contesta: Suena en la caseta y nadie contesta. A lo mejor anda dando su rondín… o dormido.

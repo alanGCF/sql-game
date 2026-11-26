@@ -62,6 +62,11 @@ export const PartidaEsquema = z.strictObject({
   mundo: MundoDiff,
   /** Misión principal en curso; null con el turno terminado. */
   mision: AvanceMision.nullable(),
+  /** Llamadas del jugador por contacto en el turno (paciencia gastada, F4-02). Falta en guardados viejos. */
+  llamadas: z
+    .record(Id, z.number().int().min(0).max(99))
+    .refine((r) => Object.keys(r).length <= 30, "demasiados contactos")
+    .default({}),
 });
 
 export type Partida = z.infer<typeof PartidaEsquema>;
@@ -82,6 +87,7 @@ export function partidaNueva(semilla: number, nombre: string, contenido: string)
     reloj: 0,
     mundo: { cambiados: [], borrados: [] },
     mision: null,
+    llamadas: {},
   };
 }
 

@@ -63,6 +63,7 @@ export function aPartida(j: Jornada, d: DatosPartida): Partida {
     reloj: e.reloj,
     mundo: e.mundo,
     mision: e.mision,
+    llamadas: e.llamadas,
   };
 }
 
@@ -82,6 +83,7 @@ export function estadoDe(p: Partida): EstadoJornada {
     ),
     favores: p.favores,
     flags: p.flags,
+    llamadas: p.llamadas,
   };
 }
 

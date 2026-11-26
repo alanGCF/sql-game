@@ -1,10 +1,19 @@
 // Harness de contenido: npm run validate:content [-- rutas...] [--semillas N]
 // Sin rutas revisa content/misiones/**/*.yaml y el ejemplo canónico. Sale con 1 si hay errores.
 import { parseArgs } from "node:util";
+import { revisarLlamadas } from "../src/engine/llamadas";
 import { type Mision, validarMision } from "../src/engine/mision/esquema";
 import { revisarMision } from "../src/engine/mision/harness";
 import { revisarRepasos } from "../src/engine/mision/harness-curriculo";
-import { archivosYaml, cargarCurriculo, cargarMundo, cargarPersonajes, leerYaml } from "./lib/contenido";
+import {
+  archivosYaml,
+  cargarCurriculo,
+  cargarLlamadas,
+  cargarMundo,
+  cargarPersonajes,
+  flagsConocidas,
+  leerYaml,
+} from "./lib/contenido";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -37,5 +46,15 @@ for (const f of archivos) {
   for (const x of h) console.log(`  ${x.severidad === "error" ? "ERROR" : "aviso"} ${x.regla}: ${x.mensaje}`);
 }
 for (const x of revisarRepasos(validas)) console.log(`aviso ${x.regla}: ${x.mensaje}`);
+if (!positionals.length) {
+  // Llamadas (F4-02): contra todas las misiones, para conocer las banderas que pueden pedir.
+  const llamadas = cargarLlamadas();
+  const deLlamadas = revisarLlamadas(llamadas, personajes.personajes, flagsConocidas(validas, llamadas));
+  errores += deLlamadas.length;
+  console.log(
+    `${deLlamadas.length ? "✗" : "✓"} content/llamadas (${Object.keys(llamadas).length} contactos)`,
+  );
+  for (const e of deLlamadas) console.log(`  ERROR llamadas: ${e}`);
+}
 console.log(`\n${archivos.length} archivo(s), ${errores} error(es), ${values.semillas} semillas.`);
 process.exit(errores ? 1 : 0);

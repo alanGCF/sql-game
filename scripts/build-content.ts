@@ -1,11 +1,19 @@
 // Pipeline de contenido: content/**/*.yaml → .generated/contenido/*.json (validado con Zod).
 // Un JSON por turno (turno-01.json … turno-te.json) que el cliente carga bajo demanda, y comun.json
-// (personajes y mundo base).
+// (personajes, mundo base y guiones de llamadas).
 // La revisión pedagógica con semillas es aparte: npm run validate:content.
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { revisarLlamadas } from "../src/engine/llamadas";
 import { type ArchivoContenido, compilarContenido } from "../src/engine/mision/compilar";
-import { archivosYaml, cargarMundo, cargarPersonajes, leerYaml } from "./lib/contenido";
+import {
+  archivosYaml,
+  cargarLlamadas,
+  cargarMundo,
+  cargarPersonajes,
+  flagsConocidas,
+  leerYaml,
+} from "./lib/contenido";
 
 const SALIDA = ".generated/contenido";
 const errores: string[] = [];
@@ -28,8 +36,13 @@ function intentar<T>(origen: string, f: () => T): T | undefined {
 }
 const personajes = intentar("content/personajes.yaml", cargarPersonajes);
 const mundo = intentar("content/mundo", () => cargarMundo());
+const llamadas = intentar("content/llamadas", () => cargarLlamadas());
+if (llamadas && personajes) {
+  const misiones = [...turnos.values()].flatMap((t) => [...t.misiones, ...t.favores]);
+  errores.push(...revisarLlamadas(llamadas, personajes.personajes, flagsConocidas(misiones, llamadas)));
+}
 
-if (errores.length || !personajes || !mundo) {
+if (errores.length || !personajes || !mundo || !llamadas) {
   for (const e of errores) console.error(`✗ ${e}`);
   console.error(`\nbuild-content: ${errores.length} error(es); no se generó nada.`);
   process.exit(1);
@@ -37,7 +50,7 @@ if (errores.length || !personajes || !mundo) {
 
 rmSync(SALIDA, { recursive: true, force: true });
 mkdirSync(SALIDA, { recursive: true });
-writeFileSync(join(SALIDA, "comun.json"), JSON.stringify({ personajes, mundo }));
+writeFileSync(join(SALIDA, "comun.json"), JSON.stringify({ personajes, mundo, llamadas }));
 for (const [llave, turno] of turnos)
   writeFileSync(join(SALIDA, `turno-${llave}.json`), JSON.stringify(turno));
 const n = [...turnos.values()].reduce((s, t) => s + t.misiones.length + t.favores.length, 0);

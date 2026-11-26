@@ -22,28 +22,43 @@ export function Dialogos() {
   // La última línea de una llamada que hiciste termina la llamada (F4-01).
   const cuelga = usePartida((s) => s.dialogos[0]?.saliente === true && s.dialogos[1]?.saliente !== true);
   const avanzar = usePartida((s) => s.avanzarDialogo);
+  const elegir = usePartida((s) => s.elegirOpcion);
   const enMenu = useEscena((s) => s.enMenu);
 
   useEffect(() => {
     if (!actual || enMenu) return;
+    const opciones = actual.opciones?.length ?? 0;
     // En captura, antes que la terminal o Tickets: Enter cierra el diálogo si no estás escribiendo
-    // (campo vacío; en bash, Enter con la línea vacía no hace nada).
+    // (campo vacío; en bash, Enter con la línea vacía no hace nada). Con opciones, 1–3 eligen.
     const tecla = (e: KeyboardEvent) => {
-      if (e.key !== "Enter") return;
+      const n = Number(e.key);
+      const opcion = opciones > 0 && Number.isInteger(n) && n >= 1 && n <= opciones;
+      if (e.key !== "Enter" && !opcion) return;
       const foco = document.activeElement;
-      if (foco instanceof HTMLButtonElement) return;
+      if (e.key === "Enter" && foco instanceof HTMLButtonElement) return;
       if ((foco instanceof HTMLInputElement || foco instanceof HTMLTextAreaElement) && foco.value !== "")
         return;
       e.preventDefault();
       e.stopPropagation();
-      avanzar();
+      if (opcion) void elegir(n - 1);
+      else if (opciones === 0) avanzar();
     };
     window.addEventListener("keydown", tecla, true);
     return () => window.removeEventListener("keydown", tecla, true);
-  }, [actual, avanzar, enMenu]);
+  }, [actual, avanzar, elegir, enMenu]);
 
   if (!actual || enMenu) return null;
-  const boton = (
+  const boton = actual.opciones?.length ? (
+    <ol className="dialogo-opciones" aria-label="Responder">
+      {actual.opciones.map((o, i) => (
+        <li key={o.texto}>
+          <button type="button" className="dialogo-opcion" onClick={() => void elegir(i)}>
+            <kbd>{i + 1}</kbd> {o.texto}
+          </button>
+        </li>
+      ))}
+    </ol>
+  ) : (
     <button type="button" className="dialogo-siguiente" onClick={avanzar}>
       {cuelga ? "Colgar" : ultimo ? "Cerrar" : "Siguiente"} <kbd>Enter</kbd>
     </button>
@@ -66,7 +81,7 @@ export function Dialogos() {
           </span>
         </div>
         <p className="llamada-texto">{actual.texto}</p>
-        <div className="llamada-pie">{boton}</div>
+        <div className={actual.opciones?.length ? "llamada-pie con-opciones" : "llamada-pie"}>{boton}</div>
       </section>
     );
   }

@@ -1,3 +1,4 @@
+import type { OpcionLlamada } from "../engine/llamadas";
 import type { Personajes } from "../engine/mision/curriculo";
 import type { EventoJornada } from "./jornada";
 
@@ -11,6 +12,8 @@ export interface Dialogo {
   texto: string;
   /** Línea de una llamada que hizo el jugador desde el teléfono (F4-01): colgar la quita. */
   saliente?: true;
+  /** Opciones de respuesta del jugador (F4-02): en lugar de "Siguiente", se elige una. */
+  opciones?: OpcionLlamada[];
 }
 
 /** Un diálogo suelto (fuera de los eventos de una misión), con el nombre y el departamento del personaje. */

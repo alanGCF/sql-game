@@ -497,8 +497,8 @@ test("teléfono (F4-01): marca 214 con el teclado, contesta Eduardo y Esc cuelga
   const dialogo = page.getByTestId("dialogo");
   await expect(dialogo).toHaveClass(/llamada/);
   await expect(dialogo).toContainText("Eduardo Téllez");
-  await expect(dialogo.getByRole("button", { name: /Colgar/ })).toBeVisible();
-  // Mientras hablas, las teclas no marcan.
+  await expect(dialogo.getByRole("list", { name: "Responder" })).toBeVisible();
+  // Mientras hablas, las teclas no marcan (y 9 no es una opción).
   await page.keyboard.type("9");
   await expect(pantalla).not.toContainText("9");
   await page.keyboard.press("Escape");
@@ -523,7 +523,43 @@ test("teléfono (F4-01): marca 214 con clic; tu extensión da ocupado y otra no 
   await telefono.getByRole("button", { name: /Llamar/ }).click();
   const dialogo = page.getByTestId("dialogo");
   await expect(dialogo).toContainText("Eduardo Téllez");
+  await dialogo.getByRole("button", { name: /ya me voy ubicando/ }).click();
   await dialogo.getByRole("button", { name: /Colgar/ }).click();
   await expect(dialogo).toBeHidden();
   await expect(pantalla).toContainText("Ext. 210");
+});
+
+test("llamadas (F4-02): opciones de respuesta y paciencia de Eduardo hasta que no contesta", async ({
+  page,
+}) => {
+  await alTelefono(page);
+  const pantalla = page.getByTestId("telefono-pantalla");
+  const dialogo = page.getByTestId("dialogo");
+  const llamar = async () => {
+    await page.keyboard.type("214");
+    await page.keyboard.press("Enter");
+  };
+  // 1: la del turno, con opciones; el 2 del teclado elige la segunda.
+  await llamar();
+  await expect(dialogo).toContainText("¿Cómo vas con tu primer turno?");
+  await page.keyboard.press("2");
+  await expect(dialogo).toContainText("a todos nos pasó");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toBeHidden();
+  // 2: la general, también con opciones.
+  await llamar();
+  await expect(dialogo).toContainText("impresora de etiquetas");
+  await dialogo.getByRole("button", { name: /nomás saludando/ }).click();
+  await expect(dialogo).toContainText("Al rato paso por tu lugar");
+  await dialogo.getByRole("button", { name: /Colgar/ }).click();
+  // 3: ya se le acabó la paciencia.
+  await llamar();
+  await expect(dialogo).toContainText(/Ponte a trabajar/i);
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toBeHidden();
+  // 4: no contesta; lo piensas.
+  await llamar();
+  await expect(pantalla).toContainText("Sin respuesta");
+  await expect(page.getByTestId("pensamiento")).toContainText("Eduardo ha de andar en piso");
+  await expect(dialogo).toBeHidden();
 });

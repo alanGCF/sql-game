@@ -8,7 +8,7 @@ import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
 import { type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type EventoJornada, Jornada } from "./jornada";
-import { marcar, type ResultadoMarcar, SALUDOS } from "./telefono";
+import { marcar, type ResultadoMarcar } from "./telefono";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
 
 /** Un renglón del pizarrón: objetivo de la misión en curso o de un favor activo. */
@@ -84,8 +84,10 @@ interface EstadoPartida {
   /** Número recién creado que el jugador debe anotar (tarjeta de Recursos Humanos, D-27). */
   numeroPorAnotar: string | null;
   anotado: () => void;
-  /** Teléfono (F4-01): marca una extensión; si contesta, su llamada entra a los diálogos. */
-  llamar: (marcado: string) => ResultadoMarcar;
+  /** Teléfono (F4-01/02): marca una extensión; si contesta, su llamada entra a los diálogos. */
+  llamar: (marcado: string) => Promise<ResultadoLlamar>;
+  /** Elige una opción de respuesta del diálogo en pantalla (F4-02). */
+  elegirOpcion: (i: number) => Promise<void>;
   /** Cuelga la llamada que hizo el jugador (quita lo que faltaba de ella). */
   colgar: () => void;
 }
@@ -95,6 +97,22 @@ const AVISO_NUMERO =
   "Antes que se me olvide: Recursos Humanos te dejó tu número de empleado en un post-it, en tu monitor. Anótalo en tu libreta o en un papel; con él checas entrada en cualquier compu.";
 
 const MAX_EVENTOS = 200;
+const llamadas = contenidoComun().llamadas;
+
+export type ResultadoLlamar = ResultadoMarcar | { tipo: "no_contesta"; texto: string };
+
+/** Las líneas de una llamada del jugador, como diálogos de tarjeta; la última lleva las opciones. */
+function lineasDeLlamada(
+  quien: string,
+  lineas: readonly string[],
+  opciones?: Dialogo["opciones"],
+): Dialogo[] {
+  return lineas.map((texto, i) => ({
+    ...dialogoDe(quien, texto, true, personajes),
+    saliente: true as const,
+    ...(opciones && i === lineas.length - 1 ? { opciones } : {}),
+  }));
+}
 
 function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
   return {
@@ -191,15 +209,39 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     avanzarDialogo() {
       set({ dialogos: get().dialogos.slice(1) });
     },
-    llamar(marcado) {
+    async llamar(marcado) {
       const r = marcar(marcado, personajes);
-      if (r.tipo !== "contesta") return r;
-      const linea: Dialogo = {
-        ...dialogoDe(r.id, SALUDOS[r.id] ?? "¿Bueno?", true, personajes),
-        saliente: true,
-      };
-      set({ dialogos: [...get().dialogos.filter((d) => !d.saliente), linea] });
-      return r;
+      const guion = r.tipo === "contesta" ? llamadas[r.id] : undefined;
+      if (r.tipo !== "contesta" || !guion) return r.tipo === "contesta" ? { tipo: "no_existe" } : r;
+      const { jornada } = get();
+      const { llamada, eventos } = await jornada.llamar(r.id, guion, personajes[r.id]?.paciencia ?? 2);
+      const s = get();
+      const lineas =
+        llamada.tipo === "charla"
+          ? lineasDeLlamada(r.id, llamada.conversacion.lineas, llamada.conversacion.opciones)
+          : llamada.tipo === "ponte_a_trabajar"
+            ? lineasDeLlamada(r.id, [llamada.texto])
+            : [];
+      // La llamada va antes que lo que haya desatado (p. ej. un objetivo de T0 cumplido).
+      const previos = s.dialogos.filter((d) => !d.saliente);
+      set({
+        ...actualizado(jornada, s, eventos),
+        dialogos: [...previos, ...lineas, ...dialogosDe(eventos, personajes)],
+      });
+      guardar(eventos);
+      return llamada.tipo === "no_contesta" ? { tipo: "no_contesta", texto: llamada.texto } : r;
+    },
+    async elegirOpcion(i) {
+      const [actual, ...resto] = get().dialogos;
+      const opcion = actual?.opciones?.[i];
+      if (!actual || !opcion) return;
+      const respuesta = lineasDeLlamada(actual.quien, opcion.respuesta);
+      set({ dialogos: [...respuesta, ...resto] });
+      if (!opcion.flag) return;
+      const { jornada } = get();
+      const eventos = await jornada.decidir(opcion.flag);
+      if (eventos.length) set(actualizado(jornada, get(), eventos));
+      guardar(eventos);
     },
     colgar() {
       set({ dialogos: get().dialogos.filter((d) => !d.saliente) });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { archivosYaml, cargarMundo, leerYaml } from "../../scripts/lib/contenido";
+import { archivosYaml, cargarLlamadas, cargarMundo, leerYaml } from "../../scripts/lib/contenido";
+import type { GuionLlamadas } from "../../src/engine/llamadas";
 import { compilarContenido, type TurnoCompilado } from "../../src/engine/mision/compilar";
 import type { Mision } from "../../src/engine/mision/esquema";
 import { respuestaEsperada } from "../../src/engine/mision/harness";
@@ -181,5 +182,50 @@ describe("jornada: guardar y restaurar (F4-12)", () => {
         mision: { ...(g.mision as object), id: "t1-m99-nada" },
       } as never),
     ).toThrow(/t1-m99-nada/);
+  });
+});
+
+describe("jornada: llamadas salientes (F4-02)", () => {
+  const guiones = cargarLlamadas();
+  const eduardo = guiones.companero as GuionLlamadas;
+
+  it("la paciencia se cuenta por contacto: 2 charlas, 'ponte a trabajar' y luego no contesta", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    j.tomarEventos();
+    const tipos = [];
+    for (let i = 0; i < 4; i++) tipos.push((await j.llamar("companero", eduardo, 2)).llamada.tipo);
+    expect(tipos).toEqual(["charla", "charla", "ponte_a_trabajar", "no_contesta"]);
+    // Otro contacto tiene su propia paciencia.
+    expect((await j.llamar("karla", guiones.karla as GuionLlamadas, 2)).llamada.tipo).toBe("charla");
+  });
+
+  it("una llamada contestada deja la bandera llamo_<contacto> y suma 2 minutos; sin contestar, nada", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    const antes = j.minutoDelDia();
+    await j.llamar("companero", eduardo, 2);
+    expect(j.flags.has("llamo_companero")).toBe(true);
+    expect(j.minutoDelDia() - antes).toBeCloseTo(2);
+    // Con paciencia 0, la primera ya es "ponte a trabajar" (contesta) y la segunda no contesta.
+    await j.llamar("karla", guiones.karla as GuionLlamadas, 0);
+    expect(j.flags.has("llamo_karla")).toBe(true);
+    const r = await j.llamar("karla", guiones.karla as GuionLlamadas, 0);
+    expect(r.llamada.tipo).toBe("no_contesta");
+    expect(j.minutoDelDia() - antes).toBeCloseTo(4);
+  });
+
+  it("decidir (una opción de la llamada) deja su bandera", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    await j.decidir("tomo_cafe");
+    expect(j.flags.has("tomo_cafe")).toBe(true);
+  });
+
+  it("la paciencia gastada se guarda y se restaura con la partida", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    await j.llamar("companero", eduardo, 2);
+    await j.llamar("companero", eduardo, 2);
+    const e = j.guardar();
+    expect(e.llamadas).toEqual({ companero: 2 });
+    const r = Jornada.restaurar(t1, mundo, 3, e);
+    expect((await r.llamar("companero", eduardo, 2)).llamada.tipo).toBe("ponte_a_trabajar");
   });
 });

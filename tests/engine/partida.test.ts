@@ -23,11 +23,18 @@ const valida = (): Partida => ({
     cwd: "/home/becario",
     leidos: ["/home/becario/LEEME.txt"],
   },
+  llamadas: { companero: 1 },
 });
 
 describe("formato de partida (cliente y servidor)", () => {
   it("acepta una partida válida", () => {
     expect(leerPartida(valida()).ok).toBe(true);
+  });
+
+  it("un guardado de antes de F4-02 (sin llamadas) se lee con la paciencia completa", () => {
+    const { llamadas: _, ...vieja } = valida();
+    const r = leerPartida(vieja);
+    expect(r.ok && r.partida.llamadas).toEqual({});
   });
 
   it.each<[string, (p: Record<string, unknown>) => void]>([
@@ -38,6 +45,12 @@ describe("formato de partida (cliente y servidor)", () => {
     ["nombre demasiado largo", (p) => (p.nombre = "x".repeat(41))],
     ["estrellas fuera de rango", (p) => (p.completadas = { "t1-m01-x": { estrellas: 9 } })],
     ["id con caracteres raros", (p) => (p.flags = ["<script>"])],
+    ["llamadas fuera de rango", (p) => (p.llamadas = { companero: 1000 })],
+    ["llamadas a un contacto raro", (p) => (p.llamadas = { "<x>": 1 })],
+    [
+      "llamadas a demasiados contactos",
+      (p) => (p.llamadas = Object.fromEntries(Array.from({ length: 31 }, (_, i) => [`c${i}`, 1]))),
+    ],
     ["demasiadas notas", (p) => (p.notas = Array(201).fill("n"))],
     ["nota demasiado larga", (p) => (p.notas = ["x".repeat(501)])],
     ["xp como texto", (p) => (p.xp = "50")],

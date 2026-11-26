@@ -971,3 +971,47 @@ fieldset.ajuste label {
   background: rgb(255 255 255 / 8%);
   color: var(--text);
 }
+
+/* Opciones de respuesta en un diálogo (F4-02): una por renglón, con su número. */
+.llamada-pie.con-opciones {
+  justify-content: stretch;
+}
+.dialogo-opciones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45em;
+  width: 100%;
+}
+.dialogo-opcion {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 0.9em;
+  padding: 0.55em 0.8em;
+  border-radius: 10px;
+  border: 1px solid #c9bda9;
+  background: #fff;
+  color: #2b2622;
+  cursor: pointer;
+}
+.dialogo-opcion:hover {
+  border-color: #23665a;
+}
+.dialogo-opcion:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
+.dialogo-opciones kbd {
+  display: inline-block;
+  min-width: 1.4em;
+  margin-right: 0.4em;
+  font-family: var(--fuente-mono);
+  font-size: 0.85em;
+  text-align: center;
+  border-radius: 4px;
+  background: #23665a;
+  color: #fff;
+}

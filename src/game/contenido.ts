@@ -1,3 +1,4 @@
+import type { GuionLlamadas } from "../engine/llamadas";
 import type { TurnoCompilado } from "../engine/mision/compilar";
 import type { Personajes } from "../engine/mision/curriculo";
 import type { MundoBase } from "../engine/mundo-base";
@@ -6,6 +7,8 @@ import type { MundoBase } from "../engine/mundo-base";
 interface Comun {
   personajes: Personajes;
   mundo: MundoBase;
+  /** Guiones de llamadas por contacto (content/llamadas, F4-02). */
+  llamadas: Record<string, GuionLlamadas>;
 }
 const comun = import.meta.glob<Comun>("../../.generated/contenido/comun.json", {
   eager: true,

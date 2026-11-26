@@ -1,0 +1,42 @@
+# Llamadas que le haces a Eduardo (ext. 214), F4-02. Paciencia en personajes.yaml.
+# Las pistas llegan en F4-03 y no gastan paciencia (D-14); platicar sí.
+contacto: companero
+conversaciones:
+  - id: t0-primera
+    turnos: [0]
+    lineas:
+      - ¡Eso! Así me marcas cuando me necesites. Casi siempre ando en piso, pero el teléfono me sigue a todos lados.
+  - id: t1-primer-turno
+    turnos: [1]
+    lineas:
+      - ¿Qué pasó? ¿Cómo vas con tu primer turno?
+    opciones:
+      - texto: Bien, ya me voy ubicando.
+        respuesta:
+          - Así se habla. Si algo no te sale, márcame; para eso estamos.
+      - texto: Medio perdido, la verdad.
+        respuesta:
+          - Normal, a todos nos pasó. Ve paso por paso y lee lo que sale en la pantalla; casi siempre ahí viene la respuesta.
+  - id: t1-leeme
+    turnos: [1]
+    requiere: leyo_leeme
+    lineas:
+      - ¿Ya leíste el LEEME de la ingeniera? Rebeca era muy cuidadosa con sus notas. Muy cuidadosa.
+      - Yo no me meto en eso. Tú saca tus tickets y no te busques broncas.
+  - id: general-piso
+    lineas:
+      - Ando en piso con una impresora de etiquetas que no quiere jalar. ¿Algo urgente?
+    opciones:
+      - texto: No, nomás saludando.
+        respuesta:
+          - Va. Al rato paso por tu lugar.
+      - texto: No, ya lo resolví.
+        respuesta:
+          - ¡Eso! Así me gusta.
+  - id: general-comedor
+    lineas:
+      - Si vas para el comedor, avísame. La señora del comedor les guarda pan dulce a los de sistemas si llegas antes de las siete.
+ponte_a_trabajar:
+  - Oye, ¿no tienes trabajo? Ponte a trabajar, que el pizarrón no se tacha solo.
+  - Otra vez tú. Ponte a trabajar, ándale; yo también tengo pendientes.
+no_contesta: Suena y suena… Eduardo ha de andar en piso. Mejor sigo con lo mío.

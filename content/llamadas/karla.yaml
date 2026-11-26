@@ -1,0 +1,23 @@
+# Llamadas que le haces a Karla (Calidad, ext. 402), F4-02.
+contacto: karla
+conversaciones:
+  - id: t1-ticket
+    turnos: [1]
+    lineas:
+      - Calidad, Karla. ¿Ya viste mi ticket? Lo ocupo antes de que acabe el turno, porfa.
+  - id: general-junta
+    lineas:
+      - Calidad, Karla. Estoy por entrar a junta con Producción. Si es de un ticket, contéstalo en la app y yo lo reviso.
+  - id: general-auditoria
+    lineas:
+      - Ahorita no puedo; tengo auditoría de cliente la otra semana y todo tiene que cuadrar. ¿Era algo rápido?
+    opciones:
+      - texto: No, nada urgente.
+        respuesta:
+          - Va. Gracias por avisar.
+      - texto: Nomás para presentarme.
+        respuesta:
+          - Ah, el nuevo de sistemas. Mucho gusto. Te voy a dejar tickets; no es nada personal.
+ponte_a_trabajar:
+  - ¿Otra vez? De verdad estoy ocupada. Ponte a trabajar y deja de marcarme, ¿sí?
+no_contesta: Entra el buzón de Karla. No le dejo mensaje; ya me dijo que está ocupada.

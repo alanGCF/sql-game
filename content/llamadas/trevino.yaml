@@ -1,0 +1,14 @@
+# Llamadas que le haces al Lic. Treviño (Gerencia, ext. 100), F4-02. Gerencia gasta paciencia al doble:
+# su paciencia en personajes.yaml es 1.
+contacto: trevino
+conversaciones:
+  - id: bienvenida
+    turnos: [0, 1]
+    lineas:
+      - Mauricio Treviño, buenas tardes. ¡Ah, el nuevo talento de sistemas! Bienvenido a la familia Ocotillo. Mi puerta siempre está abierta.
+  - id: general-correo
+    lineas:
+      - Ando en videollamada con Corporativo. Si no es urgente, mándamelo por correo y lo vemos, ¿sale?
+ponte_a_trabajar:
+  - Te encargo mucho que te enfoques en tus pendientes. Aquí todos tenemos mucho trabajo, ¿verdad?
+no_contesta: Contesta la grabadora de Gerencia. Mejor no insisto.

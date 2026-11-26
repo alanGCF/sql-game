@@ -50,6 +50,7 @@ Corre en cada build, en CI y en el hook al editar YAML. Severidad **error** (rom
 | C16 | **Favores:** `ensena: []`, `refuerza` ya enseñado, `disponible_desde` entre 1 y 2 misiones después de la que enseña el concepto más reciente; no modifica banderas de la historia | error |
 | C17 | **Variabilidad:** al menos el 80 % de las respuestas esperadas cambian entre semillas (si no, la respuesta se puede memorizar) | aviso |
 | C18 | Ningún texto contiene un valor que debería ser `{{variable}}` (detecta valores de ejemplo pegados a mano) | error |
+| C19 | **Llamadas** (`content/llamadas/`): un archivo por contacto con extensión, nombrado como su id; el contacto tiene paciencia; hay al menos una conversación general (sin `turnos` ni `requiere`); ids únicos; `requiere` pide una bandera que existe (efecto `flag` de una misión, `flag` de una opción o `llamo_<contacto>`); sin `{{variables}}` | error |
 
 ## 3. Pruebas del motor
 

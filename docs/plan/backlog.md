@@ -182,7 +182,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** capa DOM al acercarse al teléfono: pantallita, teclado numérico (clic o teclas), directorio de extensiones de `02-trama.md`; marcar una extensión inicia la llamada; colgar con Esc.
 - **Listo cuando:** e2e marca 214 con teclado y con clic; capturas aprobadas.
 
-### F4-02 · Llamadas salientes y paciencia por turno · `pendiente` · depende: F4-01
+### F4-02 · Llamadas salientes y paciencia por turno · `hecha (2026-11-26)` *(`content/llamadas/<contacto>.yaml` para los 7 contactos con esquema Zod (`src/engine/llamadas.ts`) y regla C19 del harness en build y validate; elegir conversación por turno/bandera sin repetir; paciencia por contacto guardada en la partida (`llamadas`, opcional para guardados viejos); Gerencia con paciencia 1; opciones de respuesta en la tarjeta (clic o 1–3) que pueden dejar bandera; "no contesta" como pensamiento; llamada contestada = 2 min de reloj y bandera `llamo_<contacto>`)* · depende: F4-01
 - **Hacer:** contenido `content/llamadas/` (por contacto: charla, rumores, avisos, "ponte a trabajar", no contesta) con esquema Zod y harness; paciencia por contacto y turno (Gerencia al doble); diálogos en tarjeta de llamada (D-22) con opciones de respuesta.
 - **Listo cuando:** pruebas de paciencia (1–2 charla, 3 aviso, 4+ no contesta) y e2e de una llamada con opción de respuesta.
 

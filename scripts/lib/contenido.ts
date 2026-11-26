@@ -2,6 +2,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
+import { flagsDeLlamadas, type GuionLlamadas, GuionLlamadasEsquema } from "../../src/engine/llamadas";
 import { CurriculoEsquema, PersonajesEsquema } from "../../src/engine/mision/curriculo";
 import { type Mision, validarMision } from "../../src/engine/mision/esquema";
 import { type MundoBase, MundoEsquema } from "../../src/engine/mundo-esquema";
@@ -33,6 +34,37 @@ export const cargarCurriculo = () =>
   CurriculoEsquema.parse(parse(readFileSync("content/curriculo.yaml", "utf8")));
 export const cargarPersonajes = () =>
   PersonajesEsquema.parse(parse(readFileSync("content/personajes.yaml", "utf8")));
+
+/** content/llamadas/: un guion por contacto, nombrado como su id en personajes.yaml (F4-02). */
+export function cargarLlamadas(dir = "content/llamadas"): Record<string, GuionLlamadas> {
+  const guiones: Record<string, GuionLlamadas> = {};
+  for (const ruta of archivosYaml(dir)) {
+    const y = leerYaml(ruta);
+    if (!y.ok) throw new Error(y.error);
+    const r = GuionLlamadasEsquema.safeParse(y.datos);
+    if (!r.success)
+      throw new Error(
+        r.error.issues.map((i) => `${ruta}: ${i.path.join(".") || "(raíz)"}: ${i.message}`).join("\n"),
+      );
+    guiones[ruta.replace(/^.*\//, "").replace(/\.ya?ml$/, "")] = r.data;
+  }
+  return guiones;
+}
+
+/** Banderas que ponen las misiones (efecto flag) y las opciones de llamada: las que `requiere` puede pedir. */
+export function flagsConocidas(
+  misiones: readonly Mision[],
+  llamadas: Record<string, GuionLlamadas>,
+): Set<string> {
+  const deMisiones = misiones.flatMap((m) =>
+    Object.values(m.eventos ?? {}).flatMap((efectos) =>
+      (efectos ?? []).flatMap((e) => (e.tipo === "flag" ? [e.nombre] : [])),
+    ),
+  );
+  // Llamar a alguien que contesta deja la bandera llamo_<contacto> (Jornada.llamar).
+  const llamo = Object.keys(llamadas).map((id) => `llamo_${id}`);
+  return new Set([...deMisiones, ...flagsDeLlamadas(llamadas), ...llamo]);
+}
 
 /** content/mundo/: variables de partida + un archivo por host en hosts/ (el nombre debe ser el host). */
 export function cargarMundo(dir = "content/mundo"): MundoBase {

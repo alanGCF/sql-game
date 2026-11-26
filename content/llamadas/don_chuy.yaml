@@ -1,0 +1,24 @@
+# Llamadas que le haces a Don Chuy (Mantenimiento, ext. 301), F4-02.
+contacto: don_chuy
+conversaciones:
+  - id: t1-leeme
+    turnos: [1]
+    requiere: leyo_leeme
+    lineas:
+      - La ingeniera Salcido sí bajaba a piso, joven. Decía que los datos mienten menos que la gente… pero que la gente les mueve a los datos.
+  - id: general-prensa
+    lineas:
+      - Mantenimiento, habla Ortega. Ando con la prensa cuatro, que amaneció de malas. Si no es urgente, al rato platicamos.
+  - id: general-ruido
+    lineas:
+      - "Mira, joven: máquina que no hace ruido, o está muy bien o está muy mal. Por eso yo las oigo antes de verlas."
+    opciones:
+      - texto: ¿Y cómo sabe cuál de las dos?
+        respuesta:
+          - Con los años. Y preguntando; preguntando se llega a Roma, joven.
+      - texto: Lo voy a tener en cuenta.
+        respuesta:
+          - Así me gusta. Ándale, ahí nos vemos.
+ponte_a_trabajar:
+  - ¿Otra vez tú? ¿No tienes trabajo, joven? Ponte a trabajar, que el patrón no paga por platicar.
+no_contesta: Nadie contesta en el taller. Don Chuy ha de andar metido debajo de alguna máquina.

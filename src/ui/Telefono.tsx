@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { contenidoComun } from "../game/contenido";
 import { horaTexto } from "../game/hora";
-import { usePartida } from "../game/partidaStore";
-import { directorio, extensionPropia, MAX_DIGITOS, type ResultadoMarcar } from "../game/telefono";
+import { type ResultadoLlamar, usePartida } from "../game/partidaStore";
+import { useEscena } from "../game/store";
+import { directorio, extensionPropia, MAX_DIGITOS } from "../game/telefono";
 
 const personajes = contenidoComun().personajes.personajes;
 
@@ -21,11 +22,12 @@ const TECLAS: ReadonlyArray<readonly [string, string]> = [
   ["#", ""],
 ];
 
-type Aviso = Exclude<ResultadoMarcar["tipo"], "contesta" | "vacio">;
+type Aviso = Exclude<ResultadoLlamar["tipo"], "contesta" | "vacio">;
 
 const AVISOS: Record<Aviso, readonly [string, string]> = {
   ocupado: ["Ocupado", "Es tu extensión"],
   no_existe: ["No existe", "Revisa el directorio"],
+  no_contesta: ["Sin respuesta", "No contestan"],
 };
 
 /** Variante de la consulta F4-01 (?tel=a|b|c); se queda solo la que elija el usuario. */
@@ -60,10 +62,19 @@ export function Telefono() {
     setAviso(null);
     setMarcado(actual.current.slice(0, -1));
   };
-  const marcar = () => {
-    const r = llamar(actual.current);
-    if (r.tipo === "ocupado" || r.tipo === "no_existe") setAviso(r.tipo);
-    if (r.tipo !== "vacio") setMarcado("");
+  const marcando = useRef(false);
+  const marcar = async () => {
+    if (marcando.current) return;
+    marcando.current = true;
+    try {
+      const r = await llamar(actual.current);
+      if (r.tipo !== "vacio") setMarcado("");
+      if (r.tipo === "ocupado" || r.tipo === "no_existe" || r.tipo === "no_contesta") setAviso(r.tipo);
+      // Cuando ya no te contestan, lo piensas (globo de pensamiento).
+      if (r.tipo === "no_contesta") useEscena.getState().pensar(r.texto);
+    } finally {
+      marcando.current = false;
+    }
   };
 
   const tecla = (e: KeyboardEvent) => {
@@ -88,7 +99,7 @@ export function Telefono() {
     } else if (e.key === "Enter" && usePartida.getState().dialogos.length === 0) {
       // Con un diálogo en pantalla, Enter es para avanzarlo (Dialogos).
       e.preventDefault();
-      marcar();
+      void marcar();
     }
   };
   const manejador = useRef(tecla);
@@ -171,7 +182,12 @@ export function Telefono() {
                 Colgar <kbd>Esc</kbd>
               </button>
             ) : (
-              <button type="button" className="telefono-llamar" onMouseDown={sinFoco} onClick={marcar}>
+              <button
+                type="button"
+                className="telefono-llamar"
+                onMouseDown={sinFoco}
+                onClick={() => void marcar()}
+              >
                 Llamar <kbd>Enter</kbd>
               </button>
             )}

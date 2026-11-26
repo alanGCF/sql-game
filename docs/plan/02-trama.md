@@ -78,7 +78,7 @@ Cada comentario es corto (≤ 280 caracteres), llega por visita o llamada y no g
 
 ### Teléfono: paciencia de los contactos
 
-Cada contacto tiene **paciencia por turno**: llamadas 1–2 → contenido (charla, rumor, aviso); llamada 3 → "¿No tienes trabajo? Ponte a trabajar"; llamada 4 en adelante → no contesta (timbra o buzón). Se reinicia cada turno. Llamar a gerencia sin motivo gasta paciencia más rápido. Las **llamadas a Eduardo para pedir pista no gastan paciencia** *(D-14)*; platicar sí.
+Cada contacto tiene **paciencia por turno**: llamadas 1–2 → contenido (charla, rumor, aviso); llamada 3 → "¿No tienes trabajo? Ponte a trabajar"; llamada 4 en adelante → no contesta (timbra o buzón). Se reinicia cada turno. Llamar a gerencia sin motivo gasta paciencia más rápido (su paciencia es 1: la segunda llamada ya es "ponte a trabajar"). Las **llamadas a Eduardo para pedir pista no gastan paciencia** *(D-14)*; platicar sí.
 
 ### Rumores
 

@@ -1,5 +1,6 @@
 import type { ResultadoLinea, Shell } from "../engine";
 import { inicioTurno } from "../engine/calendario";
+import { elegirLlamada, type GuionLlamadas, type Llamada } from "../engine/llamadas";
 import type { TurnoCompilado } from "../engine/mision/compilar";
 import type { Mision } from "../engine/mision/esquema";
 import { type Avance, type AvanceMision, type Efecto, MisionEnCurso } from "../engine/mision/runtime";
@@ -32,10 +33,14 @@ export interface EstadoJornada {
   /** Favores terminados (los que van a medias se reinician al cargar). */
   favores: string[];
   flags: string[];
+  /** Llamadas del jugador a cada contacto en el turno: lo que lleva gastado de su paciencia (F4-02). */
+  llamadas: Record<string, number>;
 }
 
 /** Minuto del día en que entra el turno vespertino (15:30). */
 const ENTRADA = 15 * 60 + 30;
+/** Una llamada contestada toma 2 minutos de reloj de juego. */
+const SEGUNDOS_POR_LLAMADA = 120;
 /** Cerrar todas las misiones principales lleva el reloj hasta las 23:30 (deja aire para el cierre). */
 const MINUTOS_DE_MISIONES = 8 * 60;
 
@@ -46,6 +51,7 @@ export class Jornada {
   private readonly cola: EventoJornada[] = [];
   private readonly hechas = new Map<string, 1 | 2 | 3>();
   private readonly favoresHechos: string[] = [];
+  private readonly llamadas = new Map<string, number>();
   /** El mundo base con la semilla, antes de cualquier misión: contra él se guardan las diferencias. */
   private readonly mundoInicial: Vfs;
 
@@ -97,6 +103,7 @@ export class Jornada {
     if (falta > 0) shell.mundo.reloj.avanzar(falta / 1000);
     for (const [id, estrellas] of Object.entries(e.completadas)) j.hechas.set(id, estrellas);
     j.favoresHechos.push(...e.favores);
+    for (const [id, n] of Object.entries(e.llamadas)) j.llamadas.set(id, n);
     j.indice = indice;
     if (e.mision) {
       j.principal = new MisionEnCurso(ref, shell, semilla, vars, j.flags, { restaurando: true });
@@ -122,6 +129,7 @@ export class Jornada {
       completadas: Object.fromEntries(this.hechas),
       favores: [...this.favoresHechos],
       flags: [...this.flags],
+      llamadas: Object.fromEntries(this.llamadas),
     };
   }
 
@@ -177,6 +185,38 @@ export class Jornada {
       ...(r.comentario ? { comentario: r.comentario } : {}),
       eventos: this.tomarEventos(),
     };
+  }
+
+  /**
+   * El jugador llama a un contacto (F4-02): gasta su paciencia del turno y elige qué dice. Si contesta, deja
+   * la bandera llamo_<contacto> (T0 pide marcarle a Eduardo), toma 2 minutos y se revisan los objetivos.
+   */
+  async llamar(
+    contacto: string,
+    guion: GuionLlamadas,
+    paciencia: number,
+  ): Promise<{ llamada: Llamada; eventos: EventoJornada[] }> {
+    const n = (this.llamadas.get(contacto) ?? 0) + 1;
+    this.llamadas.set(contacto, n);
+    const llamada = elegirLlamada(guion, {
+      turno: this.turno.turno,
+      llamada: n,
+      paciencia,
+      flags: this.flags,
+      semilla: this.semilla,
+    });
+    if (llamada.tipo !== "no_contesta") {
+      this.shell.mundo.reloj.avanzar(SEGUNDOS_POR_LLAMADA);
+      await this.decidir(`llamo_${contacto}`);
+    }
+    return { llamada, eventos: this.tomarEventos() };
+  }
+
+  /** Una bandera nueva por algo que el jugador eligió (opción de una llamada); revisa los objetivos. */
+  async decidir(flag: string): Promise<EventoJornada[]> {
+    this.flags.add(flag);
+    for (const mc of this.activas()) this.registrar(mc, await mc.revisar());
+    return this.tomarEventos();
   }
 
   private activas(): MisionEnCurso[] {
