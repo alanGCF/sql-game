@@ -3,17 +3,18 @@ contacto: conmutador
 conversaciones:
   - id: general-directorio
     lineas:
-      - Conmutador, buenas tardes. Las extensiones vienen en el directorio pegado en tu mampara. ¿A quién buscabas?
+      - Conmutador, buenas. Las extensiones vienen en el directorio pegado en tu mampara. ¿A quién buscabas?
     opciones:
       - texto: A nadie, gracias.
         respuesta:
           - Con gusto. Que tengas buen turno.
       - texto: ¿Me puedes vocear a Eduardo?
         respuesta:
-          - Ahorita no hay voceo; márcale a su extensión, la 214. Casi siempre anda en piso.
+          - Si quieres lo voceo, pero en piso con el ruido de las máquinas ni se oye. Mejor márcale a la 214; el teléfono lo trae con él.
   - id: general-aviso
     lineas:
-      - Conmutador. Aviso del turno, el estacionamiento de visitas cierra a las diez. Que tengas buena noche.
+      - Conmutador, buenas.
+      - "Aprovecho para el aviso del turno: el estacionamiento de visitas cierra a las diez. Que tengas buen turno."
 ponte_a_trabajar:
   - Joven, la línea del conmutador es para trabajo. Ponte a trabajar, por favor.
 no_contesta: El conmutador está ocupado. Ni modo.

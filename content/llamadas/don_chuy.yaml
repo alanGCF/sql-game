@@ -5,17 +5,19 @@ conversaciones:
     turnos: [1]
     requiere: leyo_leeme
     lineas:
-      - La ingeniera Salcido sí bajaba a piso, joven. Decía que los datos mienten menos que la gente… pero que la gente les mueve a los datos.
+      - Ah, joven. Me quedé pensando en la nota de la ingeniera. Esa muchacha sí bajaba a piso; se paraba junto a las líneas nomás a oírlas, como yo.
+      - Yo de números no sé. Pero si una máquina me dice una cosa con el ruido y la pantalla dice otra, yo le creo al ruido.
   - id: general-prensa
     lineas:
-      - Mantenimiento, habla Ortega. Ando con la prensa cuatro, que amaneció de malas. Si no es urgente, al rato platicamos.
+      - Mantenimiento, habla Chuy Ortega. Ando con la prensa cuatro, que amaneció de malas.
+      - Si no es urgente, al rato platicamos, joven.
   - id: general-ruido
     lineas:
       - "Mira, joven: máquina que no hace ruido, o está muy bien o está muy mal. Por eso yo las oigo antes de verlas."
     opciones:
       - texto: ¿Y cómo sabe cuál de las dos?
         respuesta:
-          - Con los años. Y preguntando; preguntando se llega a Roma, joven.
+          - Con los años, joven. La que cambia de ruido, algo trae. Y si no sé, pregunto; preguntando se llega a Roma.
       - texto: Lo voy a tener en cuenta.
         respuesta:
           - Así me gusta. Ándale, ahí nos vemos.

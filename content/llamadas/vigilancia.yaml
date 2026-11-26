@@ -4,10 +4,12 @@ conversaciones:
   - id: t1-nocturno
     turnos: [1]
     lineas:
-      - Caseta… ¿bueno? Ah, el de sistemas. Todo tranquilo, joven. Tranquilo hasta que llega el turno de la noche; esos entran y salen a cada rato.
+      - Caseta… ¿bueno? Ah, la extensión de sistemas. Todo tranquilo, joven. Ahorita.
+      - Ya en la noche es otra cosa. Entre el cambio de turno y los que se quedan tarde, la pluma del estacionamiento no deja de subir y bajar.
   - id: general-camaras
     lineas:
-      - Caseta de vigilancia. Aquí nomás viendo las cámaras, joven. Ni una mosca.
+      - Caseta… Aquí nomás viendo las cámaras, joven. Todo en orden.
+      - No, no estaba dormido, ¿eh?
 ponte_a_trabajar:
-  - ¿Otra vez? Joven, yo cuido la puerta, no soy operadora. Ponte a trabajar.
+  - ¿Otra vez, joven? Yo cuido la puerta, no el conmutador. Ponte a trabajar, ándale.
 no_contesta: Suena en la caseta y nadie contesta. A lo mejor anda dando su rondín… o dormido.

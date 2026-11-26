@@ -1,23 +1,25 @@
-# Llamadas que le haces al comedor (ext. 150), F4-02.
+# Llamadas que le haces al comedor (ext. 150), F4-02. Las generales no dicen qué hay "hoy".
 contacto: comedor
 conversaciones:
   - id: t1-menu
     turnos: [1]
     lineas:
-      - Comedor, buenas tardes. Hoy hay discada y frijoles charros, mijo. La cena del turno es a las nueve; no llegues tarde, que se acaban las tortillas.
+      - Comedor, buenas. Hoy hay pozole rojo, corazón, con su tostadita y todo.
+      - Vente antes de que se acabe, que aquí el pozole vuela.
   - id: general-menu
     lineas:
-      - Comedor, buenas. Hoy hay caldillo de papa con carne seca. ¿Te aparto un plato?
+      - Comedor, buenas. ¿Ya comiste, corazón? Por la voz se te nota que no.
     opciones:
-      - texto: Sí, por favor.
+      - texto: Ahorita voy.
         respuesta:
-          - Ándale pues. Nomás no me lo dejes enfriar.
-      - texto: No, gracias, traje lonche.
+          - Ándale pues. Te aparto un plato; nomás no me lo dejes enfriar.
+      - texto: Traje lonche.
         respuesta:
-          - Ay, mijo. Ya te veré por aquí a las nueve con tu lonchera.
+          - Ay, corazón, el lonche no llena. Si te arrepientes, aquí hay comida.
   - id: general-chisme
     lineas:
-      - Aquí se oye todo, mijo. Dicen que la ingeniera de sistemas se fue sin despedirse de nadie… Ay, ya ni me hagas caso.
+      - Aquí se oye todo, corazón. Dicen que la ingeniera de sistemas se fue sin despedirse de nadie…
+      - Ay, ya ni me hagas caso.
 ponte_a_trabajar:
-  - Ay, mijo, ¿otra vez? Aquí no es línea de quejas. Ándale a trabajar y luego vienes a comer.
+  - Ay, corazón, ¿otra vez? Tengo la olla en la lumbre. Ándale a trabajar y luego vienes a comer.
 no_contesta: Nadie contesta en el comedor. Han de estar sirviendo.

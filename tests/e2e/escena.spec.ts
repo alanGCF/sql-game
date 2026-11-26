@@ -544,15 +544,19 @@ test("llamadas (F4-02): opciones de respuesta y paciencia hasta que ya no contes
   await page.keyboard.press("2");
   await expect(dialogo).toContainText("¿Cómo vas con tu primer turno?");
   await page.keyboard.press("2");
-  await expect(dialogo).toContainText("a todos nos pasó");
+  await expect(dialogo).toContainText("nadie le entiende a nada");
   await page.keyboard.press("Enter");
   await expect(dialogo).toBeHidden();
   // Karla: 1–2 platica, 3 "ponte a trabajar", 4 ya no contesta y lo piensas.
   await marcar("402");
-  await expect(dialogo).toContainText("¿Ya viste mi ticket?");
+  await expect(dialogo).toContainText("¿Es por mi ticket?");
+  await page.keyboard.press("1");
+  await expect(dialogo).toContainText("Lo reviso entre junta y junta");
   await page.keyboard.press("Enter");
   await marcar("402");
   await expect(dialogo).toContainText("Estoy por entrar a junta");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText("contéstalo en la app");
   await page.keyboard.press("Enter");
   await marcar("402");
   await expect(dialogo).toContainText(/Ponte a trabajar/i);
@@ -590,7 +594,7 @@ test("pistas (F4-03): Eduardo da las tres de T1-M1 por teléfono, quedan anotada
   expect(pistas[2]?.texto).toMatch(/`[^`]+`/);
   // La cuarta repite el comando exacto y no anota nada nuevo.
   await pedirPista();
-  await expect(dialogo).toContainText("Va de nuevo");
+  await expect(dialogo).toContainText(/va de nuevo/i);
   await page.keyboard.press("Enter");
   await expect(dialogo).toContainText(pistas[2]?.texto.slice(0, 20) ?? "");
   await page.keyboard.press("Escape");

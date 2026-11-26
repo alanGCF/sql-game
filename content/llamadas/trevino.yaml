@@ -3,12 +3,19 @@
 contacto: trevino
 conversaciones:
   - id: bienvenida
-    turnos: [0, 1]
+    turnos: [0]
     lineas:
-      - Mauricio Treviño, buenas tardes. ¡Ah, el nuevo talento de sistemas! Bienvenido a la familia Ocotillo. Mi puerta siempre está abierta.
+      - Gerencia, Mauricio Treviño. ¡Ah, nuestro nuevo talento de sistemas! Te damos la bienvenida a la familia Ocotillo.
+      - Mi puerta siempre está abierta.
+  - id: t1-primer-turno
+    turnos: [1]
+    lineas:
+      - Gerencia, Mauricio Treviño. ¡Qué gusto! ¿Cómo va ese primer turno? Me dicen que vas muy bien.
+      - Y cualquier cosa que te parezca rara, me la platicas a mí directamente, ¿eh? Sin pena. Para eso estamos.
   - id: general-correo
     lineas:
-      - Ando en videollamada con Corporativo. Si no es urgente, mándamelo por correo y lo vemos, ¿sale?
+      - Estoy en videollamada con Corporativo, pero para ti siempre tengo un minutito.
+      - Si no es urgente, ¿me lo mandas por correo? Mil gracias, de verdad.
 ponte_a_trabajar:
   - Te encargo mucho que te enfoques en tus pendientes. Aquí todos tenemos mucho trabajo, ¿verdad?
 no_contesta: Contesta la grabadora de Gerencia. Mejor no insisto.

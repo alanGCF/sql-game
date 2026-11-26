@@ -91,4 +91,4 @@ eventos:
   al_completar:
     - tipo: llamada_entrante
       de: companero
-      texto: ¿Encontraste algo de Rebeca? Ahorita no me cuentes, ando en piso con la pantalla de la Línea 1. Mañana me platicas con calma. Ya vete a cenar, que hoy hay pozole en el comedor.
+      texto: ¿Encontraste algo de Rebeca? Ahorita no me cuentes, ando en piso con la pantalla de la Línea 1. Mañana me platicas con calma. Ya casi es hora de checar salida; buen primer turno.

@@ -1,5 +1,5 @@
 # Llamadas que le haces a Eduardo (ext. 214), F4-02. Paciencia en personajes.yaml.
-# Las pistas llegan en F4-03 y no gastan paciencia (D-14); platicar sí.
+# Pedir pista no gasta paciencia (D-14); platicar sí.
 contacto: companero
 # Al marcarle con pendientes en el pizarrón, primero pregunta qué ocupas (F4-03).
 pistas:
@@ -7,42 +7,49 @@ pistas:
   pedir: Necesito una pista.
   platicar: Nada, nomás quería platicar.
   cual: ¿Con cuál te atoraste?
-  repite: Ya te dije todo lo que sé de eso. Va de nuevo, apúntalo.
+  repite: Eso ya te lo pasé completito, pero va de nuevo. También lo tienes en tu libreta, en Pistas.
 conversaciones:
   - id: t0-primera
     turnos: [0]
     lineas:
       - ¡Eso! Así me marcas cuando me necesites. Casi siempre ando en piso, pero el teléfono me sigue a todos lados.
+      - Y si te atoras, pídeme una pista; esas no te las cobro.
   - id: t1-primer-turno
     turnos: [1]
     lineas:
-      - ¿Qué pasó? ¿Cómo vas con tu primer turno?
+      - Rapidito, que ando en piso. ¿Cómo vas con tu primer turno?
     opciones:
       - texto: Bien, ya me voy ubicando.
         respuesta:
-          - Así se habla. Si algo no te sale, márcame; para eso estamos.
-      - texto: Medio perdido, la verdad.
+          - Así se habla. Ya ni me vas a necesitar… no, sí me vas a necesitar. Márcame si algo no te sale.
+      - texto: La verdad, todavía no le agarro la onda.
         respuesta:
-          - Normal, a todos nos pasó. Ve paso por paso y lee lo que sale en la pantalla; casi siempre ahí viene la respuesta.
+          - Normal, el primer día nadie le entiende a nada; yo duré una semana. Ve paso por paso y lee lo que sale en la pantalla, que casi siempre ahí viene la respuesta.
+  - id: t1-carpeta-r
+    turnos: [1]
+    requiere: vio_carpeta_r
+    lineas:
+      - Si es lo de Rebeca, mañana me platicas con calma, ¿va? Por teléfono no, que en esta planta hasta las paredes oyen.
   - id: t1-leeme
     turnos: [1]
     requiere: leyo_leeme
     lineas:
-      - ¿Ya leíste el LEEME de la ingeniera? Rebeca era muy cuidadosa con sus notas. Muy cuidadosa.
-      - Yo no me meto en eso. Tú saca tus tickets y no te busques broncas.
+      - Ya leíste el LEEME, ¿verdad? Rebeca no escribía nada nomás porque sí. Ni la lista del súper.
+      - Pero tú tranquilo, primero saca tus tickets y luego le das vueltas. Te dejo, que ya me andan voceando.
   - id: general-piso
     lineas:
-      - Ando en piso con una impresora de etiquetas que no quiere jalar. ¿Algo urgente?
+      - Ando en piso con una impresora de etiquetas que no quiere jalar, así que platícame rapidito.
     opciones:
-      - texto: No, nomás saludando.
+      - texto: Va, te dejo trabajar.
         respuesta:
-          - Va. Al rato paso por tu lugar.
-      - texto: No, ya lo resolví.
+          - Gracias. Si esta impresora me gana, el que te marca soy yo.
+      - texto: Era una duda, pero ya le encontré.
         respuesta:
-          - ¡Eso! Así me gusta.
+          - ¡Eso! Así me gusta. Ojalá la impresora aprendiera de ti.
   - id: general-comedor
     lineas:
-      - Si vas para el comedor, avísame. La señora del comedor les guarda pan dulce a los de sistemas si llegas antes de las siete.
+      - Si vas para el comedor, tráeme algo, ¿no? La señora nos guarda pan dulce a los de sistemas, pero nomás antes de las siete.
+      - Después, ni las migajas.
 ponte_a_trabajar:
   - Oye, ¿no tienes trabajo? Ponte a trabajar, que el pizarrón no se tacha solo.
   - Otra vez tú. Ponte a trabajar, ándale; yo también tengo pendientes.

@@ -98,12 +98,12 @@ Objetivo: aprender los controles del juego dentro de la historia. Sin conceptos 
 
 1. Apareces sentado. Tu escritorio está decorado: globos, un letrero "¡Bienvenid@, {{nombre}}!", una concha de pan y una taza con el logo de la planta.
 2. **Eduardo se acerca a presentarse.** Diálogo con respuesta del jugador:
-   - Eduardo: "¡Tú eres el nuevo! Soy Eduardo, de sistemas. Vamos a estar en el mismo departamento."
+   - Eduardo: "¡Tú debes ser quien entra a sistemas! Soy Eduardo. Vamos a estar en el mismo departamento."
    - Eduardo: "¿Ya te dieron el recorrido o te aventaron directo aquí?"
    - **Jugador (elige):** "El lunes fue mi inducción a la planta." / "El lunes me dieron la inducción, pero no me acuerdo de nada." *(ambas dicen lo mismo con distinto tono)*
    - Eduardo: "Uy, la de seguridad industrial. A todos nos dormían. Bueno, aquí lo que importa es esto…"
 3. Eduardo te enseña, uno por uno, con un pendiente en el pizarrón para cada cosa: mirar alrededor con el mouse → leer el post-it del monitor (tu contraseña) → abrir la libreta → revisar el calendario → marcarle desde el teléfono (ext. 214: "así me pides ayuda cuando me necesites; casi siempre ando en piso") → acercarte a la computadora, iniciar sesión tecleando la contraseña y alejarte.
-4. **Don Chuy pasa a saludar** de camino al taller: "Bienvenido, joven. Aquí la planta habla; nomás hay que saberla oír." (Así ya lo conoces cuando aparece en el T1.)
+4. **Don Chuy pasa a saludar** de camino al taller: "¡Qué tal, joven! Aquí la planta habla; nomás hay que saberla oír." (Así ya lo conoces cuando aparece en el T1.)
 5. Ves tu **gafete** con tu número de empleado = tu código de partida *(D-15)*.
 6. Cierre: Eduardo: "Mañana empieza lo bueno. Ah, y no le hagas caso a lo que dicen de la ingeniera Salcido."
 
@@ -215,7 +215,7 @@ Tratamiento al jugador: neutro ("joven"), nunca "mi'jo"/"mi'ja" (el nombre lo el
 
 1. Cada misión avanza el misterio **un paso**; nunca dos revelaciones juntas.
 2. El briefing plantea el problema, no la solución.
-3. Máximo 280 caracteres por globo; 2–4 globos por diálogo.
+3. Máximo 280 caracteres por globo; 2–4 globos por diálogo. **Excepción:** una llamada que haces tú puede ser de 1 globo (el contacto está ocupado) y a lo más 4, contando la respuesta a tu opción. Las conversaciones **generales** de `content/llamadas/` se repiten de turno en turno: sin "hoy", fechas ni eventos.
 4. Los comandos los explican Eduardo (por teléfono), las notas de R., el manual (`man`) y la libreta; los demás personajes nunca dan clases.
 5. Don Chuy conecta lo físico (ruidos, luces, cables, horarios) con los datos.
 6. Toda acusación necesita evidencia obtenida con una herramienta. Los rumores orientan, no resuelven.

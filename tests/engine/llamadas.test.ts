@@ -89,6 +89,25 @@ describe("harness de llamadas (content/llamadas)", () => {
     expect(errores).toMatch(/falta content\/llamadas\/companero.yaml/);
   });
 
+  it("una llamada es de 1 a 4 globos contando la respuesta a la opción", () => {
+    const llamadas = cargarLlamadas();
+    const largo = {
+      ...(llamadas.karla as GuionLlamadas),
+      conversaciones: [
+        {
+          id: "larga",
+          lineas: ["a", "b", "c"],
+          opciones: [
+            { texto: "x", respuesta: ["d", "e"] },
+            { texto: "y", respuesta: ["f"] },
+          ],
+        },
+      ],
+    };
+    const errores = revisarLlamadas({ ...llamadas, karla: largo }, personajes, new Set()).join();
+    expect(errores).toMatch(/larga: más de 4 globos/);
+  });
+
   it("solo Eduardo da pistas: su guion trae la sección pistas y nadie más (F4-03)", () => {
     const llamadas = cargarLlamadas();
     const flags = new Set(["leyo_leeme", "vio_carpeta_r"]);

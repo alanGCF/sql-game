@@ -4,20 +4,28 @@ conversaciones:
   - id: t1-ticket
     turnos: [1]
     lineas:
-      - Calidad, Karla. ¿Ya viste mi ticket? Lo ocupo antes de que acabe el turno, porfa.
+      - Calidad, Karla. ¿Es por mi ticket? Lo ocupo para mi reporte antes de que acabe el turno.
+    opciones:
+      - texto: Ya te lo contesté.
+        respuesta:
+          - Ah, va. Lo reviso entre junta y junta. Gracias.
+      - texto: Ahorita lo busco.
+        respuesta:
+          - Porfa. Y si esa nota dice algo de Calidad, me avisas a mí primero, ¿sí?
   - id: general-junta
     lineas:
-      - Calidad, Karla. Estoy por entrar a junta con Producción. Si es de un ticket, contéstalo en la app y yo lo reviso.
-  - id: general-auditoria
+      - Calidad, Karla. Estoy por entrar a junta con Producción.
+      - Si es de un ticket, contéstalo en la app y yo lo reviso.
+  - id: general-reportes
     lineas:
-      - Ahorita no puedo; tengo auditoría de cliente la otra semana y todo tiene que cuadrar. ¿Era algo rápido?
+      - Ahorita no puedo; ando cerrando los reportes del turno y todo tiene que cuadrar. ¿Era algo rápido?
     opciones:
       - texto: No, nada urgente.
         respuesta:
           - Va. Gracias por avisar.
       - texto: Nomás para presentarme.
         respuesta:
-          - Ah, el nuevo de sistemas. Mucho gusto. Te voy a dejar tickets; no es nada personal.
+          - Ah, ¿tú eres quien entró a sistemas? Mucho gusto. Te voy a dejar tickets seguido; no es nada personal.
 ponte_a_trabajar:
   - ¿Otra vez? De verdad estoy ocupada. Ponte a trabajar y deja de marcarme, ¿sí?
 no_contesta: Entra el buzón de Karla. No le dejo mensaje; ya me dijo que está ocupada.

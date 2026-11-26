@@ -14,7 +14,7 @@ const Bandera = z.string().regex(/^[a-z0-9_-]+$/);
 const Opcion = z.strictObject({
   /** Lo que dice el jugador (botón). */
   texto: z.string().min(1).max(90),
-  respuesta: z.array(Texto280).min(1).max(4),
+  respuesta: z.array(Texto280).min(1).max(3),
   /** Bandera que queda en la partida al elegirla (para la historia). */
   flag: Bandera.optional(),
 });
@@ -25,7 +25,8 @@ const Conversacion = z.strictObject({
   turnos: z.array(Turno).min(1).optional(),
   /** Solo si la partida tiene esta bandera (p. ej. leyo_leeme). */
   requiere: Bandera.optional(),
-  lineas: z.array(Texto280).min(1).max(6),
+  /** 1–4 globos contando la respuesta a la opción (02-trama.md, regla de escritura 3). */
+  lineas: z.array(Texto280).min(1).max(4),
   opciones: z.array(Opcion).min(2).max(3).optional(),
 });
 
@@ -116,6 +117,9 @@ export function revisarLlamadas(
       errores.push(`${donde}: falta una conversación general (sin turnos ni requiere)`);
     const ids = new Set<string>();
     for (const c of g.conversaciones) {
+      const conRespuesta =
+        c.lineas.length + Math.max(0, ...(c.opciones ?? []).map((o) => o.respuesta.length));
+      if (conRespuesta > 4) errores.push(`${donde}: ${c.id}: más de 4 globos contando la respuesta`);
       if (ids.has(c.id)) errores.push(`${donde}: id repetido: ${c.id}`);
       ids.add(c.id);
       if (c.requiere && !flagsConocidas.has(c.requiere))
