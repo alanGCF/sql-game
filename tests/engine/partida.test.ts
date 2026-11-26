@@ -24,6 +24,7 @@ const valida = (): Partida => ({
     leidos: ["/home/becario/LEEME.txt"],
   },
   llamadas: { companero: 1 },
+  pistas: [{ mision: "t1-m02-el-leeme", objetivo: "leer-leeme", nivel: 1, texto: "¿Ya viste qué hay ahí?" }],
 });
 
 describe("formato de partida (cliente y servidor)", () => {
@@ -31,10 +32,11 @@ describe("formato de partida (cliente y servidor)", () => {
     expect(leerPartida(valida()).ok).toBe(true);
   });
 
-  it("un guardado de antes de F4-02 (sin llamadas) se lee con la paciencia completa", () => {
-    const { llamadas: _, ...vieja } = valida();
+  it("un guardado de antes de F4-02/03 (sin llamadas ni pistas) se lee con la paciencia completa", () => {
+    const { llamadas: _, pistas: __, ...vieja } = valida();
     const r = leerPartida(vieja);
     expect(r.ok && r.partida.llamadas).toEqual({});
+    expect(r.ok && r.partida.pistas).toEqual([]);
   });
 
   it.each<[string, (p: Record<string, unknown>) => void]>([
@@ -47,6 +49,7 @@ describe("formato de partida (cliente y servidor)", () => {
     ["id con caracteres raros", (p) => (p.flags = ["<script>"])],
     ["llamadas fuera de rango", (p) => (p.llamadas = { companero: 1000 })],
     ["llamadas a un contacto raro", (p) => (p.llamadas = { "<x>": 1 })],
+    ["pista de nivel 4", (p) => (p.pistas = [{ mision: "m", objetivo: "o", nivel: 4, texto: "x" }])],
     [
       "llamadas a demasiados contactos",
       (p) => (p.llamadas = Object.fromEntries(Array.from({ length: 31 }, (_, i) => [`c${i}`, 1]))),

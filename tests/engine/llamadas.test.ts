@@ -88,4 +88,17 @@ describe("harness de llamadas (content/llamadas)", () => {
     expect(errores).toMatch(/id repetido: a/);
     expect(errores).toMatch(/falta content\/llamadas\/companero.yaml/);
   });
+
+  it("solo Eduardo da pistas: su guion trae la sección pistas y nadie más (F4-03)", () => {
+    const llamadas = cargarLlamadas();
+    const flags = new Set(["leyo_leeme", "vio_carpeta_r"]);
+    const { pistas: _, ...sinPistas } = llamadas.companero as GuionLlamadas;
+    expect(revisarLlamadas({ ...llamadas, companero: sinPistas }, personajes, flags).join()).toMatch(
+      /falta la sección pistas/,
+    );
+    const karla = { ...(llamadas.karla as GuionLlamadas), pistas: llamadas.companero?.pistas };
+    expect(revisarLlamadas({ ...llamadas, karla } as never, personajes, flags).join()).toMatch(
+      /solo companero da pistas/,
+    );
+  });
 });

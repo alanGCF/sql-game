@@ -32,6 +32,10 @@ setTestHook("partida", () => {
   };
 });
 
+setTestHook("pistas", () =>
+  usePartida.getState().pistas.map(({ objetivo, nivel, texto }) => ({ objetivo, nivel, texto })),
+);
+
 export function App() {
   return (
     <div className="juego">

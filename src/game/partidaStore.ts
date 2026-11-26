@@ -1,13 +1,15 @@
 import { create } from "zustand";
-import { esPartidaNueva, type Partida } from "../../shared/partida";
+import { esPartidaNueva, type Partida, type PistaAnotada } from "../../shared/partida";
 import type { ResultadoLinea } from "../engine";
+import { QUIEN_DA_PISTAS } from "../engine/llamadas";
 import { isTestMode } from "../test-hooks";
 import { almacenIndexedDb } from "./almacen-idb";
 import { crearApiPartidas, type Motivo } from "./api";
 import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
-import { type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
+import { type Dialogo, dialogoDe, dialogosDe, type OpcionDialogo } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type EventoJornada, Jornada } from "./jornada";
+import { useEscena } from "./store";
 import { marcar, type ResultadoMarcar } from "./telefono";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
 
@@ -88,6 +90,8 @@ interface EstadoPartida {
   llamar: (marcado: string) => Promise<ResultadoLlamar>;
   /** Elige una opción de respuesta del diálogo en pantalla (F4-02). */
   elegirOpcion: (i: number) => Promise<void>;
+  /** Pistas que dio Eduardo, en orden: la libreta las muestra (F4-03). */
+  pistas: PistaAnotada[];
   /** Cuelga la llamada que hizo el jugador (quita lo que faltaba de ella). */
   colgar: () => void;
 }
@@ -100,6 +104,18 @@ const MAX_EVENTOS = 200;
 const llamadas = contenidoComun().llamadas;
 
 export type ResultadoLlamar = ResultadoMarcar | { tipo: "no_contesta"; texto: string };
+
+/** Tres fallos seguidos (comandos con error o respuestas equivocadas del mismo objetivo) → lo piensas. */
+const FALLOS_PARA_PENSAR = 3;
+export const PENSAR_EN_EDUARDO = "Igual y le marco a Eduardo…";
+let fallosComando = 0;
+const fallosRespuesta = new Map<string, number>();
+
+function fallo(contador: number): number {
+  if (contador + 1 < FALLOS_PARA_PENSAR) return contador + 1;
+  useEscena.getState().pensar(PENSAR_EN_EDUARDO);
+  return 0;
+}
 
 /** Las líneas de una llamada del jugador, como diálogos de tarjeta; la última lleva las opciones. */
 function lineasDeLlamada(
@@ -170,6 +186,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       contenido: versionContenido(),
       xp: previa?.xp ?? 0,
       notas: previa?.notas ?? [],
+      pistas: s.pistas,
     });
   };
   const refrescarGuardado = () => set({ guardado: estadoGuardado() });
@@ -191,8 +208,52 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
   };
 
   const cargar = (p: Partida, codigo: string | null) => {
-    set({ ...desdeJornada(jornadaDe(p)), nombre: p.nombre, semilla: p.semilla, codigo });
+    set({ ...desdeJornada(jornadaDe(p)), nombre: p.nombre, semilla: p.semilla, codigo, pistas: p.pistas });
     void guardian.guardarLocal(partidaActual()).then(refrescarGuardado);
+  };
+
+  /**
+   * Platicar con un contacto (F4-02): gasta su paciencia y pone su conversación. Si ya no contesta y la llamada
+   * estaba recién marcada, regresa "no_contesta"; si ya había contestado (Eduardo), dice "ponte a trabajar".
+   */
+  const platicar = async (id: string, recienMarcada: boolean): Promise<"contesta" | "no_contesta"> => {
+    const guion = llamadas[id];
+    if (!guion) return "no_contesta";
+    const { jornada } = get();
+    const { llamada, eventos } = await jornada.llamar(id, guion, personajes[id]?.paciencia ?? 2);
+    if (llamada.tipo === "no_contesta" && recienMarcada) {
+      if (eventos.length) set(actualizado(jornada, get(), eventos));
+      guardar(eventos);
+      return "no_contesta";
+    }
+    const s = get();
+    const lineas =
+      llamada.tipo === "charla"
+        ? lineasDeLlamada(id, llamada.conversacion.lineas, llamada.conversacion.opciones)
+        : lineasDeLlamada(id, [
+            llamada.tipo === "ponte_a_trabajar" ? llamada.texto : (guion.ponte_a_trabajar[0] ?? ""),
+          ]);
+    // La llamada va antes que lo que haya desatado (p. ej. un objetivo de T0 cumplido).
+    const previos = s.dialogos.filter((d) => !d.saliente);
+    set({
+      ...actualizado(jornada, s, eventos),
+      dialogos: [...previos, ...lineas, ...dialogosDe(eventos, personajes)],
+    });
+    guardar(eventos);
+    return "contesta";
+  };
+
+  /** Eduardo dicta la pista (F4-03) y queda anotada en la libreta si es nueva. */
+  const darPista = (quien: string, mision: string, objetivo: string, resto: Dialogo[]) => {
+    const { jornada, pistas } = get();
+    const p = jornada.pista(mision, objetivo);
+    const guion = llamadas[quien];
+    const lineas = p.nueva ? [p.texto] : [guion?.pistas?.repite ?? "Va de nuevo:", p.texto];
+    set({
+      dialogos: [...lineasDeLlamada(quien, lineas), ...resto],
+      pistas: p.nueva ? [...pistas, { mision, objetivo, nivel: p.nivel, texto: p.texto }] : pistas,
+    });
+    guardar([]);
   };
 
   return {
@@ -202,6 +263,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     semilla: 0,
     guardado: "sin_partida",
     numeroPorAnotar: null,
+    pistas: [],
     anotado() {
       set({ numeroPorAnotar: null });
     },
@@ -214,28 +276,53 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       const guion = r.tipo === "contesta" ? llamadas[r.id] : undefined;
       if (r.tipo !== "contesta" || !guion) return r.tipo === "contesta" ? { tipo: "no_existe" } : r;
       const { jornada } = get();
-      const { llamada, eventos } = await jornada.llamar(r.id, guion, personajes[r.id]?.paciencia ?? 2);
-      const s = get();
-      const lineas =
-        llamada.tipo === "charla"
-          ? lineasDeLlamada(r.id, llamada.conversacion.lineas, llamada.conversacion.opciones)
-          : llamada.tipo === "ponte_a_trabajar"
-            ? lineasDeLlamada(r.id, [llamada.texto])
-            : [];
-      // La llamada va antes que lo que haya desatado (p. ej. un objetivo de T0 cumplido).
-      const previos = s.dialogos.filter((d) => !d.saliente);
-      set({
-        ...actualizado(jornada, s, eventos),
-        dialogos: [...previos, ...lineas, ...dialogosDe(eventos, personajes)],
-      });
-      guardar(eventos);
-      return llamada.tipo === "no_contesta" ? { tipo: "no_contesta", texto: llamada.texto } : r;
+      // Eduardo: si hay pendientes, primero pregunta qué ocupas; pedir pista no gasta paciencia (D-14).
+      if (r.id === QUIEN_DA_PISTAS && guion.pistas && jornada.pendientesParaPista().length) {
+        const menu = lineasDeLlamada(
+          r.id,
+          [guion.pistas.saludo],
+          [
+            { texto: guion.pistas.pedir, accion: { tipo: "pista" } },
+            { texto: guion.pistas.platicar, accion: { tipo: "platicar" } },
+          ],
+        );
+        set({ dialogos: [...get().dialogos.filter((d) => !d.saliente), ...menu] });
+        return r;
+      }
+      const resultado = await platicar(r.id, true);
+      return resultado === "no_contesta" ? { tipo: "no_contesta", texto: guion.no_contesta } : r;
     },
     async elegirOpcion(i) {
       const [actual, ...resto] = get().dialogos;
       const opcion = actual?.opciones?.[i];
       if (!actual || !opcion) return;
-      const respuesta = lineasDeLlamada(actual.quien, opcion.respuesta);
+      const a = opcion.accion;
+      if (a?.tipo === "platicar") {
+        set({ dialogos: resto });
+        await platicar(actual.quien, false);
+        return;
+      }
+      if (a?.tipo === "pista" || a?.tipo === "pista_de") {
+        const guion = llamadas[actual.quien];
+        const pendientes = get().jornada.pendientesParaPista();
+        const elegido = a.tipo === "pista_de" ? a : pendientes.length === 1 ? pendientes[0] : undefined;
+        if (!elegido) {
+          // Varios pendientes: ¿con cuál te atoraste? (el texto del pizarrón).
+          const cual = lineasDeLlamada(
+            actual.quien,
+            [guion?.pistas?.cual ?? "¿Con cuál?"],
+            pendientes.map((p) => ({
+              texto: p.pendiente,
+              accion: { tipo: "pista_de", mision: p.mision, objetivo: p.objetivo },
+            })),
+          );
+          set({ dialogos: [...cual, ...resto] });
+          return;
+        }
+        darPista(actual.quien, elegido.mision, elegido.objetivo, resto);
+        return;
+      }
+      const respuesta = lineasDeLlamada(actual.quien, opcion.respuesta ?? []);
       set({ dialogos: [...respuesta, ...resto] });
       if (!opcion.flag) return;
       const { jornada } = get();
@@ -251,7 +338,12 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       const { resultado, eventos } = await jornada.ejecutar(linea);
       if (eventos.length) set(actualizado(jornada, get(), eventos));
       else set({ minuto: Math.floor(jornada.minutoDelDia()) });
-      if (resultado.ejecutada) guardar(eventos);
+      if (resultado.ejecutada) {
+        guardar(eventos);
+        const error = resultado.fragmentos.some((f) => f.tipo === "stderr");
+        const avanzo = eventos.some((e) => e.tipo === "objetivo_cumplido");
+        fallosComando = error && !avanzo ? fallo(fallosComando) : 0;
+      }
       return resultado;
     },
     async responder(mision, objetivo, valor) {
@@ -259,6 +351,9 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       const r = await jornada.responder(mision, objetivo, valor);
       set(actualizado(jornada, get(), r.eventos));
       guardar(r.eventos);
+      const llave = `${mision}/${objetivo}`;
+      if (r.correcta) fallosRespuesta.delete(llave);
+      else fallosRespuesta.set(llave, fallo(fallosRespuesta.get(llave) ?? 0));
       return { correcta: r.correcta, ...(r.comentario ? { comentario: r.comentario } : {}) };
     },
     async empezar(nombre) {

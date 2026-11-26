@@ -46,6 +46,14 @@ const AvanceMision = z.strictObject({
   leidos: z.array(Ruta).max(500),
 });
 
+/** Una pista que dio Eduardo: queda escrita en la libreta (pestaña Pistas, F4-03/F4-05). */
+const PistaAnotada = z.strictObject({
+  mision: Id,
+  objetivo: Id,
+  nivel: z.number().int().min(1).max(3),
+  texto: Texto(600),
+});
+
 export const PartidaEsquema = z.strictObject({
   formato: z.literal(1),
   semilla: z.number().int().min(0).max(0xffffffff),
@@ -67,9 +75,12 @@ export const PartidaEsquema = z.strictObject({
     .record(Id, z.number().int().min(0).max(99))
     .refine((r) => Object.keys(r).length <= 30, "demasiados contactos")
     .default({}),
+  /** Pistas recibidas, en orden (F4-03). Falta en guardados viejos. */
+  pistas: z.array(PistaAnotada).max(300).default([]),
 });
 
 export type Partida = z.infer<typeof PartidaEsquema>;
+export type PistaAnotada = z.infer<typeof PistaAnotada>;
 
 /** Partida recién creada: sin mundo ni misión todavía (el cliente arranca el primer turno con la semilla). */
 export function partidaNueva(semilla: number, nombre: string, contenido: string): Partida {
@@ -88,6 +99,7 @@ export function partidaNueva(semilla: number, nombre: string, contenido: string)
     mundo: { cambiados: [], borrados: [] },
     mision: null,
     llamadas: {},
+    pistas: [],
   };
 }
 

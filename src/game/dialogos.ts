@@ -1,6 +1,21 @@
-import type { OpcionLlamada } from "../engine/llamadas";
 import type { Personajes } from "../engine/mision/curriculo";
 import type { EventoJornada } from "./jornada";
+
+/** Lo que hace una opción además de contestar (F4-03): pedir pista, elegir de qué, o platicar. */
+export type AccionOpcion =
+  | { tipo: "pista" }
+  | { tipo: "pista_de"; mision: string; objetivo: string }
+  | { tipo: "platicar" };
+
+/** Una opción de respuesta del jugador en un diálogo. */
+export interface OpcionDialogo {
+  texto: string;
+  /** Lo que contesta quien habla. */
+  respuesta?: readonly string[] | undefined;
+  /** Bandera que queda en la partida al elegirla. */
+  flag?: string | undefined;
+  accion?: AccionOpcion | undefined;
+}
 
 /** Un globo en pantalla (D-22): llamadas en tarjeta a un lado; lo demás, subtítulo con el departamento. */
 export interface Dialogo {
@@ -13,7 +28,7 @@ export interface Dialogo {
   /** Línea de una llamada que hizo el jugador desde el teléfono (F4-01): colgar la quita. */
   saliente?: true;
   /** Opciones de respuesta del jugador (F4-02): en lugar de "Siguiente", se elige una. */
-  opciones?: OpcionLlamada[];
+  opciones?: OpcionDialogo[];
 }
 
 /** Un diálogo suelto (fuera de los eventos de una misión), con el nombre y el departamento del personaje. */

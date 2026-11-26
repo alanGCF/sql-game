@@ -29,8 +29,22 @@ const Conversacion = z.strictObject({
   opciones: z.array(Opcion).min(2).max(3).optional(),
 });
 
+/** Lo que dice quien da las pistas (Eduardo, F4-03) alrededor de "Necesito una pista". */
+const GuionPistas = z.strictObject({
+  /** Contesta y pregunta qué ocupas (lleva las opciones pedir y platicar). */
+  saludo: Texto280,
+  pedir: z.string().min(1).max(90),
+  platicar: z.string().min(1).max(90),
+  /** Con varios pendientes: ¿con cuál te atoraste? */
+  cual: Texto280,
+  /** Antes de repetir el comando exacto cuando ya te dio las tres. */
+  repite: Texto280,
+});
+
 export const GuionLlamadasEsquema = z.strictObject({
   contacto: z.string().regex(/^[a-z_]+$/),
+  /** Solo el contacto que da las pistas (companero). */
+  pistas: GuionPistas.optional(),
   conversaciones: z.array(Conversacion).min(1),
   ponte_a_trabajar: z.array(Texto280).min(1),
   /** Lo que piensa el jugador cuando ya no le contestan. */
@@ -38,6 +52,8 @@ export const GuionLlamadasEsquema = z.strictObject({
 });
 
 export type GuionLlamadas = z.infer<typeof GuionLlamadasEsquema>;
+/** Quien da las pistas por teléfono (D-13). */
+export const QUIEN_DA_PISTAS = "companero";
 export type Conversacion = z.infer<typeof Conversacion>;
 export type OpcionLlamada = z.infer<typeof Opcion>;
 
@@ -90,6 +106,12 @@ export function revisarLlamadas(
     if (!p) errores.push(`${donde}: ${g.contacto} no está en personajes.yaml`);
     else if (p.extension === undefined) errores.push(`${donde}: ${g.contacto} está sin extensión`);
     else if (p.paciencia === undefined) errores.push(`${donde}: ${g.contacto} no tiene paciencia`);
+    if ((g.contacto === QUIEN_DA_PISTAS) !== (g.pistas !== undefined))
+      errores.push(
+        g.pistas
+          ? `${donde}: solo ${QUIEN_DA_PISTAS} da pistas`
+          : `${donde}: falta la sección pistas (${QUIEN_DA_PISTAS} da las pistas, D-13)`,
+      );
     if (!g.conversaciones.some((c) => !especifica(c)))
       errores.push(`${donde}: falta una conversación general (sin turnos ni requiere)`);
     const ids = new Set<string>();
@@ -100,6 +122,7 @@ export function revisarLlamadas(
         errores.push(`${donde}: ${c.id}: bandera desconocida: ${c.requiere}`);
     }
     const textos = [
+      ...Object.values(g.pistas ?? {}),
       ...g.conversaciones.flatMap((c) => [
         ...c.lineas,
         ...(c.opciones ?? []).flatMap((o) => [o.texto, ...o.respuesta]),

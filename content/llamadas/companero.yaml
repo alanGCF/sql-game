@@ -1,6 +1,13 @@
 # Llamadas que le haces a Eduardo (ext. 214), F4-02. Paciencia en personajes.yaml.
 # Las pistas llegan en F4-03 y no gastan paciencia (D-14); platicar sí.
 contacto: companero
+# Al marcarle con pendientes en el pizarrón, primero pregunta qué ocupas (F4-03).
+pistas:
+  saludo: Sistemas, Eduardo. ¿Qué ocupas?
+  pedir: Necesito una pista.
+  platicar: Nada, nomás quería platicar.
+  cual: ¿Con cuál te atoraste?
+  repite: Ya te dije todo lo que sé de eso. Va de nuevo, apúntalo.
 conversaciones:
   - id: t0-primera
     turnos: [0]

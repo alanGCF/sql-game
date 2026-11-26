@@ -99,10 +99,11 @@ Hay varias frases por caso para que no se repitan. El globo no gasta pistas ni a
 
 ## Pistas: Eduardo por teléfono
 
-- Marcas a Eduardo y eliges "Necesito una pista". Sabe en qué pendiente estás (o eliges el pendiente si hay varios).
+- Marcas a Eduardo y, si hay pendientes, contesta "¿Qué ocupas?": eliges "Necesito una pista" o "Nada, nomás quería platicar" (esto sí gasta paciencia). Sabe en qué pendiente estás; si hay varios (misión y favores), pregunta "¿Con cuál te atoraste?" y eliges el texto del pizarrón. Después de la tercera pista de un objetivo, te repite el comando exacto sin cambiar las estrellas. Lo que dice alrededor de la pista vive en `content/llamadas/companero.yaml` (sección `pistas`).
 - Tres niveles por objetivo, uno por llamada: **empujón** ("¿Ya viste qué hay en esa carpeta?") → **concepto** ("Hay un comando que muestra lo que tiene un archivo; viene de *concatenate*") → **comando exacto** dictado ("Teclea `cat LEEME.txt`, con mayúsculas").
 - Las pistas recibidas quedan escritas en la libreta (sección Pistas), sin poder copiarse: hay que teclearlas.
-- **Pedir pista no gasta la paciencia de Eduardo** *(D-14)*; platicar sí. Si fallas 3 veces seguidas el mismo objetivo, piensas en voz alta: *"Igual y le marco a Eduardo…"*.
+- **Pedir pista no gasta la paciencia de Eduardo** *(D-14)*; platicar sí. Si fallas 3 veces seguidas (tres comandos con error que no cumplen nada, o tres respuestas equivocadas del mismo objetivo), piensas en voz alta: *"Igual y le marco a Eduardo…"*.
+- Las pistas recibidas se guardan en la partida (`pistas`: misión, objetivo, nivel y texto) para la pestaña Pistas de la libreta.
 - Sin castigo de progreso: solo afecta las estrellas de la misión.
 
 ## Libreta de apuntes

@@ -186,7 +186,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** contenido `content/llamadas/` (por contacto: charla, rumores, avisos, "ponte a trabajar", no contesta) con esquema Zod y harness; paciencia por contacto y turno (Gerencia al doble); diálogos en tarjeta de llamada (D-22) con opciones de respuesta.
 - **Listo cuando:** pruebas de paciencia (1–2 charla, 3 aviso, 4+ no contesta) y e2e de una llamada con opción de respuesta.
 
-### F4-03 · Pistas de Eduardo por teléfono · `pendiente` · depende: F4-02
+### F4-03 · Pistas de Eduardo por teléfono · `hecha (2026-11-26)` *(con pendientes, Eduardo contesta "¿Qué ocupas?" con "Necesito una pista" / "Nomás quería platicar"; con varios pendientes se elige el del pizarrón; empujón → concepto → comando exacto vía `Jornada.pista`, y después repite el comando sin cambiar estrellas; no gasta paciencia; las pistas se guardan en la partida (`pistas`) para la libreta; tres comandos con error o tres respuestas equivocadas seguidas → pensamiento. El e2e revisa las pistas anotadas por el gancho de pruebas; verlas en la libreta llega con F4-05)* · depende: F4-02
 - **Hacer:** "Necesito una pista" en la llamada a Eduardo; elige el pendiente si hay varios; empujón → concepto → comando exacto (uno por llamada, `MisionEnCurso.pista`); no gasta paciencia (D-14); se anota en la libreta (Pistas); 3 fallos seguidos del mismo objetivo → pensamiento "Igual y le marco a Eduardo…"; las estrellas lo reflejan.
 - **Listo cuando:** e2e pide las tres pistas de T1-M1 y las ve en la libreta; prueba de que no gasta paciencia.
 

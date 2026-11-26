@@ -229,3 +229,46 @@ describe("jornada: llamadas salientes (F4-02)", () => {
     expect((await r.llamar("companero", eduardo, 2)).llamada.tipo).toBe("ponte_a_trabajar");
   });
 });
+
+describe("jornada: pistas de Eduardo por teléfono (F4-03)", () => {
+  const guiones = cargarLlamadas();
+  const eduardo = guiones.companero as GuionLlamadas;
+
+  it("pendientes para pista: los objetivos sin cumplir de la misión en curso (y favores)", () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    const p = j.pendientesParaPista();
+    expect(p.length).toBeGreaterThan(0);
+    expect(p.every((x) => x.mision === "t1-m01-donde-estoy")).toBe(true);
+    expect(p[0]).toHaveProperty("pendiente");
+  });
+
+  it("tres niveles, uno por llamada; la cuarta repite el comando exacto sin cambiar estrellas", () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    const [o] = j.pendientesParaPista();
+    if (!o) throw new Error("sin pendientes");
+    const niveles = [1, 2, 3, 4].map(() => j.pista(o.mision, o.objetivo));
+    expect(niveles.map((p) => [p.nivel, p.nueva])).toEqual([
+      [1, true],
+      [2, true],
+      [3, true],
+      [3, false],
+    ]);
+    expect(niveles[3]?.texto).toBe(niveles[2]?.texto);
+    expect(niveles[2]?.texto).toMatch(/`[^`]+`/);
+    expect(j.actual()?.estrellas()).toBe(1);
+  });
+
+  it("pedir pista no gasta la paciencia de Eduardo (D-14)", async () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    const [o] = j.pendientesParaPista();
+    if (!o) throw new Error("sin pendientes");
+    for (let i = 0; i < 3; i++) j.pista(o.mision, o.objetivo);
+    expect(j.guardar().llamadas).toEqual({});
+    expect((await j.llamar("companero", eduardo, 2)).llamada.tipo).toBe("charla");
+  });
+
+  it("una pista de un objetivo que no está pendiente es un error claro", () => {
+    const j = Jornada.iniciar(t1, mundo, 3);
+    expect(() => j.pista("t1-m02-el-leeme", "x")).toThrow(/no está activa/);
+  });
+});

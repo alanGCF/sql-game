@@ -523,43 +523,99 @@ test("teléfono (F4-01): marca 214 con clic; tu extensión da ocupado y otra no 
   await telefono.getByRole("button", { name: /Llamar/ }).click();
   const dialogo = page.getByTestId("dialogo");
   await expect(dialogo).toContainText("Eduardo Téllez");
+  await dialogo.getByRole("button", { name: /nomás quería platicar/ }).click();
   await dialogo.getByRole("button", { name: /ya me voy ubicando/ }).click();
   await dialogo.getByRole("button", { name: /Colgar/ }).click();
   await expect(dialogo).toBeHidden();
   await expect(pantalla).toContainText("Ext. 210");
 });
 
-test("llamadas (F4-02): opciones de respuesta y paciencia de Eduardo hasta que no contesta", async ({
-  page,
-}) => {
+test("llamadas (F4-02): opciones de respuesta y paciencia hasta que ya no contestan", async ({ page }) => {
   await alTelefono(page);
   const pantalla = page.getByTestId("telefono-pantalla");
   const dialogo = page.getByTestId("dialogo");
-  const llamar = async () => {
-    await page.keyboard.type("214");
+  const marcar = async (ext: string) => {
+    await page.keyboard.type(ext);
     await page.keyboard.press("Enter");
   };
-  // 1: la del turno, con opciones; el 2 del teclado elige la segunda.
-  await llamar();
+  // Eduardo: con pendientes pregunta qué ocupas; platicar (2) pone la del turno, con opciones.
+  await marcar("214");
+  await expect(dialogo).toContainText("¿Qué ocupas?");
+  await page.keyboard.press("2");
   await expect(dialogo).toContainText("¿Cómo vas con tu primer turno?");
   await page.keyboard.press("2");
   await expect(dialogo).toContainText("a todos nos pasó");
   await page.keyboard.press("Enter");
   await expect(dialogo).toBeHidden();
-  // 2: la general, también con opciones.
-  await llamar();
-  await expect(dialogo).toContainText("impresora de etiquetas");
-  await dialogo.getByRole("button", { name: /nomás saludando/ }).click();
-  await expect(dialogo).toContainText("Al rato paso por tu lugar");
-  await dialogo.getByRole("button", { name: /Colgar/ }).click();
-  // 3: ya se le acabó la paciencia.
-  await llamar();
+  // Karla: 1–2 platica, 3 "ponte a trabajar", 4 ya no contesta y lo piensas.
+  await marcar("402");
+  await expect(dialogo).toContainText("¿Ya viste mi ticket?");
+  await page.keyboard.press("Enter");
+  await marcar("402");
+  await expect(dialogo).toContainText("Estoy por entrar a junta");
+  await page.keyboard.press("Enter");
+  await marcar("402");
   await expect(dialogo).toContainText(/Ponte a trabajar/i);
   await page.keyboard.press("Enter");
   await expect(dialogo).toBeHidden();
-  // 4: no contesta; lo piensas.
-  await llamar();
+  await marcar("402");
   await expect(pantalla).toContainText("Sin respuesta");
-  await expect(page.getByTestId("pensamiento")).toContainText("Eduardo ha de andar en piso");
+  await expect(page.getByTestId("pensamiento")).toContainText("buzón de Karla");
   await expect(dialogo).toBeHidden();
+});
+
+test("pistas (F4-03): Eduardo da las tres de T1-M1 por teléfono, quedan anotadas y no gastan paciencia", async ({
+  page,
+}) => {
+  await alTelefono(page);
+  const dialogo = page.getByTestId("dialogo");
+  const pedirPista = async () => {
+    await page.keyboard.type("214");
+    await page.keyboard.press("Enter");
+    await expect(dialogo.getByRole("button", { name: /Necesito una pista/ })).toBeVisible();
+    await page.keyboard.press("1");
+    // T1-M1 tiene dos pendientes: ¿con cuál te atoraste? Se elige el primero.
+    await expect(dialogo.getByRole("list", { name: "Responder" })).toBeVisible();
+    await page.keyboard.press("1");
+  };
+  for (let i = 0; i < 3; i++) {
+    await pedirPista();
+    await expect(dialogo.getByRole("button", { name: /Colgar/ })).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(dialogo).toBeHidden();
+  }
+  const pistas = await page.evaluate(() => window.__planta7?.pistas?.() ?? []);
+  expect(pistas.map((p) => p.nivel)).toEqual([1, 2, 3]);
+  expect(new Set(pistas.map((p) => p.objetivo)).size).toBe(1);
+  expect(pistas[2]?.texto).toMatch(/`[^`]+`/);
+  // La cuarta repite el comando exacto y no anota nada nuevo.
+  await pedirPista();
+  await expect(dialogo).toContainText("Va de nuevo");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText(pistas[2]?.texto.slice(0, 20) ?? "");
+  await page.keyboard.press("Escape");
+  expect((await page.evaluate(() => window.__planta7?.pistas?.() ?? [])).length).toBe(3);
+  // Pedir pistas no gastó paciencia: platicar todavía es la charla del turno.
+  await page.keyboard.type("214");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("2");
+  await expect(dialogo).toContainText("¿Cómo vas con tu primer turno?");
+});
+
+test("pistas (F4-03): tres comandos con error seguidos te hacen pensar en marcarle a Eduardo", async ({
+  page,
+}) => {
+  await abrir(page);
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  for (const c of ["cat no-existe", "cd nada"]) {
+    await input.fill(c);
+    await input.press("Enter");
+  }
+  await expect(page.getByTestId("pensamiento")).toBeHidden();
+  await input.fill("ls nada");
+  await input.press("Enter");
+  await expect(page.getByTestId("pensamiento")).toHaveText("Igual y le marco a Eduardo…");
 });

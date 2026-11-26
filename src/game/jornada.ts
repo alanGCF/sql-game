@@ -212,6 +212,27 @@ export class Jornada {
     return { llamada, eventos: this.tomarEventos() };
   }
 
+  /** Objetivos sin cumplir de la misión en curso y de los favores activos: de qué se puede pedir pista. */
+  pendientesParaPista(): { mision: string; objetivo: string; pendiente: string }[] {
+    return this.activas().flatMap((mc) =>
+      mc
+        .pendientes()
+        .filter((p) => !p.cumplido)
+        .map((p) => ({ mision: mc.mision.id, objetivo: p.id, pendiente: p.pendiente })),
+    );
+  }
+
+  /**
+   * Pista de Eduardo (F4-03): empujón → concepto → comando exacto, una por llamada. No gasta paciencia
+   * (D-14). Después de la tercera repite el comando exacto (`nueva: false`, sin cambiar estrellas).
+   */
+  pista(misionId: string, objetivo: string): { nivel: 1 | 2 | 3; texto: string; nueva: boolean } {
+    const mc = this.misionDe(misionId);
+    if (!mc) throw new Error(`la misión ${misionId} no está activa`);
+    const p = mc.pista(objetivo);
+    return p ? { ...p, nueva: true } : { nivel: 3, texto: mc.textoPista(objetivo, 3), nueva: false };
+  }
+
   /** Una bandera nueva por algo que el jugador eligió (opción de una llamada); revisa los objetivos. */
   async decidir(flag: string): Promise<EventoJornada[]> {
     this.flags.add(flag);

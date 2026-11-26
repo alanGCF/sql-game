@@ -207,6 +207,13 @@ export class MisionEnCurso {
     return { nivel, texto: this.texto(o.pistas[nivel - 1] ?? "") };
   }
 
+  /** Texto de una pista ya dada: Eduardo la repite si se la vuelves a pedir (no cambia las estrellas). */
+  textoPista(objetivo: string, nivel: 1 | 2 | 3): string {
+    const o = this.mision.objetivos.find((x) => x.id === objetivo);
+    if (!o) throw new Error(`objetivo inexistente: ${objetivo}`);
+    return this.texto(o.pistas[nivel - 1] ?? "");
+  }
+
   /** ★★★ sin pistas · ★★ con pistas de nivel 1–2 · ★ si usó alguna de nivel 3 (D-09). */
   estrellas(): 1 | 2 | 3 {
     const max = Math.max(0, ...this.pistasUsadas.values());
