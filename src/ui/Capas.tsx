@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
 import { ControlesAjustes } from "./Ajustes";
 import { Dialogos } from "./Dialogos";
 import { Menu } from "./Menu";
 import { Monitor } from "./Monitor";
+import { NumeroEmpleado } from "./NumeroEmpleado";
 
 function EtiquetaHover() {
   const hover = useEscena((s) => s.hover);
@@ -50,6 +52,7 @@ export function Capas() {
   const transicionando = useEscena((s) => s.transicionando);
   const setVista = useEscena((s) => s.setVista);
   const enMenu = useEscena((s) => s.enMenu);
+  const porAnotar = usePartida((s) => s.numeroPorAnotar !== null);
   const [ajustes, setAjustes] = useState(false);
 
   useEffect(() => {
@@ -90,7 +93,9 @@ export function Capas() {
           Levantar la vista <kbd>Esc</kbd>
         </button>
       )}
-      <Dialogos />
+      {/* Los diálogos esperan a que el jugador anote su número (D-27). */}
+      {!porAnotar && <Dialogos />}
+      {!enMenu && <NumeroEmpleado />}
       <Menu />
       <Pensamiento />
     </>

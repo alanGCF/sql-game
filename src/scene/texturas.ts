@@ -164,7 +164,12 @@ export function dibujarPostIt(texto: string[]) {
   };
 }
 
-export function dibujarGafete(ctx: CanvasRenderingContext2D, w: number, h: number) {
+/** Gafete del escritorio: nombre y número enmascarado (D-26); sin partida, el del becario genérico. */
+export function dibujarGafete(nombre: string, numero: string) {
+  return (ctx: CanvasRenderingContext2D, w: number, h: number) => gafete(ctx, w, h, nombre, numero);
+}
+
+function gafete(ctx: CanvasRenderingContext2D, w: number, h: number, nombre: string, numero: string) {
   ctx.fillStyle = "#fafafa";
   ctx.fillRect(0, 0, w, h);
   ctx.fillStyle = "#e0702b";
@@ -176,9 +181,9 @@ export function dibujarGafete(ctx: CanvasRenderingContext2D, w: number, h: numbe
   ctx.fillRect(14, 56, 70, 86);
   ctx.fillStyle = "#222";
   ctx.font = `bold 24px ${SANS}`;
-  ctx.fillText("BECARIO", 96, 84);
+  ctx.fillText(nombre.toUpperCase().slice(0, 16), 96, 84);
   ctx.font = `18px ${MONO}`;
-  ctx.fillText("K7QF-29XM-PL4D", 96, 118);
+  ctx.fillText(numero, 96, 118);
 }
 
 /** Reloj de pared con la hora del juego (`minuto` = minutos desde las 00:00). */

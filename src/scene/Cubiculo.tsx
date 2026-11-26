@@ -1,5 +1,6 @@
 import { RoundedBox } from "@react-three/drei";
 import { DoubleSide } from "three";
+import { enmascararCodigo } from "../../shared/codigo";
 import { inicioTurno } from "../engine/calendario";
 import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
@@ -127,6 +128,7 @@ function Monitor() {
   const vista = useEscena((s) => s.vista);
   const postIt = useTexturaCanvas(160, 160, dibujarPostIt(["pass:", "duna47"]));
   const postIt2 = useTexturaCanvas(160, 160, dibujarPostIt(["Eduardo", "ext. 214"]));
+  const codigo = usePartida((s) => s.codigo);
   const [cx, cy, cz] = MONITOR.centro;
   return (
     <Interactivo nombre="Computadora" vista="monitor">
@@ -155,6 +157,7 @@ function Monitor() {
         <planeGeometry args={[0.07, 0.07]} />
         <Mat color="#ffffff" mapa={postIt2} />
       </mesh>
+      {codigo && <PostItNumero codigo={codigo} pos={[cx - 0.3, cy - 0.06, cz]} />}
       {/* teclado y mouse */}
       <CajaRedonda pos={[0, ESCRITORIO_Y + 0.012, -0.2]} tam={[0.44, 0.022, 0.14]} color={C.teclado} />
       <CajaRedonda
@@ -193,6 +196,22 @@ function Libreta() {
         <Caja pos={[0.02, 0.005, -0.1]} tam={[0.03, 0.01, 0.03]} color="#e0702b" />
       </group>
     </Interactivo>
+  );
+}
+
+/** Post-it de Recursos Humanos con el número de empleado (F4-13, D-27 opción C). */
+function PostItNumero({ codigo, pos }: { codigo: string; pos: [number, number, number] }) {
+  const tex = useTexturaCanvas(
+    200,
+    200,
+    dibujarPostIt(["No. empleado", codigo.slice(0, 4), codigo.slice(4, 8), codigo.slice(8), "¡Anótalo!"]),
+    codigo,
+  );
+  return (
+    <mesh position={pos} rotation={[0, 0, -0.05]}>
+      <planeGeometry args={[0.085, 0.085]} />
+      <Mat color="#ffffff" mapa={tex} />
+    </mesh>
   );
 }
 
@@ -251,7 +270,15 @@ function Calendario() {
 }
 
 function ObjetosEscritorio() {
-  const gafete = useTexturaCanvas(320, 160, dibujarGafete);
+  const nombre = usePartida((s) => s.nombre);
+  const codigo = usePartida((s) => s.codigo);
+  const numero = codigo ? enmascararCodigo(codigo) : "••••-••••-••••";
+  const gafete = useTexturaCanvas(
+    320,
+    160,
+    dibujarGafete(nombre || "Becario", numero),
+    `${nombre}|${numero}`,
+  );
   const foto = useTexturaCanvas(200, 160, dibujarFoto);
   const directorio = useTexturaCanvas(320, 260, dibujarDirectorio);
   return (

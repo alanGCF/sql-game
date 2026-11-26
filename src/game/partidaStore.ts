@@ -5,7 +5,7 @@ import { isTestMode } from "../test-hooks";
 import { almacenIndexedDb } from "./almacen-idb";
 import { crearApiPartidas, type Motivo } from "./api";
 import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
-import { type Dialogo, dialogosDe } from "./dialogos";
+import { type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type EventoJornada, Jornada } from "./jornada";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
@@ -80,7 +80,14 @@ interface EstadoPartida {
   continuar: () => Promise<boolean>;
   /** "No soy yo" (D-26): olvida la partida en este navegador y deja una jornada sin guardar. */
   olvidar: () => Promise<void>;
+  /** Número recién creado que el jugador debe anotar (tarjeta de Recursos Humanos, D-27). */
+  numeroPorAnotar: string | null;
+  anotado: () => void;
 }
+
+// shortcut: el aviso de Eduardo pasa al contenido del Turno 0 (F4-14), donde él te recibe.
+const AVISO_NUMERO =
+  "Antes que se me olvide: Recursos Humanos te dejó tu número de empleado en un post-it, en tu monitor. Anótalo en tu libreta o en un papel; con él checas entrada en cualquier compu.";
 
 const MAX_EVENTOS = 200;
 
@@ -171,6 +178,10 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     codigo: null,
     semilla: 0,
     guardado: "sin_partida",
+    numeroPorAnotar: null,
+    anotado() {
+      set({ numeroPorAnotar: null });
+    },
     ...desdeJornada(inicial),
     avanzarDialogo() {
       set({ dialogos: get().dialogos.slice(1) });
@@ -194,6 +205,11 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       const limpio = nombre.trim().slice(0, 40);
       const r = await guardian.empezar(limpio, versionContenido(), semillaAleatoria);
       cargar(r.partida, r.codigo);
+      if (r.codigo)
+        set({
+          numeroPorAnotar: r.codigo,
+          dialogos: [...get().dialogos, dialogoDe("companero", AVISO_NUMERO, false, personajes)],
+        });
       return { sinServidor: r.sinServidor };
     },
     async checarEntrada(codigo) {

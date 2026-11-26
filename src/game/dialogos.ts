@@ -11,6 +11,20 @@ export interface Dialogo {
   texto: string;
 }
 
+/** Un diálogo suelto (fuera de los eventos de una misión), con el nombre y el departamento del personaje. */
+export function dialogoDe(
+  quien: string,
+  texto: string,
+  llamada: boolean,
+  personajes: Personajes["personajes"],
+): Dialogo {
+  const [d] = dialogosDe(
+    [{ tipo: "dialogo", mision: "", entrega: llamada ? "llamada" : "visita", quien, texto }],
+    personajes,
+  );
+  return d as Dialogo;
+}
+
 export function dialogosDe(
   eventos: readonly EventoJornada[],
   personajes: Personajes["personajes"],

@@ -132,7 +132,7 @@ Las entradas automáticas aparecen con animación de escritura a mano y un sonid
 
 ## Código de partida (checkpoint)
 
-- **Nuevo ingreso:** escribes tu nombre; se genera un código de 12 caracteres (`K7QF-29XM-PL4D`, alfabeto sin caracteres ambiguos). Se muestra grande con la indicación "anótalo" y queda impreso en tu gafete *(D-15)*.
+- **Nuevo ingreso:** escribes tu nombre; se genera un código de 12 caracteres (`K7QF-29XM-PL4D`, alfabeto sin caracteres ambiguos). Una tarjeta de Recursos Humanos lo muestra grande con "Anótalo en un papel" y "Ya lo anoté" (los diálogos esperan); además queda en un post-it del monitor, Eduardo lo menciona y el gafete del escritorio lo trae enmascarado *(D-15, D-26, D-27)*.
 - **Checkpoints:** al completar cada misión o favor y al terminar el turno, la partida se guarda en el servidor bajo ese código. Entre checkpoints, el progreso también se guarda en el navegador.
 - **Checar entrada:** en el menú tecleas el código y continúas desde el último checkpoint, en cualquier computadora.
 - El código es la única llave de la partida: quien lo tenga puede continuarla. No se piden correos ni contraseñas.

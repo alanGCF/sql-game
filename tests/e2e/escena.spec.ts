@@ -298,6 +298,7 @@ test("menú (gafete): primer día pide el nombre tecleado y empieza el turno", a
   await menu.getByRole("button", { name: "Empezar mi turno" }).click();
 
   await expect(menu).toBeHidden();
+  await page.getByRole("button", { name: "Ya lo anoté" }).click();
   await expect(page.getByTestId("dialogo")).toContainText("Eduardo Téllez · Sistemas");
   const partida = await page.evaluate(() => window.__planta7?.partida?.());
   expect(partida?.nombre).toBe("Ale");
@@ -356,6 +357,7 @@ async function empezarPrimerDia(page: Page, nombre: string) {
   await page.getByLabel("¿Cómo te llamas? (o un apodo)").fill(nombre);
   await menu.getByRole("button", { name: "Empezar mi turno" }).click();
   await expect(menu).toBeHidden();
+  await page.getByRole("button", { name: "Ya lo anoté" }).click();
   while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
 }
 
@@ -440,4 +442,36 @@ test('guardado (D-26): "No soy yo" olvida la partida en esta computadora', async
   await page.reload();
   await page.waitForFunction(() => window.__planta7?.ready === true);
   await expect(page.getByTestId("menu")).toContainText("(nuevo ingreso)");
+});
+
+test("número de empleado (F4-13, D-27): tarjeta de Recursos Humanos y Eduardo lo menciona", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await page.goto("/?test=1&menu=1");
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const menu = page.getByTestId("menu");
+  await menu.getByRole("button", { name: "Primer día de trabajo" }).click();
+  await page.getByLabel("¿Cómo te llamas? (o un apodo)").fill("Ale");
+  await menu.getByRole("button", { name: "Empezar mi turno" }).click();
+
+  const tarjeta = page.getByRole("dialog", { name: "Tu número de empleado" });
+  await expect(tarjeta).toBeVisible();
+  const codigo = (await page.evaluate(() => window.__planta7?.partida?.()))?.codigo ?? "";
+  await expect(tarjeta).toContainText(`${codigo.slice(0, 4)}-${codigo.slice(4, 8)}-${codigo.slice(8)}`);
+  await expect(tarjeta).toContainText("Ale");
+  // Los diálogos esperan a que el jugador lo anote.
+  await expect(page.getByTestId("dialogo")).toBeHidden();
+  const boton = tarjeta.getByRole("button", { name: "Ya lo anoté" });
+  await expect(boton).toBeFocused();
+  await boton.click();
+  await expect(tarjeta).toBeHidden();
+
+  const textos: string[] = [];
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) {
+    textos.push((await dialogo.textContent()) ?? "");
+    await page.keyboard.press("Enter");
+  }
+  expect(textos.some((t) => t.includes("Eduardo") && t.includes("número de empleado"))).toBe(true);
 });

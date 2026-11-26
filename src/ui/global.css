@@ -545,6 +545,74 @@ body,
 .gafete-acciones label {
   font-weight: 600;
 }
+/* Número de empleado (F4-13, D-27): tarjeta de Recursos Humanos sobre la escena. */
+.numero-fondo {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(10, 12, 16, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 40;
+}
+.numero-tarjeta {
+  width: min(560px, calc(100vw - 32px));
+  background: #fbf8f2;
+  color: #2b2622;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  font-size: calc(1rem * var(--escala, 1));
+}
+.numero-franja {
+  background: #1f6b5a;
+  color: #fff;
+  padding: 0.9em 1.4em;
+}
+.numero-franja h2 {
+  margin: 0;
+  font-size: 1.25em;
+}
+.numero-franja p {
+  margin: 0.2em 0 0;
+  font-size: 0.8em;
+  letter-spacing: 0.06em;
+}
+.numero-cuerpo {
+  padding: 1.2em 1.5em 1.4em;
+}
+.numero-cuerpo p {
+  margin: 0 0 0.7em;
+  line-height: 1.4;
+}
+.numero-grande {
+  font-family: var(--fuente-mono);
+  font-weight: 700;
+  font-size: 2.6em;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 0.35em;
+  border: 2px dashed #c9b89b;
+  border-radius: 12px;
+  background: #fff;
+  user-select: text;
+}
+.numero-nota {
+  font-size: 0.85em;
+  color: #5c4d3b;
+}
+.numero-cuerpo button {
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75em;
+  border-radius: 10px;
+  border: 0;
+  background: #e0702b;
+  color: #1a0e05;
+  cursor: pointer;
+}
 .gafete-ver {
   margin-left: 0.6em;
   font: inherit;

@@ -226,7 +226,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** IndexedDB tras cada comando que cambia el estado; checkpoint al servidor al completar misión, favor o turno; menú "Checar entrada con mi número"; sin conexión sigue local y sincroniza al volver; el mundo se guarda como diferencias (`vfs-diff`).
 - **Listo cuando:** e2e: terminar T1-M1, recargar en otro contexto del navegador, checar entrada con el código y seguir en T1-M2.
 
-### F4-13 · Gafete con el código de partida (D-15) · `pendiente` · depende: F4-12
+### F4-13 · Gafete con el código de partida (D-15) · `hecha (2026-11-26)` *(D-27 = A + C: tarjeta de Recursos Humanos con el número grande y "Ya lo anoté" antes de los diálogos; post-it con el número en el monitor; Eduardo lo menciona (línea en código hasta el contenido de T0, F4-14); el gafete del escritorio muestra nombre y número enmascarado (D-26))* · depende: F4-12
 - **Hacer:** al empezar el primer día se genera el código, se muestra grande con "anótalo" y queda en el gafete (menú y objeto del escritorio).
 - **Listo cuando:** e2e del primer día muestra el código y el gafete del escritorio lo tiene.
 
