@@ -110,6 +110,7 @@ describe("variables de entorno del servidor", () => {
       trustProxyHops: 1,
       produccion: false,
       partidasEnMemoria: false,
+      enRailway: false,
     });
   });
 
@@ -132,6 +133,7 @@ describe("variables de entorno del servidor", () => {
       databaseUrl: "postgresql://u:p@postgres.railway.internal:5432/railway",
       pepper: Buffer.from("0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f", "hex"),
       partidasEnMemoria: true,
+      enRailway: false,
     });
   });
 

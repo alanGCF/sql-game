@@ -26,6 +26,11 @@ export interface OpcionesPartidas {
   pepper: Buffer;
   /** Topes globales (pruebas): por omisión los de shared/limites.ts. */
   topeCreacionGlobalPorHora?: number;
+  /**
+   * Partidas nuevas por hora por origen. Solo el modo de pruebas (repositorio en memoria, nunca en
+   * producción) lo sube: la suite e2e crea muchas desde 127.0.0.1. Por omisión, el de shared/limites.ts.
+   */
+  limiteCreacionPorHora?: number;
   limiteAlmacenBytes?: number;
 }
 
@@ -218,7 +223,7 @@ export function rutasPartidas(app: FastifyInstance, opts: OpcionesPartidas | nul
     {
       config: {
         rateLimit: {
-          max: LIMITE_CREAR_PARTIDAS_POR_HORA,
+          max: opts?.limiteCreacionPorHora ?? LIMITE_CREAR_PARTIDAS_POR_HORA,
           timeWindow: "1 hour",
           // Crear agrupa IPv6 por /56: es la acción que más espacio cuesta.
           keyGenerator: (req: FastifyRequest) => `${normalizeIP(req.ip, 56)}|crear`,

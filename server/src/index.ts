@@ -1,31 +1,19 @@
-import { randomBytes } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DIAS_RETENCION_PARTIDAS } from "../../shared/limites.js";
 import { buildApp } from "./app.js";
 import { leerEntorno } from "./entorno.js";
+import { modoPartidas } from "./modo-partidas.js";
 import { codigoDeError, programarRetencion, repositorioEnMemoria, repositorioPostgres } from "./partidas.js";
-import type { OpcionesPartidas } from "./rutas-partidas.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const config = leerEntorno(process.env);
 
-/**
- * Postgres con DATABASE_URL y PARTIDAS_PEPPER. Memoria solo con PARTIDAS_EN_MEMORIA=1 fuera de producción.
- * Si falta algo, la API contesta 503 (nunca se pierden partidas en silencio) y el resto del sitio sigue.
- */
-let partidas: OpcionesPartidas | null = null;
-let falta: string | null = null;
-if (config.databaseUrl && config.pepper)
-  partidas = {
-    repo: repositorioPostgres(config.databaseUrl, (codigo) =>
-      app.log.error({ codigo }, "conexión inactiva de Postgres perdida"),
-    ),
-    pepper: config.pepper,
-  };
-else if (config.partidasEnMemoria && !config.produccion)
-  partidas = { repo: repositorioEnMemoria(), pepper: config.pepper ?? randomBytes(32) };
-else falta = config.databaseUrl ? "PARTIDAS_PEPPER" : "DATABASE_URL";
+const { partidas, falta } = modoPartidas(config, {
+  postgres: (url) =>
+    repositorioPostgres(url, (codigo) => app.log.error({ codigo }, "conexión inactiva de Postgres perdida")),
+  memoria: repositorioEnMemoria,
+});
 
 const app = await buildApp({
   staticDir: config.staticDir ?? join(here, "../../../client"),

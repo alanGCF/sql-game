@@ -39,6 +39,8 @@ export interface Config {
   pepper?: Buffer;
   produccion: boolean;
   partidasEnMemoria: boolean;
+  /** Corre en Railway (lo marca la plataforma): ahí nunca se usan partidas en memoria. */
+  enRailway: boolean;
 }
 
 export function leerEntorno(env: Readonly<Record<string, string | undefined>>): Config {
@@ -52,6 +54,7 @@ export function leerEntorno(env: Readonly<Record<string, string | undefined>>): 
     trustProxyHops: r.data.TRUST_PROXY_HOPS,
     produccion: r.data.NODE_ENV === "production",
     partidasEnMemoria: r.data.PARTIDAS_EN_MEMORIA === "1",
+    enRailway: Boolean(env.RAILWAY_PROJECT_ID || env.RAILWAY_ENVIRONMENT_ID),
   };
   if (r.data.PARTIDAS_PEPPER) c.pepper = Buffer.from(r.data.PARTIDAS_PEPPER, "hex");
   if (r.data.STATIC_DIR) c.staticDir = r.data.STATIC_DIR;

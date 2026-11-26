@@ -12,7 +12,11 @@ let log: string[];
 
 async function crearApp(
   repo: RepositorioPartidas | null = repositorioEnMemoria(),
-  extra: { topeCreacionGlobalPorHora?: number; limiteAlmacenBytes?: number } = {},
+  extra: {
+    topeCreacionGlobalPorHora?: number;
+    limiteAlmacenBytes?: number;
+    limiteCreacionPorHora?: number;
+  } = {},
 ) {
   log = [];
   app = await buildApp({
@@ -150,6 +154,12 @@ describe("API de partidas", () => {
     for (let i = 1; i <= 10; i++) expect((await crear(undefined, `2001:db8:1::${i}`)).statusCode).toBe(201);
     expect((await crear(undefined, "2001:db8:1::ffff")).statusCode).toBe(429);
     expect((await crear(undefined, "2001:db8:2::1")).statusCode).toBe(201);
+  });
+
+  it("la opción limiteCreacionPorHora sube el límite de crear por origen (solo la usa el modo memoria)", async () => {
+    await crearApp(repositorioEnMemoria(), { limiteCreacionPorHora: 12 });
+    for (let i = 1; i <= 12; i++) expect((await crear()).statusCode).toBe(201);
+    expect((await crear()).statusCode).toBe(429);
   });
 
   it("leer y guardar comparten un contador de 60 por minuto", async () => {
