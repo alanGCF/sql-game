@@ -31,6 +31,8 @@ export interface TestHooks {
     cayendo: number;
     vistos: { tachados: number; caidos: number };
   };
+  /** Quién está de visita en el cubículo y en qué va: llegando, aquí o yéndose (F4-09). */
+  visitante?: () => { quien: string | null; fase: string | null };
   /** Fija la hora que muestra la escena ("HH:MM", 24:00 = medianoche) para capturas de la ventana. */
   hora?: (hhmm: string) => void;
 }

@@ -77,3 +77,36 @@ describe("varios globos y pensamiento (F4-06)", () => {
     ]);
   });
 });
+
+describe("visitas (F4-09)", () => {
+  it("las líneas de una visita la marcan como visita y sus opciones van en el último globo", () => {
+    const eventos: EventoJornada[] = [
+      {
+        tipo: "efecto",
+        mision: "m",
+        efecto: {
+          tipo: "visita",
+          de: "don_chuy",
+          texto: ["¿Qué tanto lees?", "Dime."],
+          opciones: [
+            { texto: "Una nota.", respuesta: "Ah, la de la ingeniera." },
+            { texto: "Nada.", respuesta: ["Ajá.", "Al rato vengo."] },
+          ],
+        },
+      },
+      { tipo: "dialogo", mision: "m", entrega: "visita", quien: "karla", texto: "Te traigo un ticket." },
+      { tipo: "dialogo", mision: "m", entrega: "ticket", quien: "karla", texto: "Te dejé un ticket." },
+    ];
+    const d = dialogosDe(eventos, personajes);
+    expect(d.map((x) => [x.texto, x.visita ?? false, x.opciones?.length ?? 0])).toEqual([
+      ["¿Qué tanto lees?", true, 0],
+      ["Dime.", true, 2],
+      ["Te traigo un ticket.", true, 0],
+      ["Te dejé un ticket.", false, 0],
+    ]);
+    expect(d[1]?.opciones?.map((o) => o.respuesta)).toEqual([
+      ["Ah, la de la ingeniera."],
+      ["Ajá.", "Al rato vengo."],
+    ]);
+  });
+});

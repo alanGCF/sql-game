@@ -1,6 +1,15 @@
 import { expect, type Page, test } from "@playwright/test";
 import type {} from "../../src/test-hooks.js";
 
+/** Cierra los diálogos en pantalla: con opciones elige la primera; si no, Enter (también contesta el teléfono). */
+async function cerrarDialogos(page: Page) {
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) {
+    if (await dialogo.getByRole("list", { name: "Responder" }).isVisible()) await page.keyboard.press("1");
+    else await page.keyboard.press("Enter");
+  }
+}
+
 async function abrir(page: Page) {
   await page.goto("/?test=1");
   await page.waitForFunction(() => window.__planta7?.ready === true);
@@ -366,7 +375,7 @@ async function empezarPrimerDia(page: Page, nombre: string) {
   await menu.getByRole("button", { name: "Empezar mi turno" }).click();
   await expect(menu).toBeHidden();
   await page.getByRole("button", { name: "Ya lo anoté" }).click();
-  while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
 }
 
 test("guardado (F4-12): termina T1-M1 y en otra computadora checa entrada con su número y sigue en T1-M2", async ({
@@ -487,7 +496,7 @@ test("número de empleado (F4-13, D-27): tarjeta de Recursos Humanos y Eduardo l
 async function alTelefono(page: Page) {
   await abrir(page);
   const dialogo = page.getByTestId("dialogo");
-  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
   await expect(page.getByTestId("telefono")).toBeVisible();
 }
@@ -619,7 +628,7 @@ test("pistas (F4-03): tres comandos con error seguidos te hacen pensar en marcar
 }) => {
   await abrir(page);
   const dialogo = page.getByTestId("dialogo");
-  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
   const input = page.getByLabel("Comando");
   for (const c of ["cat no-existe", "cd nada"]) {
@@ -635,7 +644,7 @@ test("pistas (F4-03): tres comandos con error seguidos te hacen pensar en marcar
 async function cerrarT1M1SinContestar(page: Page) {
   await abrir(page);
   const dialogo = page.getByTestId("dialogo");
-  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
   const input = page.getByLabel("Comando");
   await input.fill("ls tickets | wc -l");
@@ -672,7 +681,7 @@ test("llamada entrante (F4-04): si nadie contesta, queda en el buzón y se escuc
   expect(await page.evaluate(() => window.__planta7?.buzon?.())).toBe(1);
   // Lo que venía después de la llamada sigue (Karla deja su ticket).
   await expect(dialogo).toContainText("Ing. Karla Ibáñez · Calidad");
-  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
   const telefono = page.getByTestId("telefono");
   await expect(page.getByTestId("telefono-pantalla")).toContainText("Buzón 1");
@@ -688,7 +697,7 @@ test("llamada entrante (F4-04): si nadie contesta, queda en el buzón y se escuc
 test("libreta (F4-05): apuntes de la misión, comando aprendido y pista en su pestaña", async ({ page }) => {
   await cerrarT1M1SinContestar(page);
   await page.keyboard.press("Enter");
-  while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   // Una pista de T1-M2 por teléfono.
   await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
   const dialogo = page.getByTestId("dialogo");
@@ -759,7 +768,7 @@ test("libreta (F4-05): no se copia, no se pega y la nota tecleada se guarda con 
   await page.waitForFunction(() => window.__planta7?.ready === true, null, { timeout: 45_000 });
   await page.getByRole("button", { name: /Checar entrada como Ale/ }).click();
   await expect(page.getByTestId("menu")).toBeHidden();
-  while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
   await page.getByTestId("libreta").getByRole("tab", { name: "Mis notas" }).click();
   await expect(page.getByTestId("libreta")).toContainText("ls -a muestra los ocultos");
@@ -770,7 +779,7 @@ test("pensamiento (F4-06): al cerrar T1-M2, Don Chuy en dos globos y luego lo qu
 }) => {
   await cerrarT1M1SinContestar(page);
   const dialogo = page.getByTestId("dialogo");
-  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   const input = page.getByLabel("Comando");
   await input.fill("grep -r Karla tickets");
   await input.press("Enter");
@@ -788,6 +797,8 @@ test("pensamiento (F4-06): al cerrar T1-M2, Don Chuy en dos globos y luego lo qu
   );
   await expect(dialogo).toContainText("¿Qué tanto lees, joven?");
   await expect(dialogo).toContainText("Mantenimiento");
+  await page.keyboard.press("1");
+  await expect(dialogo).toContainText("los números del turno nocturno");
   await page.keyboard.press("Enter");
   await expect(dialogo).toContainText("nunca se equivocaba");
   await page.keyboard.press("Enter");
@@ -816,7 +827,7 @@ test("pizarrón (F4-07): el plumón raya el pendiente y el post-it del favor cae
   await page.waitForFunction(() => window.__planta7?.ready === true);
   const dialogo = page.getByTestId("dialogo");
   const cerrar = async () => {
-    while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+    await cerrarDialogos(page);
   };
   const responder = (m: string, o: string, v: string) =>
     page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
@@ -851,7 +862,7 @@ test("pizarrón (F4-07): con reducir movimiento se tacha sin animación", async 
   await page.goto("/?test=1&animar=1");
   await page.waitForFunction(() => window.__planta7?.ready === true);
   const dialogo = page.getByTestId("dialogo");
-  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await cerrarDialogos(page);
   await page.getByRole("button", { name: "Ajustes" }).click();
   await page.getByLabel(/Reducir movimiento/).check();
   await page.getByRole("button", { name: "Cerrar" }).click();
@@ -869,7 +880,7 @@ test("calendario (F4-08): con T1 terminado, el día trae sus estrellas y su resu
   await abrir(page);
   const dialogo = page.getByTestId("dialogo");
   const cerrar = async () => {
-    while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+    await cerrarDialogos(page);
   };
   const responder = (m: string, o: string, v: string) =>
     page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
@@ -909,4 +920,59 @@ test("calendario (F4-08): con T1 terminado, el día trae sus estrellas y su resu
   await expect(resumen).toContainText("Mi carpeta en el servidor es /home/becario");
   await resumen.getByRole("button", { name: "Cerrar" }).click();
   await expect(resumen).toBeHidden();
+});
+
+/** Cierra T1-M1 y T1-M2 con la solución (abre la visita de Don Chuy). */
+async function hastaLaVisitaDeDonChuy(page: Page, url = "/?test=1") {
+  await page.goto(url);
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const dialogo = page.getByTestId("dialogo");
+  const cerrar = async () => {
+    await cerrarDialogos(page);
+  };
+  const responder = (m: string, o: string, v: string) =>
+    page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
+  await cerrar();
+  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/becario");
+  await responder("t1-m01-donde-estoy", "responder-tickets", await teclear(page, "ls tickets | wc -l"));
+  await cerrar();
+  const folio = /T-(\d+)/.exec(await teclear(page, "grep -r Karla tickets"))?.[1] ?? "";
+  await teclear(page, "cat LEEME.txt");
+  await responder("t1-m02-el-leeme", "responder-folio", folio);
+  await responder("t1-m02-el-leeme", "responder-firma", "R");
+  await expect(dialogo).toContainText("¿Qué tanto lees, joven?");
+}
+
+const visitante = (page: Page) => page.evaluate(() => window.__planta7?.visitante?.());
+
+test("visitas (F4-09): Don Chuy viene por el pasillo, le contestas con una opción y se va", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await hastaLaVisitaDeDonChuy(page);
+  const dialogo = page.getByTestId("dialogo");
+  await expect(dialogo).toHaveClass(/subtitulo/);
+  await expect(dialogo).toContainText('Jesús "Don Chuy" Ortega · Mantenimiento');
+  expect(await visitante(page)).toEqual({ quien: "don_chuy", fase: "aqui" });
+  await dialogo.getByRole("button", { name: /Nada, cosas del sistema/ }).click();
+  await expect(dialogo).toContainText("Ajá, cosas del sistema");
+  // Mientras sigue hablando, sigue ahí.
+  expect((await visitante(page))?.quien).toBe("don_chuy");
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText("Al rato te busco");
+  await page.keyboard.press("Enter");
+  // Termina la visita (sigue tu pensamiento) y se va.
+  await expect(dialogo).toHaveClass(/dialogo-pensamiento/);
+  await expect.poll(async () => (await visitante(page))?.quien).toBeNull();
+});
+
+test("visitas (F4-09): con animación llega caminando, se queda y se va caminando", async ({ page }) => {
+  test.setTimeout(90_000);
+  await hastaLaVisitaDeDonChuy(page, "/?test=1&animar=1");
+  await expect.poll(async () => (await visitante(page))?.fase, { timeout: 10_000 }).toBe("aqui");
+  await page.keyboard.press("1");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await expect.poll(async () => (await visitante(page))?.fase).toBe("yendose");
+  await expect.poll(async () => (await visitante(page))?.quien, { timeout: 10_000 }).toBeNull();
 });

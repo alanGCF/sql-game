@@ -408,7 +408,14 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
         darPista(actual.quien, elegido.mision, elegido.objetivo, resto);
         return;
       }
-      const respuesta = lineasDeLlamada(actual.quien, opcion.respuesta ?? []);
+      // La respuesta sale igual que lo que se le contestó: tarjeta de llamada o subtítulo de visita (F4-09).
+      const respuesta =
+        actual.forma === "llamada"
+          ? lineasDeLlamada(actual.quien, opcion.respuesta ?? [])
+          : (opcion.respuesta ?? []).map((t) => ({
+              ...dialogoDe(actual.quien, t, false, personajes),
+              ...(actual.visita ? { visita: true as const } : {}),
+            }));
       set({ dialogos: [...respuesta, ...resto] });
       if (!opcion.flag) return;
       const { jornada } = get();

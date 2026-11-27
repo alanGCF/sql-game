@@ -26,6 +26,7 @@ import {
   dibujarReloj,
   dibujarVentana,
 } from "./texturas";
+import { Visitante } from "./Visitante";
 
 /** Medidas en metros. El jugador está sentado en (0, 1.18, 0.45) mirando hacia -z. */
 const DIBUJO_DIRECTORIO = dibujarDirectorio(
@@ -739,6 +740,7 @@ export function Cubiculo() {
       <Pizarron />
       <Calendario />
       <ObjetosEscritorio />
+      <Visitante />
     </group>
   );
 }

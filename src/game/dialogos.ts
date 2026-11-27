@@ -35,6 +35,8 @@ export interface Dialogo {
   entrante?: string;
   /** Primera línea de una llamada entrante que todavía suena (falta contestar). */
   timbre?: true;
+  /** Lo dice alguien que vino al cubículo (F4-09): mientras tanto está parado detrás de la mampara. */
+  visita?: true;
 }
 
 /**
@@ -80,11 +82,28 @@ export function dialogosDe(
     return { forma: llamada ? "llamada" : "subtitulo", quien, nombre: p?.nombre ?? quien, detalle, texto };
   };
   return eventos.flatMap((e): Dialogo[] => {
-    if (e.tipo === "dialogo") return [crear(e.quien, e.texto, e.entrega === "llamada")];
+    if (e.tipo === "dialogo")
+      return [
+        {
+          ...crear(e.quien, e.texto, e.entrega === "llamada"),
+          ...(e.entrega === "visita" ? { visita: true as const } : {}),
+        },
+      ];
     if (e.tipo !== "efecto") return [];
     const f = e.efecto;
     if (f.tipo === "llamada_entrante") return globos(f.texto).map((t) => crear(f.de, t, true));
-    if (f.tipo === "visita" || f.tipo === "mensaje") return globos(f.texto).map((t) => crear(f.de, t, false));
+    if (f.tipo === "mensaje") return globos(f.texto).map((t) => crear(f.de, t, false));
+    if (f.tipo === "visita") {
+      // F4-09: quien viene al cubículo se queda mientras habla; sus opciones van en el último globo.
+      const lineas = globos(f.texto);
+      return lineas.map((t, i) => ({
+        ...crear(f.de, t, false),
+        visita: true as const,
+        ...(f.opciones && i === lineas.length - 1
+          ? { opciones: f.opciones.map((o) => ({ ...o, respuesta: globos(o.respuesta) })) }
+          : {}),
+      }));
+    }
     if (f.tipo === "pensamiento")
       return globos(f.texto).map((texto) => ({
         forma: "pensamiento" as const,

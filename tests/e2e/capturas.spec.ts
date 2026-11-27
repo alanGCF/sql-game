@@ -146,6 +146,44 @@ test("calendario (F4-08): días trabajados y resumen del día en curso", async (
   await captura(page, "calendario-resumen.png");
 });
 
+test("visita (D-30 B): Don Chuy se asoma sobre la mampara y te deja contestar", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  const ultima = page.getByTestId("terminal").locator(".terminal-linea").last();
+  await input.fill("ls tickets | wc -l");
+  await input.press("Enter");
+  await expect(ultima).toHaveText(/^\d+$/);
+  const n = (await ultima.textContent())?.trim() ?? "";
+  await page.evaluate(
+    (v) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v),
+      ]),
+    n,
+  );
+  await cerrarDialogos(page);
+  await input.fill("grep -r Karla tickets");
+  await input.press("Enter");
+  await expect(ultima).toContainText("T-");
+  const folio = /T-(\d+)/.exec((await ultima.textContent()) ?? "")?.[1] ?? "";
+  await input.fill("cat LEEME.txt");
+  await input.press("Enter");
+  await page.evaluate(
+    (f) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m02-el-leeme", "responder-folio", f),
+        window.__planta7?.responder?.("t1-m02-el-leeme", "responder-firma", "R"),
+      ]),
+    folio,
+  );
+  await expect(page.getByTestId("dialogo")).toContainText("¿Qué tanto lees, joven?");
+  await mirar(page, 1, 0.55);
+  await captura(page, "visita.png");
+});
+
 test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);

@@ -99,9 +99,16 @@ eventos:
   al_completar:
     - tipo: visita
       de: don_chuy
-      texto:
-        - ¿Qué tanto lees, joven? «No confíes en los números del turno nocturno»…
-        - Esa muchacha siempre fue rara, pero nunca se equivocaba. Al rato vengo, que traigo un pendiente con la Línea 3.
+      texto: ¿Qué tanto lees, joven? Traes cara de que la computadora te debe dinero.
+      opciones:
+        - texto: Una nota de la ingeniera de antes.
+          respuesta:
+            - «…los números del turno nocturno». Desde aquí se alcanza a leer tu pantalla, joven; de lejos todavía veo bien.
+            - Esa muchacha hablaba poco, pero nunca se equivocaba. Al rato te busco, que traigo un pendiente con la Línea 3.
+        - texto: Nada, cosas del sistema.
+          respuesta:
+            - "Ajá, cosas del sistema. Caras vemos, corazones no sabemos, pero pantallas sí: desde aquí se alcanza a leer la tuya. ¿Es lo que dejó la ingeniera?"
+            - Esa muchacha hablaba poco, pero nunca se equivocaba. Al rato te busco, que traigo un pendiente con la Línea 3.
     - tipo: pensamiento
       texto: ¿Cuáles números? Primer turno y ya heredé un misterio.
     - tipo: flag

@@ -63,7 +63,7 @@ Paleta base: gris claro de mampara, madera clara del escritorio, blanco cálido 
 - **Monitor:** sistema operativo ficticio de la planta (barra superior con apps: Terminal, Tickets, Correo, Datos, Red). Terminal con **JetBrains Mono** (OFL, D-25), tamaño ajustable. Interfaz y texturas con **Atkinson Hyperlegible** (OFL, D-25, pensada para baja visión). Las dos van empaquetadas: se ven igual en cualquier sistema.
 - **Teléfono (D-28 A):** la escena se oscurece un poco; el aparato de plástico oscuro (pantallita verde con letra mono, teclas claras con letras, "Llamar" verde y "Colgar" rojo) y a su lado el directorio impreso pegado con dos tiras de cinta. La llamada se ve en la tarjeta de D-22, a la derecha.
 - **Libreta (D-29 B):** abierta a dos páginas con la espiral al centro y pestañas de colores al costado (Historia amarilla, Comandos verde, Pistas salmón, Mis notas azul); hojas con renglones azules y margen rojo; **Patrick Hand** (OFL) para lo que escribe el juego y letra normal para las notas del jugador; la escena se oscurece un poco detrás.
-- **Diálogos de visitas:** globo con nombre del personaje y opciones de respuesta.
+- **Visitas (D-30 B):** figura de bloques (cápsulas y esferas, sin rasgos) con la ropa de su departamento: Don Chuy overol azul y gorra naranja, Karla bata blanca y chongo, Treviño saco gris y corbata roja, Eduardo camisa verde, el comedor mandil rosa, vigilancia uniforme azul marino y gorra. Se asoma sobre la mampara derecha; su diálogo va en subtítulo con opciones de respuesta.
 - **Globo de pensamiento:** nube distinta a la de diálogo, cerca del centro inferior.
 - **Subtítulos:** abajo al centro, fondo semitransparente configurable.
 

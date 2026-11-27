@@ -123,7 +123,7 @@ eventos:
       # Un globo, o una lista de 2 a 4 globos seguidos (F4-06).
       texto:
         - ¿Que no confíes en los números?
-        - Esa muchacha siempre fue rara… pero nunca se equivocaba.
+        - Esa muchacha hablaba poco… pero nunca se equivocaba.
     - tipo: pensamiento
       texto: ¿Cuáles números? Ya me dejó con la duda.
     - tipo: flag

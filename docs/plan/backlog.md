@@ -210,7 +210,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** estrellas de cada turno terminado y marca de favores; clic en un día pasado → resumen (misiones, estrellas, hallazgos). Repetir misiones queda para F7.
 - **Listo cuando:** e2e con una partida que terminó T0 y T1 muestra sus estrellas y el resumen.
 
-### F4-09 · Visitas por el pasillo con opciones (consultar) · `pendiente` · depende: F4-06
+### F4-09 · Visitas por el pasillo con opciones (consultar) · `hecha (2026-11-27)` *(D-30 = B, figura de bloques por personaje; llega por el pasillo detrás de la mampara derecha, se asoma junto a la entrada y se va al terminar sus líneas (pide cuadros solo al caminar; sin caminar con "reducir movimiento"); el efecto `visita` acepta 2–3 opciones con respuesta y bandera; la respuesta sale como la visita; Don Chuy en T1-M2 pregunta y el jugador contesta; e2e con y sin animación; captura `visita`. La visita de Don Chuy en T0 llega con F4-14)* · depende: F4-06
 - **Hacer:** un personaje llega por el pasillo de la derecha (silueta sencilla), diálogo en subtítulo con departamento (D-22) y opciones de respuesta; se va al terminar.
 - **Listo cuando:** e2e de la visita de Don Chuy en T0; capturas aprobadas.
 

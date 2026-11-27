@@ -173,7 +173,26 @@ export function globos(texto: string | readonly string[]): string[] {
 const Efecto = z.discriminatedUnion("tipo", [
   z.strictObject({ tipo: z.literal("mensaje"), de: z.string(), texto: Globos }),
   z.strictObject({ tipo: z.literal("llamada_entrante"), de: z.string(), texto: Globos }),
-  z.strictObject({ tipo: z.literal("visita"), de: z.string(), texto: Globos }),
+  z.strictObject({
+    tipo: z.literal("visita"),
+    de: z.string(),
+    texto: Globos,
+    /** Lo que puede contestar el jugador (F4-09): 2 o 3 opciones con la respuesta de quien vino. */
+    opciones: z
+      .array(
+        z.strictObject({
+          texto: z.string().min(1).max(90),
+          respuesta: Globos,
+          flag: z
+            .string()
+            .regex(/^[a-z0-9_-]+$/)
+            .optional(),
+        }),
+      )
+      .min(2)
+      .max(3)
+      .optional(),
+  }),
   /** Lo que piensa el protagonista, en su nube (F4-06). */
   z.strictObject({ tipo: z.literal("pensamiento"), texto: Globos }),
   z.strictObject({ tipo: z.literal("flag"), nombre: z.string() }),
