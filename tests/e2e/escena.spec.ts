@@ -977,8 +977,9 @@ test("sonido (F4-10): lo que suena a lo lejos sale en subtítulo y se quita solo
   page.on("pageerror", (e) => errores.push(e.message));
   await abrir(page);
   await cerrarDialogos(page);
-  // Un gesto crea el audio (política de autoplay); luego suena la impresora.
-  await page.mouse.click(10, 300);
+  // Un gesto crea el audio (política de autoplay); con una tecla, para no mover la cámara. Luego suena la
+  // impresora.
+  await page.keyboard.press("Shift");
   await page.evaluate(() => window.__planta7?.ambiental?.("impresora"));
   const sub = page.getByTestId("subtitulo-ambiente");
   await expect(sub).toHaveText("[A lo lejos, una impresora empieza a imprimir.]");
