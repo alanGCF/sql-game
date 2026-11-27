@@ -135,8 +135,9 @@ Las entradas automáticas aparecen con animación de escritura a mano (los rengl
 ## Calendario
 
 - Calendario de pared de octubre–noviembre 2026 (del 26 de octubre al 16 de noviembre).
-- Días pasados: calificación del turno (estrellas) y marca de favores hechos. Hoy: encerrado en círculo. Sábado 7: "Tiempo extra (opcional)".
-- Clic en un día pasado → resumen del turno (misiones, estrellas, hallazgos) y opción de **repetir** una misión para mejorar estrellas (no cambia la historia).
+- Días pasados: calificación del turno (estrellas: el promedio redondeado de sus misiones principales) y una palomita verde por favor hecho. Hoy: encerrado en círculo. Sábado 7: "Tiempo extra (opcional)".
+- Acercado, a un lado aparece "Días trabajados" (cada día con sus estrellas, o "hoy"); al elegir uno, aquí o con clic en la hoja, sale su **resumen**: misiones con estrellas (o "pendiente"), favores hechos y los hallazgos que quedaron en la pestaña Historia de la libreta.
+- **Repetir** una misión para mejorar estrellas (no cambia la historia) llega en F7.
 - Al terminar el viernes 6, una visita o llamada ofrece el tiempo extra del sábado; el jugador decide ir o no.
 
 ## Código de partida (checkpoint)

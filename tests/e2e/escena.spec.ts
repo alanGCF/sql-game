@@ -863,3 +863,50 @@ test("pizarrón (F4-07): con reducir movimiento se tacha sin animación", async 
     .toMatch(/^\[x\]/);
   expect((await animacion(page))?.vistos.tachados).toBe(0);
 });
+
+test("calendario (F4-08): con T1 terminado, el día trae sus estrellas y su resumen", async ({ page }) => {
+  test.setTimeout(120_000);
+  await abrir(page);
+  const dialogo = page.getByTestId("dialogo");
+  const cerrar = async () => {
+    while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  };
+  const responder = (m: string, o: string, v: string) =>
+    page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
+  await cerrar();
+  // A medias, el día es "hoy" y el resumen dice "en curso".
+  await page.evaluate(() => window.__planta7?.setVista?.("calendario"));
+  const dias = page.getByRole("navigation", { name: "Días trabajados" });
+  await expect(dias).toContainText("hoy");
+  await page.evaluate(() => window.__planta7?.setVista?.("general"));
+  // T1 completo con la solución de cada misión.
+  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/becario");
+  await responder("t1-m01-donde-estoy", "responder-tickets", await teclear(page, "ls tickets | wc -l"));
+  await cerrar();
+  const folio = /T-(\d+)/.exec(await teclear(page, "grep -r Karla tickets"))?.[1] ?? "";
+  await teclear(page, "cat LEEME.txt");
+  await responder("t1-m02-el-leeme", "responder-folio", folio);
+  await responder("t1-m02-el-leeme", "responder-firma", "R");
+  await cerrar();
+  const paros = await teclear(page, "cd /srv/lineas/linea3", "grep Paros estado.txt | cut -d: -f2");
+  await responder("t1-m03-moverse-por-la-planta", "responder-paros", paros.trim());
+  await teclear(page, "history");
+  await cerrar();
+  await teclear(page, "man ls");
+  await responder("t1-m04-preguntale-al-manual", "responder-opcion", "-a");
+  await teclear(page, "cd ~", "cat .r/hola");
+  await cerrar();
+  expect((await page.evaluate(() => window.__planta7?.partida?.()))?.eventos).toContain("turno_completado");
+  // El día trae sus estrellas; al elegirlo, el resumen.
+  await page.evaluate(() => window.__planta7?.setVista?.("calendario"));
+  const dia = dias.getByRole("button", { name: /28/ });
+  await expect(dia.getByRole("img", { name: "3 de 3 estrellas" })).toBeVisible();
+  await dia.click();
+  const resumen = page.getByTestId("resumen-dia");
+  await expect(resumen).toContainText("Turno 1");
+  await expect(resumen).toContainText("¿Dónde estoy?");
+  await expect(resumen.getByRole("img", { name: "3 de 3 estrellas" })).toHaveCount(5);
+  await expect(resumen).toContainText("Mi carpeta en el servidor es /home/becario");
+  await resumen.getByRole("button", { name: "Cerrar" }).click();
+  await expect(resumen).toBeHidden();
+});

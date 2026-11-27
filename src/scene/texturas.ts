@@ -54,7 +54,13 @@ const MESES = [
  * encerrado y el título es su mes; el sábado 7 es el tiempo extra.
  */
 // shortcut: las estrellas por turno terminado llegan con la partida guardada (F4); hoy no se dibujan.
-export function dibujarCalendario(hoy: string) {
+/** Lo que se anota en un día trabajado (F4-08): estrellas del turno terminado y favores hechos. */
+export interface MarcaDia {
+  estrellas: number | null;
+  favores: number;
+}
+
+export function dibujarCalendario(hoy: string, marcas: Readonly<Record<string, MarcaDia>> = {}) {
   return (ctx: CanvasRenderingContext2D, w: number) => {
     const [, mesHoy = 10, diaHoy = 28] = hoy.split("-").map(Number);
     ctx.fillStyle = "#f6f3ec";
@@ -95,6 +101,26 @@ export function dibujarCalendario(hoy: string) {
         ctx.fillStyle = "#3d5a80";
         ctx.font = `16px ${SANS}`;
         ctx.fillText("T. extra", x, y + 34);
+        ctx.font = `24px ${SANS}`;
+      }
+      const marca = marcas[`2026-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`];
+      if (marca?.estrellas) {
+        ctx.font = `20px ${SANS}`;
+        ctx.fillStyle = "#e0a21b";
+        ctx.fillText("★".repeat(marca.estrellas), x, y + 30);
+        ctx.fillStyle = "#cfc6b4";
+        ctx.fillText(
+          "★".repeat(3 - marca.estrellas),
+          x + ctx.measureText("★".repeat(marca.estrellas)).width,
+          y + 30,
+        );
+        ctx.font = `24px ${SANS}`;
+      }
+      if (marca?.favores) {
+        // Una palomita verde por cada favor hecho, abajo a la derecha.
+        ctx.font = `bold 18px ${SANS}`;
+        ctx.fillStyle = "#2e7d32";
+        ctx.fillText("✓".repeat(Math.min(3, marca.favores)), x + celda - 34, y + 52);
         ctx.font = `24px ${SANS}`;
       }
     }

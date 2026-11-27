@@ -134,6 +134,18 @@ test("pizarrón (F4-07): antes y después de cumplir un pendiente", async ({ pag
   await captura(page, "pizarron-despues.png");
 });
 
+test("calendario (F4-08): días trabajados y resumen del día en curso", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await page.evaluate(() =>
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+  );
+  await page.evaluate(() => window.__planta7?.setVista?.("calendario"));
+  await page.getByRole("navigation", { name: "Días trabajados" }).getByRole("button").click();
+  await expect(page.getByTestId("resumen-dia")).toContainText("en curso");
+  await captura(page, "calendario-resumen.png");
+});
+
 test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);

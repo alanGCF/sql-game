@@ -1,10 +1,11 @@
 import { RoundedBox } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
+import { type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DoubleSide, type Group, type MeshStandardMaterial, Vector3 } from "three";
 import { enmascararCodigo } from "../../shared/codigo";
 import { inicioTurno } from "../engine/calendario";
 import { useAjustes } from "../game/ajustes";
+import { diaDeCalendario, resumenDelDia } from "../game/calendario";
 import { contenidoComun } from "../game/contenido";
 import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
@@ -499,13 +500,31 @@ function Pizarron() {
   );
 }
 
+/**
+ * Calendario de pared (F4-08): encierra el día del turno y anota las estrellas y los favores de los días
+ * trabajados. Acercado, un clic en un día trabajado abre su resumen (capa Calendario).
+ */
 function Calendario() {
-  const turno = usePartida((s) => s.jornada.turno.turno);
-  const hoy = inicioTurno(turno).slice(0, 10);
-  const tex = useTexturaCanvas(512, 520, dibujarCalendario(hoy), hoy);
+  const jornada = usePartida((s) => s.jornada);
+  usePartida((s) => s.eventos); // se vuelve a dibujar cuando avanza el turno
+  const vista = useEscena((s) => s.vista);
+  const elegirDia = useEscena((s) => s.elegirDia);
+  const hoy = inicioTurno(jornada.turno.turno).slice(0, 10);
+  const terminado = jornada.turnoCompletado();
+  const completadas = jornada.completadas();
+  const resumen = resumenDelDia(jornada.turno, completadas, terminado, []);
+  const marcas = { [hoy]: { estrellas: resumen.estrellas, favores: resumen.favores.length } };
+  const tex = useTexturaCanvas(512, 520, dibujarCalendario(hoy, marcas), `${hoy}|${JSON.stringify(marcas)}`);
+  const clic = (e: ThreeEvent<MouseEvent>) => {
+    if (vista !== "calendario" || !e.uv) return;
+    e.stopPropagation();
+    const dia = diaDeCalendario(e.uv);
+    // shortcut: solo el día del turno en curso tiene resumen; los anteriores llegan con más turnos (F5).
+    if (dia === hoy) elegirDia(dia);
+  };
   return (
     <Interactivo nombre="Calendario" vista="calendario">
-      <mesh position={[-0.87, 1.05, -0.25]} rotation={[0, Math.PI / 2, 0]}>
+      <mesh position={[-0.87, 1.05, -0.25]} rotation={[0, Math.PI / 2, 0]} onClick={clic}>
         <planeGeometry args={[0.36, 0.37]} />
         <Mat color="#ffffff" mapa={tex} />
       </mesh>

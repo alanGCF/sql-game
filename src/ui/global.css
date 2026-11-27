@@ -1351,8 +1351,11 @@ fieldset.ajuste label {
   box-shadow: 0 0 0 2px #c0392b inset;
 }
 .cal-dia-fecha {
+  display: inline-block;
   font-weight: 700;
-  text-transform: capitalize;
+}
+.cal-dia-fecha::first-letter {
+  text-transform: uppercase;
 }
 .cal-estrellas {
   color: #e0a21b;

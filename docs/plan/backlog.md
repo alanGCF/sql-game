@@ -206,7 +206,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** tachado con trazo de plumón al cumplir un pendiente; el post-it del favor se arruga y cae al bote al completarse; post-its informativos por efecto.
 - **Listo cuando:** capturas antes/después y animaciones que respetan "reducir movimiento".
 
-### F4-08 · Calendario con estrellas y resumen del día · `pendiente` · depende: F4-12
+### F4-08 · Calendario con estrellas y resumen del día · `hecha (2026-11-27)` *(estrellas del turno = promedio redondeado de sus misiones principales; palomita por favor hecho en la hoja 3D; "Días trabajados" y resumen del día (misiones con estrellas, favores, hallazgos de la libreta) al elegirlo o con clic en la hoja (UV → día); e2e con T1 terminado; captura `calendario-resumen`. Shortcut: solo el turno en curso, los anteriores cuando haya más turnos jugables (F5); el e2e con T0 llega con F4-14)* · depende: F4-12
 - **Hacer:** estrellas de cada turno terminado y marca de favores; clic en un día pasado → resumen (misiones, estrellas, hallazgos). Repetir misiones queda para F7.
 - **Listo cuando:** e2e con una partida que terminó T0 y T1 muestra sus estrellas y el resumen.
 
