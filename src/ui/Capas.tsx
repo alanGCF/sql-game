@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
 import { ControlesAjustes } from "./Ajustes";
+import { Calendario } from "./Calendario";
 import { Dialogos } from "./Dialogos";
 import { Libreta } from "./Libreta";
 import { Menu } from "./Menu";
@@ -43,7 +44,6 @@ function Pensamiento() {
 
 const NOMBRES: Record<string, string> = {
   pizarron: "Pizarrón de pendientes",
-  calendario: "Calendario",
 };
 
 /** Capas DOM sobre la escena: etiqueta, terminal, pensamiento y botón para alejarse. */
@@ -87,6 +87,7 @@ export function Capas() {
       {vista === "monitor" && <Monitor />}
       {vista === "telefono" && !transicionando && <Telefono />}
       {vista === "libreta" && !transicionando && <Libreta />}
+      {vista === "calendario" && !transicionando && <Calendario />}
       {vista !== "general" && vista !== "monitor" && !transicionando && NOMBRES[vista] && (
         <div className="aviso-vista">{NOMBRES[vista]}</div>
       )}

@@ -32,6 +32,9 @@ interface EstadoEscena {
   setRectMonitor: (r: Rect | null) => void;
   setMirarForzado: (m: { x: number; y: number } | null) => void;
   pensar: (texto: string | null) => void;
+  /** Día elegido en el calendario para ver su resumen (F4-08), "AAAA-MM-DD". */
+  diaElegido: string | null;
+  elegirDia: (dia: string | null) => void;
 }
 
 export const useEscena = create<EstadoEscena>()((set) => ({
@@ -52,4 +55,6 @@ export const useEscena = create<EstadoEscena>()((set) => ({
   setRectMonitor: (rectMonitor) => set({ rectMonitor }),
   setMirarForzado: (mirarForzado) => set({ mirarForzado }),
   pensar: (pensamiento) => set({ pensamiento }),
+  diaElegido: null,
+  elegirDia: (diaElegido) => set({ diaElegido }),
 }));

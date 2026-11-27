@@ -1308,3 +1308,117 @@ fieldset.ajuste label {
   border-radius: 50%;
   background: #fbf8f1;
 }
+
+/* Calendario (F4-08): días trabajados y resumen del día, como hojas de papel junto a la pared. */
+.cal-dias,
+.cal-resumen {
+  position: fixed;
+  z-index: 6;
+  background: #f6f3ec;
+  color: #2b2622;
+  border-radius: 10px;
+  box-shadow: 0 12px 36px rgb(0 0 0 / 40%);
+  font-size: calc(clamp(14px, 2vh, 20px) * var(--escala));
+}
+.cal-dias {
+  right: 3vw;
+  top: 10vh;
+  width: 15em;
+  padding: 0.9em 1em;
+}
+.cal-dias h3,
+.cal-resumen h3 {
+  margin: 0 0 0.5em;
+  font-size: 1em;
+}
+.cal-dia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2em 0.6em;
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  padding: 0.5em 0.7em;
+  border: 1px solid #d8d2c4;
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+}
+.cal-dia[aria-pressed="true"] {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 2px #c0392b inset;
+}
+.cal-dia-fecha {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.cal-estrellas {
+  color: #e0a21b;
+  letter-spacing: 0.08em;
+}
+.cal-estrellas-vacias {
+  color: #cfc6b4;
+}
+.cal-pendiente,
+.cal-favores {
+  font-size: 0.8em;
+  color: #6b5d4b;
+}
+.cal-ayuda {
+  margin: 0.6em 0 0;
+  font-size: 0.8em;
+  color: #6b5d4b;
+}
+.cal-resumen {
+  left: 4vw;
+  top: 10vh;
+  width: min(30em, 44vw);
+  max-height: 76vh;
+  overflow-y: auto;
+  padding: 1em 1.3em 1.2em;
+}
+.cal-resumen header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+}
+.cal-resumen header h3::first-letter {
+  text-transform: uppercase;
+}
+.cal-resumen h4 {
+  margin: 0.8em 0 0.3em;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #8a5a2b;
+}
+.cal-resumen ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+.cal-resumen li {
+  line-height: 1.5;
+}
+.cal-hallazgos li {
+  font-family: var(--fuente-mano);
+  font-size: 1.1em;
+}
+.cal-cerrar {
+  margin-top: 0.9em;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.4em 1.1em;
+  border: 0;
+  border-radius: 8px;
+  background: #1f6b5a;
+  color: #fff;
+  cursor: pointer;
+}
+.cal-dia:focus-visible,
+.cal-cerrar:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+}
