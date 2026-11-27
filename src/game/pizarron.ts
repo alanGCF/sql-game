@@ -1,5 +1,12 @@
 import type { EventoJornada } from "./jornada";
-import type { Pendiente } from "./partidaStore";
+
+/** Lo que el pizarrón necesita de un pendiente (sin depender del store, que usa el DOM). */
+interface Pendiente {
+  titulo: string;
+  favor: boolean;
+  pendiente: string;
+  cumplido: boolean;
+}
 
 /** Lo que se escribe en el pizarrón: pendientes de la misión principal; los favores van en post-its. */
 export interface RenglonPizarron {
