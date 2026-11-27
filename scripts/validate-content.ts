@@ -14,6 +14,7 @@ import {
   flagsConocidas,
   leerYaml,
 } from "./lib/contenido";
+import { revisarOrtografia, textosDelContenido } from "./lib/ortografia";
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -56,5 +57,12 @@ if (!positionals.length) {
   );
   for (const e of deLlamadas) console.log(`  ERROR llamadas: ${e}`);
 }
+// C14 (aviso): ortografía es-MX de lo que ve el jugador, con content/diccionario.txt.
+const faltas = await revisarOrtografia(textosDelContenido(archivos, !positionals.length));
+for (const f of faltas)
+  console.log(
+    `aviso C14: ${f.origen}: «${f.palabra}»${f.sugerencias.length ? ` (¿${f.sugerencias.join(", ")}?)` : ""}`,
+  );
+console.log(`${faltas.length ? "!" : "✓"} ortografía (C14): ${faltas.length} palabra(s) por revisar`);
 console.log(`\n${archivos.length} archivo(s), ${errores} error(es), ${values.semillas} semillas.`);
 process.exit(errores ? 1 : 0);

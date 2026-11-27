@@ -113,7 +113,7 @@ F0–F2 detalladas; F3+ se detallan al iniciar la fase.
 - **Hacer:** `content/libreta/comandos/<comando>.md` para cada comando simulado (CLAUDE.md §Reglas de código): explicación corta, ejemplo y "En tu Linux real…"; prueba que falla si un comando de `src/engine/commands/` no tiene página.
 - **Listo cuando:** la prueba pasa con todos los comandos actuales; `revisor-curricular` sin bloqueantes.
 
-### F2-09 · Reglas C12 (finales alcanzables) y C14 (ortografía) · `pendiente` · depende: F2-05
+### F2-09 · Reglas C12 (finales alcanzables) y C14 (ortografía) · `parcial (2026-11-27)` *(C14 hecha: `scripts/lib/ortografia.ts` con `cspell-lib` y el español de cspell (ADR-021) más `content/diccionario.txt`; revisa los textos visibles de misiones, llamadas y páginas de la libreta y sale como aviso en `validate:content`; prueba con un fixture con falta. C12 sigue bloqueada hasta que exista contenido del Turno 13)* · depende: F2-05
 - **Hacer:** C12 cuando exista contenido del Turno 13 (hoy no hay finales que revisar); C14 con `cspell` y diccionario es-MX del proyecto (dependencia nueva con ADR) al empezar a escribir contenido real (F2-08).
 - **Listo cuando:** un fixture con un final inalcanzable y otro con una falta de ortografía disparan su regla.
 

@@ -1,0 +1,52 @@
+# Diccionario del proyecto para C14 (cspell, además del español de cspell). Una palabra por renglón; en
+# minúsculas también acepta la versión con mayúscula inicial. Solo palabras correctas que el diccionario
+# general no trae: nombres de la historia, regionalismos de México, diminutivos y términos del oficio.
+
+# Personas, lugares y cosas de la historia (02-trama.md)
+Chuy
+Eduardo
+Téllez
+Karla
+Ibáñez
+Treviño
+Salcido
+Rebeca
+Ortega
+Delgado
+Ocotillo
+LEEME
+
+# Regionalismos y habla de planta
+nomás
+quiubo
+porfa
+checar
+lonche
+pozole
+tostadita
+rondín
+márcame
+márcale
+scrap
+
+# Diminutivos
+completito
+cortito
+minutito
+rapidito
+pantallita
+
+# Términos del oficio (en inglés como se dicen en la planta o en la terminal)
+ticket
+tickets
+tablet
+prompt
+script
+scripts
+print
+concatenate
+listarlo
+listarla
+listarlos
+subcarpeta
+subcarpetas

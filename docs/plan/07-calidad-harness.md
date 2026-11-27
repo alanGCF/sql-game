@@ -45,7 +45,7 @@ Corre en cada build, en CI y en el hook al editar YAML. Severidad **error** (rom
 | C11 | Determinismo: misma semilla → mismo estado final (hash) | error |
 | C12 | Todos los finales del T13 son alcanzables | error |
 | C13 | Duración 3–8 min y ≤ 3 objetivos | aviso |
-| C14 | Ortografía es-MX (`cspell` con diccionario del proyecto) | aviso |
+| C14 | Ortografía es-MX de los textos visibles (`cspell-lib` con el español de cspell y `content/diccionario.txt`; ignora código entre backticks, `{{variables}}` y rutas) | aviso |
 | C15 | Ningún texto visible contiene la solución de un objetivo | aviso |
 | C16 | **Favores:** `ensena: []`, `refuerza` ya enseñado, `disponible_desde` entre 1 y 2 misiones después de la que enseña el concepto más reciente; no modifica banderas de la historia | error |
 | C17 | **Variabilidad:** al menos el 80 % de las respuestas esperadas cambian entre semillas (si no, la respuesta se puede memorizar) | aviso |
