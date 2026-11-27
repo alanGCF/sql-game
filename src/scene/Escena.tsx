@@ -9,6 +9,7 @@ import { setTestHook } from "../test-hooks";
 import { CamaraSentada, ProyectorMonitor } from "./CamaraSentada";
 import { Cubiculo, ESCRITORIO_Y, VENTANA } from "./Cubiculo";
 import { ESTILO } from "./estilos";
+import { Paseante } from "./Paseante";
 
 /** Lámpara de escritorio: un foco que apunta al escritorio (no al pizarrón ni a las mamparas). */
 function Lampara() {
@@ -82,6 +83,7 @@ export function Escena() {
       onCreated={({ gl }) => {
         setTestHook("webgl", gl.capabilities.isWebGL2);
         setTestHook("info", () => ({ calls: gl.info.render.calls, triangles: gl.info.render.triangles }));
+        setTestHook("cuadros", () => gl.info.render.frame);
         setTestHook("ready", true);
       }}
     >
@@ -89,6 +91,7 @@ export function Escena() {
       <fog attach="fog" args={[ESTILO.niebla.color, ESTILO.niebla.cerca, ESTILO.niebla.lejos]} />
       <Luces />
       <Cubiculo />
+      <Paseante />
       <CamaraSentada />
       <ProyectorMonitor />
     </Canvas>

@@ -184,6 +184,14 @@ test("visita (D-30 B): Don Chuy se asoma sobre la mampara y te deja contestar", 
   await captura(page, "visita.png");
 });
 
+test("oficina viva (F4-15): alguien cruza a lo lejos, frente a la ventana", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await mirar(page, 0, 0);
+  await page.evaluate(() => window.__planta7?.paseo?.(0, 2, 0.3));
+  await captura(page, "paseante.png");
+});
+
 test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);

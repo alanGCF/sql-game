@@ -35,6 +35,12 @@ export interface TestHooks {
   visitante?: () => { quien: string | null; fase: string | null };
   /** Hace sonar ya un sonido a lo lejos (F4-10): impresora, telefono_lejano, voceo, montacargas, puerta. */
   ambiental?: (tipo: string) => void;
+  /** Cuadros dibujados desde que cargó la escena (F4-15): con la escena quieta no debe subir. */
+  cuadros?: () => number;
+  /** Alguien cruza a lo lejos (F4-15); con `avance` (0–1) se queda quieto ahí, para capturas. */
+  paseo?: (ruta: number, quien: number, avance?: number) => void;
+  /** Si alguien va caminando a lo lejos ahora. */
+  paseante?: () => boolean;
   /** Fija la hora que muestra la escena ("HH:MM", 24:00 = medianoche) para capturas de la ventana. */
   hora?: (hhmm: string) => void;
 }

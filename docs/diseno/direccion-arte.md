@@ -53,6 +53,7 @@ Sombreado suave, sombras suaves y reflejos sutiles; formas limpias con algo de d
 - **Materiales:** mate en mamparas y papel; satinado en escritorio y plásticos; pantalla emisiva sin reflejos.
 - **Rendimiento:** es el estilo más pesado; presupuesto de 150 draw calls y medición en hardware real (Iris Xe/UHD 620) desde F3. Si no da 60 fps: menos sombras dinámicas, luz horneada y una opción de "calidad baja" en Ajustes.
 - Los estilos A y B del spike se retiraron en F3-06; la escena solo tiene el estilo C (`src/scene/estilos.ts`).
+- **Oficina viva (F4-15):** de vez en cuando (cada 1.5 a 3 min, con la semilla, nunca durante un diálogo) alguien de la oficina cruza por el pasillo entre las dos filas de cubículos del fondo; desde tu silla se le ven la cabeza y los hombros sobre las mamparas, a veces frente a la ventana. Es la misma figura de bloques de las visitas (D-30) con ropa de oficina, sin ser un personaje. Pide cuadros solo mientras camina; con "reducir movimiento" nadie cruza. Planificador en `src/game/paseos.ts`, figura en `src/scene/Paseante.tsx`.
 - **Ventana:** en la pared del fondo, sobre las mamparas y a la izquierda del reloj: la sierra, la nave de la planta con su chimenea y el tanque de agua. Tarde (15:30) → atardecer (el sol se mete hacia las 18:20) → noche (luces de la nave, foco rojo de la chimenea, estrellas). La luz que entra, los reflejos y un poco la luz de oficina siguen la hora (`src/game/hora.ts`).
 - **Lámpara:** foco cálido que apunta al escritorio; no ilumina el pizarrón.
 

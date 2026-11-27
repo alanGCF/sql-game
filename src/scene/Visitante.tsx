@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Group } from "three";
 import { useAjustes } from "../game/ajustes";
 import { usePartida } from "../game/partidaStore";
+import type { Aspecto } from "../game/paseos";
 import { animarEnPruebas, isTestMode, setTestHook } from "../test-hooks";
 import { Mat } from "./contexto";
 
@@ -14,14 +15,6 @@ import { Mat } from "./contexto";
  */
 
 /** Ropa y pelo de cada personaje (la silueta es la misma; cambian los colores y un detalle). */
-interface Aspecto {
-  ropa: string;
-  piel: string;
-  pelo: string;
-  detalle?: "gorra" | "corbata" | "chongo";
-  detalleColor?: string;
-}
-
 const ASPECTO: Record<string, Aspecto> = {
   don_chuy: { ropa: "#2f5d8a", piel: "#8d5b3f", pelo: "#d9d6cf", detalle: "gorra", detalleColor: "#e0702b" },
   companero: { ropa: "#2e7d6b", piel: "#a0694a", pelo: "#1d1a17" },
@@ -50,7 +43,8 @@ type Fase = "llegando" | "aqui" | "yendose";
 const estado = { quien: null as string | null, fase: null as Fase | null };
 setTestHook("visitante", () => ({ quien: estado.quien, fase: estado.fase }));
 
-function FiguraBloques({ a, paso }: { a: Aspecto; paso: React.RefObject<number> }) {
+/** Figura de bloques (D-30): mira hacia +z; los brazos se mecen con `paso`. */
+export function FiguraBloques({ a, paso }: { a: Aspecto; paso: React.RefObject<number> }) {
   const brazoI = useRef<Group>(null);
   const brazoD = useRef<Group>(null);
   useFrame(() => {

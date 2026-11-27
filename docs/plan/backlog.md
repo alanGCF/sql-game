@@ -234,7 +234,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** misiones de T0 según `02-trama.md` (mirar alrededor, post-it, libreta, calendario, marcar a Eduardo, iniciar sesión); decoración del escritorio (globos, letrero con el nombre, concha y taza); visita de Don Chuy; cierre de Eduardo.
 - **Listo cuando:** harness con 25 semillas, `revisor-curricular` y `disenador-narrativo` sin pendientes, e2e de T0 completo.
 
-### F4-15 · Oficina viva básica · `pendiente` · depende: F4-10
+### F4-15 · Oficina viva básica · `hecha (2026-11-27)` *(planificador con semilla en `src/game/paseos.ts`: alguien cruza cada 1.5–3 min por el pasillo entre las filas de cubículos del fondo, en los dos sentidos, uno a la vez y nunca empieza durante un diálogo; figura de bloques (D-30) con ropa de oficina; `invalidate` solo mientras camina; sin paseos con "reducir movimiento"; gancho `cuadros` (cuadros dibujados) y e2e de que la escena quieta no dibuja, con y sin animaciones, y de que tras el paseo vuelve a quedarse quieta; captura `paseante`)* · depende: F4-10
 - **Hacer:** alguien pasa a lo lejos de vez en cuando (con la semilla), con `invalidate` solo mientras camina; nada durante diálogos.
 - **Listo cuando:** captura con la persona caminando y prueba de que la escena quieta no pide cuadros.
 
