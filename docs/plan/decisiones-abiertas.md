@@ -37,6 +37,7 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 | D-20 | Fechas especiales | Recomendación aceptada, marcadas en el calendario, con adornos en el escritorio y comentarios de los compañeros; nada afecta la historia (`02-trama.md` §Fechas especiales) |
 | D-21 | Look de la app Tickets | **A · mesa de ayuda corporativa** (clara, lista a la izquierda y detalle con respuesta a la derecha) |
 | D-22 | Diálogos, llamadas y visitas | **Llamadas: tarjeta a un lado (C)** con iniciales, nombre y extensión. **Todo lo demás: subtítulo abajo (A)** con el nombre y el **departamento** de quien habla (nunca la palabra "visita") |
+| D-29 | Libreta (F4-05) | **B · libreta abierta** a dos páginas (espiral al centro, pestañas de colores al costado; índice o nota nueva a la izquierda, página a la derecha) con **Patrick Hand** para lo que escribe el juego; tus notas en letra normal |
 | D-28 | Vista del teléfono (F4-01) | **A · aparato y hoja de papel**: la escena se oscurece un poco; el teléfono de plástico oscuro con pantalla verde y teclas con letras, y a su lado el directorio impreso pegado con cinta. La llamada va en la tarjeta de D-22 |
 | D-27 | Entrega del número de empleado al empezar | **A + C**: tarjeta de Recursos Humanos con el número grande, "Anótalo en un papel" y "Ya lo anoté" (los diálogos esperan); además un post-it con el número en el monitor y Eduardo lo menciona en su primer diálogo. El gafete del escritorio trae nombre y número enmascarado (D-26) |
 | D-26 | Computadoras compartidas (salones) | **C**: botón "No soy yo: olvidar esta partida en esta computadora" (con confirmación; la partida sigue en el servidor con su número) y el gafete muestra solo los últimos 4 caracteres del número, salvo con "Mostrar mi número" |
@@ -46,12 +47,4 @@ Las decisiones de **código** las toma el agente (quedan en `docs/decisiones/adr
 
 ## Abiertas
 
-### D-29 · Libreta: disposición y letra manuscrita (F4-05)
-
-Pestañas Historia, Comandos, Pistas y Mis notas sobre papel con renglones. Lo que escribe el juego va a mano; tus notas, en letra normal.
-
-- **Disposición A · libreta de reportero:** una hoja grande con la espiral arriba y las pestañas encima.
-- **Disposición B · libreta abierta:** dos páginas con la espiral al centro y las pestañas al costado; a la izquierda el índice o la nota nueva, a la derecha la página. *(Recomendada: aprovecha la pantalla ancha.)*
-- **Letra:** Patrick Hand *(recomendada, la más legible en números y rutas)*, Kalam o Caveat (las tres OFL).
-
-Bloquea: cerrar F4-05 (capturas aprobadas). Mientras tanto queda B con Patrick Hand.
+Ninguna por ahora. Las nuevas se agregan aquí con opciones, recomendación y qué bloquean.

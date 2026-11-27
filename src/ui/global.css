@@ -1000,8 +1000,7 @@ fieldset.ajuste label {
   box-shadow: 0 0 6px #ff3b30;
 }
 
-/* Libreta (F4-05): papel con renglones; lo del juego a mano (Patrick Hand), tus notas en letra normal.
-   Variantes a/b en consulta (D-29). */
+/* Libreta (F4-05, D-29): papel con renglones; lo del juego a mano (Patrick Hand), tus notas en letra normal. */
 .libreta-fondo {
   position: fixed;
   inset: 0;
@@ -1208,7 +1207,7 @@ fieldset.ajuste label {
   gap: 0.6em;
   border-bottom: 1px dashed var(--renglon);
 }
-.libreta-borrar {
+.libreta-abiertaorrar {
   background: none;
   border: 0;
   color: #a33;
@@ -1216,28 +1215,8 @@ fieldset.ajuste label {
   cursor: pointer;
 }
 
-/* A: libreta de reportero, una hoja grande con la espiral arriba y las pestañas encima. */
-.libreta-a {
-  left: 50%;
-  top: 6vh;
-  bottom: 12vh;
-  width: min(720px, 90vw);
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-}
-.libreta-a .libreta-pestana {
-  border-radius: 8px 8px 0 0;
-}
-.libreta-a .libreta-hoja {
-  flex: 1;
-  border-radius: 0 6px 6px 6px;
-  border-top: 14px solid #3b4148;
-  background-clip: padding-box;
-}
-
-/* B: libreta abierta, dos páginas con la espiral al centro y las pestañas al costado. */
-.libreta-b {
+/* D-29 = B: libreta abierta, dos páginas con la espiral al centro y las pestañas al costado. */
+.libreta-abierta {
   left: 50%;
   top: 8vh;
   bottom: 12vh;
@@ -1247,15 +1226,15 @@ fieldset.ajuste label {
   flex-direction: row-reverse;
   align-items: flex-start;
 }
-.libreta-b .libreta-pestanas {
+.libreta-abierta .libreta-pestanas {
   flex-direction: column;
   margin-top: 2em;
 }
-.libreta-b .libreta-pestana {
+.libreta-abierta .libreta-pestana {
   border-radius: 0 8px 8px 0;
   text-align: left;
 }
-.libreta-b .libreta-hoja {
+.libreta-abierta .libreta-hoja {
   flex: 1;
   align-self: stretch;
   border-radius: 6px;
@@ -1274,23 +1253,23 @@ fieldset.ajuste label {
       var(--renglon) calc(var(--linea) - 1px) var(--linea)
     );
 }
-.libreta-b .libreta-comandos {
+.libreta-abierta .libreta-comandos {
   column-span: all;
   grid-template-columns: 1fr 1fr;
   gap: 4.4em;
 }
-.libreta-b .libreta-notas {
+.libreta-abierta .libreta-notas {
   column-span: all;
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 4.4em;
 }
-.libreta-b .libreta-notas .libreta-mis-notas {
+.libreta-abierta .libreta-notas .libreta-mis-notas {
   grid-column: 2;
   grid-row: 1 / span 3;
 }
 
-/* Estados de la libreta al final: ganan sobre las variantes. */
+/* Estados de la libreta al final: ganan sobre la disposición. */
 .libreta-pestana[aria-selected="true"] {
   filter: none;
   box-shadow: 0 0 0 2px #2b2622 inset;
@@ -1298,7 +1277,7 @@ fieldset.ajuste label {
 .libreta-pestana:focus-visible,
 .libreta-indice-boton:focus-visible,
 .libreta-anotar:focus-visible,
-.libreta-borrar:focus-visible,
+.libreta-abiertaorrar:focus-visible,
 .libreta-nota-nueva:focus-visible {
   outline: 3px solid var(--acento);
   outline-offset: 2px;

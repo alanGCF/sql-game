@@ -16,9 +16,6 @@ const PESTANAS: ReadonlyArray<readonly [Pestana, string]> = [
 
 const NO_PEGAR = "Mejor lo escribo yo, así se me queda.";
 
-/** Variante de la consulta F4-05 (?lib=a|b); se queda solo la que elija el usuario (D-29). */
-const VARIANTE = new URLSearchParams(window.location.search).get("lib") ?? "b";
-
 const { paginas, conceptos } = contenidoComun().libreta;
 
 /** Cuántos apuntes de cada pestaña ya viste: los nuevos se escriben con animación (una vez por sesión). */
@@ -90,7 +87,8 @@ function Apunte({ nuevo, retraso, children }: { nuevo: boolean; retraso: number;
 }
 
 /**
- * Libreta de apuntes (F4-05, 04-mecanicas.md §Libreta): pestañas Historia, Comandos, Pistas y Mis notas. Lo
+ * Libreta de apuntes (F4-05, 04-mecanicas.md §Libreta; D-29: abierta a dos páginas, con Patrick Hand).
+ * Pestañas Historia, Comandos, Pistas y Mis notas. Lo
  * que escribe el juego va a mano; tus notas, en letra normal. Nada se puede seleccionar ni copiar, y en tus
  * notas no se puede pegar: todo se teclea.
  */
@@ -273,7 +271,7 @@ export function Libreta() {
       <div className="libreta-fondo" aria-hidden="true" />
       <section
         ref={raiz}
-        className={`libreta libreta-${VARIANTE}`}
+        className="libreta libreta-abierta"
         aria-label="Libreta de apuntes"
         tabIndex={-1}
         data-testid="libreta"

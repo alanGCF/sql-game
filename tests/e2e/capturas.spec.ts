@@ -92,6 +92,34 @@ test("teléfono (D-28 A): aparato y directorio, marcando y en llamada con Eduard
   await captura(page, "telefono-llamada.png");
 });
 
+test("libreta (D-29 B): Historia y Comandos con lo de T1-M1", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  await input.fill("ls tickets | wc -l");
+  await input.press("Enter");
+  const ultima = page.getByTestId("terminal").locator(".terminal-linea").last();
+  await expect(ultima).toHaveText(/^\d+$/);
+  const n = (await ultima.textContent())?.trim() ?? "";
+  await page.evaluate(
+    (v) =>
+      Promise.all([
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v),
+      ]),
+    n,
+  );
+  await cerrarDialogos(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
+  const libreta = page.getByTestId("libreta");
+  await expect(libreta).toContainText("Mi carpeta en el servidor");
+  await captura(page, "libreta-historia.png");
+  await libreta.getByRole("tab", { name: "Comandos" }).click();
+  await expect(libreta).toContainText("Para qué sirve");
+  await captura(page, "libreta-comandos.png");
+});
+
 test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);

@@ -691,10 +691,16 @@ test("libreta (F4-05): apuntes de la misión, comando aprendido y pista en su pe
   while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
   // Una pista de T1-M2 por teléfono.
   await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
+  const dialogo = page.getByTestId("dialogo");
+  await expect(page.getByTestId("telefono")).toBeVisible();
   await page.keyboard.type("214");
   await page.keyboard.press("Enter");
+  await expect(dialogo).toContainText("¿Qué ocupas?");
   await page.keyboard.press("1");
-  if (await page.getByRole("list", { name: "Responder" }).isVisible()) await page.keyboard.press("1");
+  // T1-M2 tiene varios pendientes: ¿con cuál te atoraste? Se elige el primero.
+  await expect(dialogo).toContainText("¿Con cuál te atoraste?");
+  await page.keyboard.press("1");
+  await expect(dialogo.getByRole("button", { name: /Colgar/ })).toBeVisible();
   await page.keyboard.press("Escape");
   await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
   const libreta = page.getByTestId("libreta");
@@ -712,6 +718,8 @@ test("libreta (F4-05): apuntes de la misión, comando aprendido y pista en su pe
 test("libreta (F4-05): no se copia, no se pega y la nota tecleada se guarda con la partida", async ({
   page,
 }) => {
+  // Dos cargas de la escena con WebGL por software: más tiempo, como T1 completo.
+  test.setTimeout(90_000);
   await empezarPrimerDia(page, "Ale");
   await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
   const libreta = page.getByTestId("libreta");
@@ -748,7 +756,7 @@ test("libreta (F4-05): no se copia, no se pega y la nota tecleada se guarda con 
     );
   await expect.poll(notasGuardadas).toContain("ls -a muestra los ocultos");
   await page.reload();
-  await page.waitForFunction(() => window.__planta7?.ready === true);
+  await page.waitForFunction(() => window.__planta7?.ready === true, null, { timeout: 45_000 });
   await page.getByRole("button", { name: /Checar entrada como Ale/ }).click();
   await expect(page.getByTestId("menu")).toBeHidden();
   while (await page.getByTestId("dialogo").isVisible()) await page.keyboard.press("Enter");
