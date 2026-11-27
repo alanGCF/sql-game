@@ -120,6 +120,20 @@ test("libreta (D-29 B): Historia y Comandos con lo de T1-M1", async ({ page }) =
   await captura(page, "libreta-comandos.png");
 });
 
+test("pizarrón (F4-07): antes y después de cumplir un pendiente", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await page.evaluate(() => window.__planta7?.setVista?.("pizarron"));
+  await captura(page, "pizarron-antes.png");
+  await page.evaluate(() =>
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+  );
+  await expect
+    .poll(async () => (await page.evaluate(() => window.__planta7?.pizarron?.()))?.renglones[0])
+    .toMatch(/^\[x\]/);
+  await captura(page, "pizarron-despues.png");
+});
+
 test("monitor: terminal con salida y app Tickets", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);

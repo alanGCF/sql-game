@@ -51,6 +51,7 @@ export interface DatosPartida {
   notas: string[];
   pistas: PistaAnotada[];
   buzon: MensajeBuzon[];
+  postits: string[];
 }
 
 export function aPartida(j: Jornada, d: DatosPartida): Partida {
@@ -74,6 +75,7 @@ export function aPartida(j: Jornada, d: DatosPartida): Partida {
     llamadas: e.llamadas,
     pistas: d.pistas,
     buzon: d.buzon,
+    postits: d.postits,
   };
 }
 

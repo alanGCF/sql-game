@@ -25,6 +25,12 @@ export interface TestHooks {
   dejarSonar?: () => void;
   /** Mensajes en el buzón del teléfono. */
   buzon?: () => number;
+  /** Lo que se está animando en el pizarrón (F4-07): renglones rayándose y post-its cayendo al bote. */
+  animacionPizarron?: () => {
+    tachando: number;
+    cayendo: number;
+    vistos: { tachados: number; caidos: number };
+  };
   /** Fija la hora que muestra la escena ("HH:MM", 24:00 = medianoche) para capturas de la ventana. */
   hora?: (hhmm: string) => void;
 }
@@ -36,6 +42,8 @@ declare global {
 }
 
 export const isTestMode = new URLSearchParams(window.location.search).has("test");
+/** En pruebas las animaciones van apagadas; `&animar=1` las prende para revisarlas (F4-07). */
+export const animarEnPruebas = isTestMode && new URLSearchParams(window.location.search).has("animar");
 
 export function setTestHook<K extends keyof TestHooks>(key: K, value: TestHooks[K]): void {
   if (!isTestMode) return;

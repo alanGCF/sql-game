@@ -1,17 +1,17 @@
 import { RoundedBox } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
-import { DoubleSide, type Group, type MeshStandardMaterial } from "three";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DoubleSide, type Group, type MeshStandardMaterial, Vector3 } from "three";
 import { enmascararCodigo } from "../../shared/codigo";
 import { inicioTurno } from "../engine/calendario";
 import { useAjustes } from "../game/ajustes";
 import { contenidoComun } from "../game/contenido";
 import { iluminacion } from "../game/hora";
 import { usePartida } from "../game/partidaStore";
-import { favoresPizarron, renglonesPizarron } from "../game/pizarron";
+import { favoresPizarron, favoresTerminados, recienTachados, renglonesPizarron } from "../game/pizarron";
 import { useEscena } from "../game/store";
 import { directorio } from "../game/telefono";
-import { isTestMode } from "../test-hooks";
+import { animarEnPruebas, isTestMode, setTestHook } from "../test-hooks";
 import { Mat, useTexturaCanvas } from "./contexto";
 import { Interactivo } from "./Interactivo";
 import {
@@ -262,16 +262,25 @@ function PostItNumero({ codigo, pos }: { codigo: string; pos: [number, number, n
 }
 
 /** Post-it de un favor activo: el título partido en renglones cortos. */
-function PostItFavor({ titulo, pos }: { titulo: string; pos: [number, number, number] }) {
-  const palabras = titulo.split(" ");
-  const renglones = ["Favor:"];
-  for (const p of palabras) {
+/** Parte un texto en renglones cortos de post-it (a mano, ~11 letras por renglón). */
+function renglonesPostIt(texto: string, primero?: string): string[] {
+  const renglones = primero ? [primero] : [""];
+  for (const p of texto.split(" ")) {
     const ultimo = renglones[renglones.length - 1] ?? "";
-    if (renglones.length > 1 && `${ultimo} ${p}`.length <= 11)
-      renglones[renglones.length - 1] = `${ultimo} ${p}`;
+    if (ultimo && `${ultimo} ${p}`.length <= 11) renglones[renglones.length - 1] = `${ultimo} ${p}`;
+    else if (!ultimo) renglones[renglones.length - 1] = p;
     else renglones.push(p);
   }
-  const tex = useTexturaCanvas(160, 160, dibujarPostIt(renglones.slice(0, 5)));
+  return renglones.slice(0, 5);
+}
+
+function PostItFavor({ titulo, pos }: { titulo: string; pos: [number, number, number] }) {
+  const tex = useTexturaCanvas(
+    160,
+    160,
+    dibujarPostIt(["Favor:", ...renglonesPostIt(titulo).slice(0, 4)]),
+    titulo,
+  );
   return (
     <mesh position={pos} rotation={[0, 0, 0.1]}>
       <planeGeometry args={[0.09, 0.09]} />
@@ -280,24 +289,213 @@ function PostItFavor({ titulo, pos }: { titulo: string; pos: [number, number, nu
   );
 }
 
+/** Post-it informativo (efecto `postit`, F4-07): rosa, abajo del pizarrón. */
+function PostItInfo({ texto, pos }: { texto: string; pos: [number, number, number] }) {
+  const tex = useTexturaCanvas(160, 160, dibujarPostIt(renglonesPostIt(texto), "#f6b5c6"), texto);
+  return (
+    <mesh position={pos} rotation={[0, 0, -0.06]}>
+      <planeGeometry args={[0.09, 0.09]} />
+      <Mat color="#ffffff" mapa={tex} />
+    </mesh>
+  );
+}
+
+const PIZARRON = { pos: new Vector3(0.87, 1.05, -0.3), favorY: 0.17 };
+/** Para las pruebas: qué se anima ahora y cuántas animaciones han empezado (F4-07). */
+const animacion = { tachando: 0, cayendo: 0, tachados: 0, caidos: 0 };
+setTestHook("animacionPizarron", () => ({
+  tachando: animacion.tachando,
+  cayendo: animacion.cayendo,
+  vistos: { tachados: animacion.tachados, caidos: animacion.caidos },
+}));
+/** Bote de basura en el piso, a la derecha y al frente del escritorio (F4-07). */
+const BOTE = new Vector3(0.7, 0, 0.14);
+const ALTO_BOTE = 0.28;
+const DURACION_TACHADO = 0.8;
+const PASOS_TACHADO = 16;
+const ARRUGAR = 0.45;
+const VUELO = 0.8;
+
+/** Del sistema del pizarrón (girado -90° en Y) al del mundo. */
+const enMundo = (x: number, y: number, z: number) =>
+  new Vector3(PIZARRON.pos.x - z, PIZARRON.pos.y + y, PIZARRON.pos.z + x);
+
+/**
+ * Post-it de un favor terminado (F4-07): se arruga en su lugar y la bolita vuela al bote en una curva que
+ * pasa por encima del escritorio. Pide cuadros solo mientras se mueve (ADR-018).
+ */
+function PostItCayendo({
+  titulo,
+  x,
+  inicio,
+  alTerminar,
+}: {
+  titulo: string;
+  x: number;
+  inicio: number;
+  alTerminar: () => void;
+}) {
+  const grupo = useRef<Group>(null);
+  const invalidate = useThree((s) => s.invalidate);
+  const [bolita, setBolita] = useState(false);
+  const tex = useTexturaCanvas(
+    160,
+    160,
+    dibujarPostIt(["Favor:", ...renglonesPostIt(titulo).slice(0, 4)]),
+    titulo,
+  );
+  const inicioPos = useMemo(() => enMundo(x, PIZARRON.favorY, 0.01), [x]);
+  // Punto de control de la curva: por encima y al frente, para no atravesar el escritorio (z < 0).
+  const control = useMemo(() => new Vector3(0.8, 1.4, 0.3), []);
+  const fin = useMemo(() => new Vector3(BOTE.x, BOTE.y + ALTO_BOTE * 0.5, BOTE.z), []);
+  const terminado = useRef(false);
+
+  useFrame(() => {
+    const g = grupo.current;
+    if (!g || terminado.current) return;
+    const t = (performance.now() - inicio) / 1000;
+    if (t < ARRUGAR) {
+      const k = t / ARRUGAR;
+      g.scale.setScalar(1 - 0.7 * k);
+      g.rotation.z = 0.1 + k * 2.5;
+    } else {
+      if (!bolita) setBolita(true);
+      const k = Math.min(1, (t - ARRUGAR) / VUELO);
+      const e = k * k;
+      // Curva cuadrática: arranca en el pizarrón, sube un poco y cae dentro del bote.
+      g.position.set(
+        (1 - e) * (1 - e) * inicioPos.x + 2 * (1 - e) * e * control.x + e * e * fin.x,
+        (1 - e) * (1 - e) * inicioPos.y + 2 * (1 - e) * e * control.y + e * e * fin.y,
+        (1 - e) * (1 - e) * inicioPos.z + 2 * (1 - e) * e * control.z + e * e * fin.z,
+      );
+      g.rotation.x += 0.25;
+      if (k >= 1) {
+        terminado.current = true;
+        alTerminar();
+        return;
+      }
+    }
+    invalidate();
+  });
+
+  return (
+    <group ref={grupo} position={inicioPos} rotation={[0, -Math.PI / 2, 0.1]}>
+      {bolita ? (
+        // El grupo ya quedó a 0.3 de escala al arrugarse: la bolita mide ~2 cm de radio en el mundo.
+        <mesh>
+          <icosahedronGeometry args={[0.022 / 0.3, 0]} />
+          <Mat color="#e9c84f" />
+        </mesh>
+      ) : (
+        <mesh>
+          <planeGeometry args={[0.09, 0.09]} />
+          <Mat color="#ffffff" mapa={tex} />
+        </mesh>
+      )}
+    </group>
+  );
+}
+
+function Bote() {
+  return (
+    <group position={[BOTE.x, BOTE.y + ALTO_BOTE / 2, BOTE.z]}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.11, 0.09, ALTO_BOTE, 20, 1, true]} />
+        <meshStandardMaterial color="#7d848c" side={DoubleSide} roughness={0.6} metalness={0.3} />
+      </mesh>
+      <mesh position={[0, -ALTO_BOTE / 2 + 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.09, 20]} />
+        <meshStandardMaterial color="#3e4348" />
+      </mesh>
+    </group>
+  );
+}
+
+/**
+ * Pizarrón de pendientes (F3-04, F4-07). Al cumplir un pendiente, el plumón lo raya de izquierda a derecha;
+ * el post-it de un favor terminado se arruga y cae al bote; los post-its informativos van abajo. Con
+ * "reducir movimiento" (y en pruebas) todo pasa sin animación.
+ */
 function Pizarron() {
   const pendientes = usePartida((s) => s.pendientes);
-  const renglones = renglonesPizarron(pendientes);
-  const favores = favoresPizarron(pendientes).slice(0, 3);
-  const tex = useTexturaCanvas(640, 480, dibujarPizarron(renglones), JSON.stringify(renglones));
+  const postits = usePartida((s) => s.postits);
+  const renglones = useMemo(() => renglonesPizarron(pendientes), [pendientes]);
+  const favores = useMemo(() => favoresPizarron(pendientes).slice(0, 3), [pendientes]);
+  const quieto = useAjustes((s) => s.reducirMovimiento) || (isTestMode && !animarEnPruebas);
+  const invalidate = useThree((s) => s.invalidate);
+  const [tachando, setTachando] = useState<{ textos: string[]; inicio: number; paso: number } | null>(null);
+  const [cayendo, setCayendo] = useState<{ titulo: string; x: number; inicio: number }[]>([]);
+  const previos = useRef(renglones);
+  const favoresPrevios = useRef(favores);
+
+  useEffect(() => {
+    const nuevos = recienTachados(previos.current, renglones);
+    previos.current = renglones;
+    if (!nuevos.length || quieto) return;
+    animacion.tachados += nuevos.length;
+    setTachando({ textos: nuevos, inicio: performance.now(), paso: 0 });
+    invalidate();
+  }, [renglones, quieto, invalidate]);
+
+  useEffect(() => {
+    const antes = favoresPrevios.current;
+    favoresPrevios.current = favores;
+    const idos = favoresTerminados(antes, favores);
+    if (!idos.length || quieto) return;
+    animacion.caidos += idos.length;
+    const ahora = performance.now();
+    setCayendo((c) => [
+      ...c,
+      ...idos.map((titulo) => ({ titulo, x: 0.24 - antes.indexOf(titulo) * 0.1, inicio: ahora })),
+    ]);
+    invalidate();
+  }, [favores, quieto, invalidate]);
+
+  useFrame(() => {
+    if (!tachando) return;
+    const p = Math.min(1, (performance.now() - tachando.inicio) / 1000 / DURACION_TACHADO);
+    const paso = Math.round(p * PASOS_TACHADO);
+    if (p >= 1) setTachando(null);
+    else if (paso !== tachando.paso) setTachando({ ...tachando, paso });
+    invalidate();
+  });
+
+  animacion.tachando = tachando?.textos.length ?? 0;
+  animacion.cayendo = cayendo.length;
+  const avance = new Map(tachando ? tachando.textos.map((t) => [t, tachando.paso / PASOS_TACHADO]) : []);
+  const tex = useTexturaCanvas(
+    640,
+    480,
+    dibujarPizarron(renglones, avance),
+    `${JSON.stringify(renglones)}|${tachando?.paso ?? ""}`,
+  );
   return (
-    <Interactivo nombre="Pizarrón de pendientes" vista="pizarron">
-      <group position={[0.87, 1.05, -0.3]} rotation={[0, -Math.PI / 2, 0]}>
-        <Caja pos={[0, 0, -0.012]} tam={[0.64, 0.48, 0.02]} color="#9aa0a6" sombra={false} />
-        <mesh position={[0, 0, 0.001]}>
-          <planeGeometry args={[0.6, 0.45]} />
-          <Mat color="#ffffff" mapa={tex} rugosidad={0.85} emisivo="#ffffff" intensidadEmisiva={0.3} />
-        </mesh>
-        {favores.map((t, i) => (
-          <PostItFavor key={t} titulo={t} pos={[0.24 - i * 0.1, 0.17, 0.004]} />
-        ))}
-      </group>
-    </Interactivo>
+    <>
+      <Interactivo nombre="Pizarrón de pendientes" vista="pizarron">
+        <group position={PIZARRON.pos} rotation={[0, -Math.PI / 2, 0]}>
+          <Caja pos={[0, 0, -0.012]} tam={[0.64, 0.48, 0.02]} color="#9aa0a6" sombra={false} />
+          <mesh position={[0, 0, 0.001]}>
+            <planeGeometry args={[0.6, 0.45]} />
+            <Mat color="#ffffff" mapa={tex} rugosidad={0.85} emisivo="#ffffff" intensidadEmisiva={0.3} />
+          </mesh>
+          {favores.map((t, i) => (
+            <PostItFavor key={t} titulo={t} pos={[0.24 - i * 0.1, PIZARRON.favorY, 0.004]} />
+          ))}
+          {postits.slice(-3).map((t, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: los post-its no tienen id; se pintan en orden.
+            <PostItInfo key={`${i}-${t}`} texto={t} pos={[0.22 - i * 0.1, -0.17, 0.004]} />
+          ))}
+        </group>
+      </Interactivo>
+      {cayendo.map((c) => (
+        <PostItCayendo
+          key={`${c.titulo}-${c.inicio}`}
+          {...c}
+          alTerminar={() => setCayendo((todos) => todos.filter((x) => x !== c))}
+        />
+      ))}
+      <Bote />
+    </>
   );
 }
 

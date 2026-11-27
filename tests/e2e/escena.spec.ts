@@ -796,3 +796,70 @@ test("pensamiento (F4-06): al cerrar T1-M2, Don Chuy en dos globos y luego lo qu
   await page.keyboard.press("Enter");
   await expect(dialogo.filter({ hasText: "heredé un misterio" })).toHaveCount(0);
 });
+
+/** Ejecuta comandos en la terminal y devuelve la última línea de salida. */
+async function teclear(page: Page, ...lineas: string[]): Promise<string> {
+  await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
+  const input = page.getByLabel("Comando");
+  for (const l of lineas) {
+    await input.fill(l);
+    await input.press("Enter");
+  }
+  return ((await page.getByTestId("terminal").locator(".terminal-linea").last().textContent()) ?? "").trim();
+}
+
+const animacion = (page: Page) => page.evaluate(() => window.__planta7?.animacionPizarron?.());
+
+test("pizarrón (F4-07): el plumón raya el pendiente y el post-it del favor cae al bote", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto("/?test=1&animar=1");
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const dialogo = page.getByTestId("dialogo");
+  const cerrar = async () => {
+    while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  };
+  const responder = (m: string, o: string, v: string) =>
+    page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
+  await cerrar();
+  // T1-M1: el primer pendiente se raya con animación.
+  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/becario");
+  await expect.poll(async () => (await animacion(page))?.vistos.tachados).toBe(1);
+  await expect.poll(async () => (await animacion(page))?.tachando).toBe(0);
+  const n = await teclear(page, "ls tickets | wc -l");
+  await responder("t1-m01-donde-estoy", "responder-tickets", n);
+  await cerrar();
+  // T1-M2 y T1-M3 para que llegue el favor de Don Chuy con T1-M4.
+  const folio = /T-(\d+)/.exec(await teclear(page, "grep -r Karla tickets"))?.[1] ?? "";
+  await teclear(page, "cat LEEME.txt");
+  await responder("t1-m02-el-leeme", "responder-folio", folio);
+  await responder("t1-m02-el-leeme", "responder-firma", "R");
+  await cerrar();
+  const paros = await teclear(page, "cd /srv/lineas/linea3", "grep Paros estado.txt | cut -d: -f2");
+  await responder("t1-m03-moverse-por-la-planta", "responder-paros", paros.trim());
+  await teclear(page, "history");
+  await cerrar();
+  expect((await page.evaluate(() => window.__planta7?.pizarron?.()))?.favores.length).toBe(1);
+  // El favor: al terminarlo, su post-it se arruga y cae al bote.
+  const piezas = await teclear(page, "grep Piezas /srv/lineas/linea1/estado.txt | cut -d: -f2");
+  await responder("t1-f01-lentes-de-don-chuy", "responder-piezas", piezas.trim());
+  await expect.poll(async () => (await animacion(page))?.vistos.caidos).toBe(1);
+  await expect.poll(async () => (await animacion(page))?.cayendo, { timeout: 10_000 }).toBe(0);
+  expect((await page.evaluate(() => window.__planta7?.pizarron?.()))?.favores).toEqual([]);
+});
+
+test("pizarrón (F4-07): con reducir movimiento se tacha sin animación", async ({ page }) => {
+  await page.goto("/?test=1&animar=1");
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  const dialogo = page.getByTestId("dialogo");
+  while (await dialogo.isVisible()) await page.keyboard.press("Enter");
+  await page.getByRole("button", { name: "Ajustes" }).click();
+  await page.getByLabel(/Reducir movimiento/).check();
+  await page.getByRole("button", { name: "Cerrar" }).click();
+  await page.evaluate(() =>
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+  );
+  await expect
+    .poll(async () => (await page.evaluate(() => window.__planta7?.pizarron?.()))?.renglones[0])
+    .toMatch(/^\[x\]/);
+  expect((await animacion(page))?.vistos.tachados).toBe(0);
+});

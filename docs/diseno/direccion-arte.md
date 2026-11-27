@@ -70,7 +70,7 @@ Paleta base: gris claro de mampara, madera clara del escritorio, blanco cálido 
 ## Movimiento
 
 - Transiciones de acercamiento ≈ 600 ms con aceleración y frenado suaves; nada de rebotes.
-- Animaciones cortas con propósito: tachar pendiente, arrugar post-it, escribir en la libreta, teléfono sonando.
+- Animaciones cortas con propósito: tachar pendiente (plumón rojo, ≈ 0.8 s), arrugar post-it y lanzarlo al bote del piso, escribir en la libreta, teléfono sonando. Todas se apagan con "reducir movimiento".
 - Ambientales sutiles: polvo en la luz de la ventana, gente pasando a lo lejos.
 - Todo respeta "reducir movimiento".
 

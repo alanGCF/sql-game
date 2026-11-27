@@ -29,6 +29,7 @@ const base = {
   notas: [] as string[],
   pistas: [],
   buzon: [],
+  postits: [],
 };
 
 function almacenMemoria(): AlmacenLocal & { dato: unknown } {

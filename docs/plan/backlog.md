@@ -202,7 +202,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** ampliar el esquema de efectos (pedido de la revisión narrativa de T1) y mostrar el pensamiento en la nube de `direccion-arte.md`.
 - **Listo cuando:** harness con los efectos nuevos y e2e del pensamiento disparado por un evento.
 
-### F4-07 · Pizarrón y post-its animados · `pendiente` · depende: F3-04
+### F4-07 · Pizarrón y post-its animados · `hecha (2026-11-27)` *(el plumón raya de izquierda a derecha lo recién cumplido (`recienTachados`) y luego pone la palomita; el post-it de un favor terminado se arruga y vuela en curva al bote nuevo del piso, sin cruzar el escritorio; post-its informativos rosas por efecto `postit`, guardados en la partida; con "reducir movimiento" sin animación; cuadros solo mientras se mueve; e2e con `&animar=1` y con reducir movimiento; capturas `pizarron-antes` y `pizarron-despues`)* · depende: F3-04
 - **Hacer:** tachado con trazo de plumón al cumplir un pendiente; el post-it del favor se arruga y cae al bote al completarse; post-its informativos por efecto.
 - **Listo cuando:** capturas antes/después y animaciones que respetan "reducir movimiento".
 

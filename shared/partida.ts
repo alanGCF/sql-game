@@ -85,6 +85,8 @@ export const PartidaEsquema = z.strictObject({
   pistas: z.array(PistaAnotada).max(300).default([]),
   /** Llamadas entrantes perdidas, por escuchar (F4-04). Falta en guardados viejos. */
   buzon: z.array(MensajeBuzon).max(20).default([]),
+  /** Post-its informativos que dejaron los efectos `postit`, del más viejo al más nuevo (F4-07). */
+  postits: z.array(Texto(300)).max(12).default([]),
 });
 
 export type Partida = z.infer<typeof PartidaEsquema>;
@@ -110,6 +112,7 @@ export function partidaNueva(semilla: number, nombre: string, contenido: string)
     llamadas: {},
     pistas: [],
     buzon: [],
+    postits: [],
   };
 }
 

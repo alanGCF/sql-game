@@ -9,6 +9,7 @@ import { contenidoComun, turnoInicial, versionContenido } from "./contenido";
 import { conTimbre, type Dialogo, dialogoDe, dialogosDe } from "./dialogos";
 import { aPartida, estadoDe, Guardian } from "./guardado";
 import { type ApunteLibreta, type EventoJornada, Jornada } from "./jornada";
+import { postitsDe } from "./pizarron";
 import { useEscena } from "./store";
 import { marcar, type ResultadoMarcar } from "./telefono";
 import { type Ticket, ticketsDe, unirTickets } from "./tickets";
@@ -96,6 +97,8 @@ interface EstadoPartida {
   buzon: MensajeBuzon[];
   /** Apuntes automáticos de la libreta (Historia y Comandos) de lo terminado en el turno (F4-05). */
   apuntes: ApunteLibreta[];
+  /** Post-its informativos del pizarrón (efecto `postit`, F4-07), los más nuevos al final. */
+  postits: string[];
   /** Mis notas: lo que el jugador teclea en la libreta (hasta 200 de 500 caracteres). */
   notas: string[];
   /** Agrega una nota tecleada; false si está vacía o ya no caben. */
@@ -147,6 +150,7 @@ function lineasDeLlamada(
 
 const MAX_BUZON = 20;
 export const MAX_NOTAS = 200;
+const MAX_POSTITS = 12;
 export const LARGO_NOTA = 500;
 let entrantes = 0;
 /** Diálogos de los eventos, con las llamadas entrantes agrupadas y sonando (F4-04). */
@@ -156,6 +160,7 @@ const dialogosConTimbre = (eventos: EventoJornada[]) =>
 function actualizado(j: Jornada, s: EstadoPartida, eventos: EventoJornada[]) {
   return {
     apuntes: j.libreta(),
+    postits: [...s.postits, ...postitsDe(eventos)].slice(-MAX_POSTITS),
     minuto: Math.floor(j.minutoDelDia()),
     eventos: [...s.eventos, ...eventos].slice(-MAX_EVENTOS),
     pendientes: pendientesDe(j),
@@ -213,6 +218,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       notas: s.notas,
       pistas: s.pistas,
       buzon: s.buzon,
+      postits: s.postits,
     });
   };
   const refrescarGuardado = () => set({ guardado: estadoGuardado() });
@@ -242,6 +248,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
       pistas: p.pistas,
       buzon: p.buzon,
       notas: p.notas,
+      postits: p.postits,
     });
     void guardian.guardarLocal(partidaActual()).then(refrescarGuardado);
   };
@@ -300,6 +307,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
     pistas: [],
     buzon: [],
     notas: [],
+    postits: [],
     agregarNota(texto) {
       const limpia = texto.trim().slice(0, LARGO_NOTA);
       const { notas } = get();
@@ -465,6 +473,7 @@ export const usePartida = create<EstadoPartida>()((set, get) => {
         pistas: [],
         buzon: [],
         notas: [],
+        postits: [],
       });
     },
     async continuar() {

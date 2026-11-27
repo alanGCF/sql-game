@@ -117,7 +117,14 @@ function envolver(ctx: CanvasRenderingContext2D, texto: string, ancho: number): 
 }
 
 /** Pizarrón con los pendientes de la misión: los cumplidos se tachan con plumón rojo. */
-export function dibujarPizarron(renglones: readonly { texto: string; hecho: boolean }[]) {
+/**
+ * Pizarrón de pendientes. `tachando` (F4-07): textos que el plumón está rayando ahora y cuánto lleva (0..1);
+ * la raya crece de izquierda a derecha y la palomita aparece al final.
+ */
+export function dibujarPizarron(
+  renglones: readonly { texto: string; hecho: boolean }[],
+  tachando: ReadonlyMap<string, number> = new Map(),
+) {
   return (ctx: CanvasRenderingContext2D, w: number, h: number) => {
     ctx.fillStyle = "#f4f5f1";
     ctx.fillRect(0, 0, w, h);
@@ -133,17 +140,26 @@ export function dibujarPizarron(renglones: readonly { texto: string; hecho: bool
     for (const r of renglones) {
       const lineas = envolver(ctx, r.texto, w - 110);
       if (y + (lineas.length - 1) * 32 > h - 16) break;
-      ctx.fillStyle = r.hecho ? "#2e7d32" : "#1f3b73";
-      ctx.fillText(r.hecho ? "✓" : "□", 30, y);
+      const avance = r.hecho ? (tachando.get(r.texto) ?? 1) : 0;
+      const palomita = r.hecho && avance >= 1;
+      ctx.fillStyle = palomita ? "#2e7d32" : "#1f3b73";
+      ctx.fillText(palomita ? "✓" : "□", 30, y);
+      // La raya recorre todos los renglones del pendiente, uno tras otro.
+      const anchos = lineas.map((l) => ctx.measureText(l).width + 4);
+      let porRayar = avance * anchos.reduce((a, b) => a + b, 0);
       lineas.forEach((l, i) => {
         const yl = y + i * 32;
+        ctx.fillStyle = r.hecho ? "#2e7d32" : "#1f3b73";
         ctx.fillText(l, 66, yl);
-        if (r.hecho) {
+        const largo = Math.min(porRayar, anchos[i] ?? 0);
+        porRayar -= largo;
+        if (largo > 0) {
           ctx.strokeStyle = "#c62828";
           ctx.lineWidth = 3;
+          ctx.lineCap = "round";
           ctx.beginPath();
           ctx.moveTo(64, yl - 9);
-          ctx.lineTo(68 + ctx.measureText(l).width, yl - 9);
+          ctx.lineTo(64 + largo, yl - 9 + Math.sin(largo / 40) * 1.5);
           ctx.stroke();
         }
       });
@@ -152,9 +168,9 @@ export function dibujarPizarron(renglones: readonly { texto: string; hecho: bool
   };
 }
 
-export function dibujarPostIt(texto: string[]) {
+export function dibujarPostIt(texto: string[], color = "#f4d35e") {
   return (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-    ctx.fillStyle = "#f4d35e";
+    ctx.fillStyle = color;
     ctx.fillRect(0, 0, w, h);
     ctx.fillStyle = "#3a3320";
     ctx.font = `26px ${MANO}`;

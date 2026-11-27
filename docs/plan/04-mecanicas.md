@@ -127,9 +127,10 @@ Las entradas automáticas aparecen con animación de escritura a mano (los rengl
 
 ## Pizarrón y post-its
 
-- El pizarrón muestra los **pendientes del turno** (objetivos de la misión actual y siguientes del día). Al cumplirse, se tachan con una animación de plumón.
-- Los **favores** aparecen como post-its pegados en el pizarrón o en el monitor; al completarse, el post-it se arruga y cae al bote.
-- Post-its informativos: contraseña (T0), extensiones, recordatorios de Eduardo.
+- El pizarrón muestra los **pendientes del turno** (objetivos de la misión actual y siguientes del día). Al cumplirse, el plumón rojo los raya de izquierda a derecha (≈ 0.8 s) y aparece la palomita verde. El último pendiente de una misión no se alcanza a ver rayado: el pizarrón pasa de inmediato a la misión siguiente.
+- Los **favores** aparecen como post-its amarillos pegados en el pizarrón; al completarse, el post-it se arruga en su lugar y la bolita cae al **bote** que está en el piso, a la derecha del escritorio.
+- Post-its informativos (rosas, abajo del pizarrón; los 3 más recientes): los deja el efecto `postit` de una misión (contraseña en T0, extensiones, recordatorios de Eduardo) y se guardan con la partida (hasta 12).
+- Con "reducir movimiento" no hay animaciones: el renglón aparece rayado y el post-it desaparece. Las animaciones piden cuadros solo mientras se mueven (ADR-018).
 
 ## Calendario
 
