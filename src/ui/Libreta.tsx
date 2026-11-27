@@ -4,6 +4,7 @@ import { contenidoComun, turnoInicial } from "../game/contenido";
 import { type Bloque, type Inline, leerMarkdown } from "../game/markdown";
 import { LARGO_NOTA, MAX_NOTAS, usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
+import { sonido } from "./audio";
 
 type Pestana = "historia" | "comandos" | "pistas" | "notas";
 
@@ -124,8 +125,12 @@ export function Libreta() {
   const [antes] = useState(() => ({ ...vistos }));
   const ultimos = useRef(cuantos);
   ultimos.current = cuantos;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: solo al abrir; `antes` no cambia.
   useEffect(() => {
     raiz.current?.focus();
+    // Lápiz sobre el papel si hay algo nuevo por escribir (F4-10).
+    const c = ultimos.current;
+    if (c.historia > antes.historia || c.comandos > antes.comandos || c.pistas > antes.pistas) sonido.trazo();
     return () => {
       vistos.historia = Math.max(vistos.historia, ultimos.current.historia);
       vistos.comandos = Math.max(vistos.comandos, ultimos.current.comandos);

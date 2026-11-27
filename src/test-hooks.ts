@@ -33,6 +33,8 @@ export interface TestHooks {
   };
   /** Quién está de visita en el cubículo y en qué va: llegando, aquí o yéndose (F4-09). */
   visitante?: () => { quien: string | null; fase: string | null };
+  /** Hace sonar ya un sonido a lo lejos (F4-10): impresora, telefono_lejano, voceo, montacargas, puerta. */
+  ambiental?: (tipo: string) => void;
   /** Fija la hora que muestra la escena ("HH:MM", 24:00 = medianoche) para capturas de la ventana. */
   hora?: (hhmm: string) => void;
 }

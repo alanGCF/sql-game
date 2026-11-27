@@ -1,6 +1,7 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import { type ReactNode, useState } from "react";
 import { useEscena, type Vista } from "../game/store";
+import { sonido } from "../ui/audio";
 import { ProveedorHover } from "./contexto";
 
 interface Props {
@@ -36,6 +37,7 @@ export function Interactivo({ nombre, vista, alClic, children }: Props) {
     e.stopPropagation();
     if (!activo) return;
     salir();
+    sonido.clic();
     if (vista) setVista(vista);
     alClic?.();
   };

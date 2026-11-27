@@ -8,6 +8,7 @@ import { Libreta } from "./Libreta";
 import { Menu } from "./Menu";
 import { Monitor } from "./Monitor";
 import { NumeroEmpleado } from "./NumeroEmpleado";
+import { SonidoAmbiente } from "./SonidoAmbiente";
 import { Telefono } from "./Telefono";
 
 function EtiquetaHover() {
@@ -101,6 +102,7 @@ export function Capas() {
       {!enMenu && <NumeroEmpleado />}
       <Menu />
       <Pensamiento />
+      <SonidoAmbiente />
     </>
   );
 }

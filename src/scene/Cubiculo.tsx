@@ -13,6 +13,7 @@ import { favoresPizarron, favoresTerminados, recienTachados, renglonesPizarron }
 import { useEscena } from "../game/store";
 import { directorio } from "../game/telefono";
 import { animarEnPruebas, isTestMode, setTestHook } from "../test-hooks";
+import { sonido } from "../ui/audio";
 import { Mat, useTexturaCanvas } from "./contexto";
 import { Interactivo } from "./Interactivo";
 import {
@@ -433,6 +434,7 @@ function Pizarron() {
   useEffect(() => {
     const nuevos = recienTachados(previos.current, renglones);
     previos.current = renglones;
+    if (nuevos.length) sonido.trazo(); // el plumón suena aunque no se anime (F4-10)
     if (!nuevos.length || quieto) return;
     animacion.tachados += nuevos.length;
     setTachando({ textos: nuevos, inicio: performance.now(), paso: 0 });

@@ -495,7 +495,6 @@ test("número de empleado (F4-13, D-27): tarjeta de Recursos Humanos y Eduardo l
 
 async function alTelefono(page: Page) {
   await abrir(page);
-  const dialogo = page.getByTestId("dialogo");
   await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("telefono"));
   await expect(page.getByTestId("telefono")).toBeVisible();
@@ -627,7 +626,6 @@ test("pistas (F4-03): tres comandos con error seguidos te hacen pensar en marcar
   page,
 }) => {
   await abrir(page);
-  const dialogo = page.getByTestId("dialogo");
   await cerrarDialogos(page);
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
   const input = page.getByLabel("Comando");
@@ -825,7 +823,6 @@ test("pizarrón (F4-07): el plumón raya el pendiente y el post-it del favor cae
   test.setTimeout(120_000);
   await page.goto("/?test=1&animar=1");
   await page.waitForFunction(() => window.__planta7?.ready === true);
-  const dialogo = page.getByTestId("dialogo");
   const cerrar = async () => {
     await cerrarDialogos(page);
   };
@@ -861,7 +858,6 @@ test("pizarrón (F4-07): el plumón raya el pendiente y el post-it del favor cae
 test("pizarrón (F4-07): con reducir movimiento se tacha sin animación", async ({ page }) => {
   await page.goto("/?test=1&animar=1");
   await page.waitForFunction(() => window.__planta7?.ready === true);
-  const dialogo = page.getByTestId("dialogo");
   await cerrarDialogos(page);
   await page.getByRole("button", { name: "Ajustes" }).click();
   await page.getByLabel(/Reducir movimiento/).check();
@@ -878,7 +874,6 @@ test("pizarrón (F4-07): con reducir movimiento se tacha sin animación", async 
 test("calendario (F4-08): con T1 terminado, el día trae sus estrellas y su resumen", async ({ page }) => {
   test.setTimeout(120_000);
   await abrir(page);
-  const dialogo = page.getByTestId("dialogo");
   const cerrar = async () => {
     await cerrarDialogos(page);
   };
@@ -975,4 +970,38 @@ test("visitas (F4-09): con animación llega caminando, se queda y se va caminand
   await page.keyboard.press("Enter");
   await expect.poll(async () => (await visitante(page))?.fase).toBe("yendose");
   await expect.poll(async () => (await visitante(page))?.quien, { timeout: 10_000 }).toBeNull();
+});
+
+test("sonido (F4-10): lo que suena a lo lejos sale en subtítulo y se quita solo", async ({ page }) => {
+  const errores: string[] = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await abrir(page);
+  await cerrarDialogos(page);
+  // Un gesto crea el audio (política de autoplay); luego suena la impresora.
+  await page.mouse.click(10, 300);
+  await page.evaluate(() => window.__planta7?.ambiental?.("impresora"));
+  const sub = page.getByTestId("subtitulo-ambiente");
+  await expect(sub).toHaveText("[A lo lejos, una impresora empieza a imprimir.]");
+  await expect(sub).toBeHidden({ timeout: 8_000 });
+  expect(errores).toEqual([]);
+});
+
+test("sonido (F4-10): modo silencio y volúmenes en Ajustes, y se conservan al recargar", async ({ page }) => {
+  await abrir(page);
+  await cerrarDialogos(page);
+  await page.getByRole("button", { name: "Ajustes" }).click();
+  const silencio = page.getByLabel(/Modo silencio/);
+  await silencio.check();
+  await expect(page.getByLabel(/Ambiente/)).toBeDisabled();
+  await silencio.uncheck();
+  await page.getByLabel(/Voces/).fill("30");
+  await page.reload();
+  await page.waitForFunction(() => window.__planta7?.ready === true);
+  await cerrarDialogos(page);
+  await page.getByRole("button", { name: "Ajustes" }).click();
+  await expect(page.getByLabel(/Voces/)).toHaveValue("30");
+  // Con silencio, el subtítulo sale igual.
+  await page.getByLabel(/Modo silencio/).check();
+  await page.evaluate(() => window.__planta7?.ambiental?.("voceo"));
+  await expect(page.getByTestId("subtitulo-ambiente")).toContainText("voceo");
 });

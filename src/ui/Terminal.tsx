@@ -10,6 +10,7 @@ import {
 import { useEscena } from "../game/store";
 import { type LineaTerminal, useTerminal } from "../game/terminalStore";
 import { parsearAnsi } from "./ansi";
+import { sonido } from "./audio";
 
 function Linea({ linea }: { linea: LineaTerminal }) {
   if (linea.tipo === "prompt") {
@@ -66,6 +67,8 @@ export function Terminal() {
   };
 
   const tecla = async (e: KeyboardEvent<HTMLInputElement>) => {
+    // Teclear suena (F4-10): solo las teclas que escriben algo y Enter.
+    if (e.key.length === 1 || e.key === "Enter") sonido.tecla();
     const historial = shell.sesion.historial;
     if (e.key === "Tab") {
       e.preventDefault();

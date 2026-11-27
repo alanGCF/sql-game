@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { usePartida } from "../game/partidaStore";
 import { useEscena } from "../game/store";
+import { sonido } from "./audio";
 
 /** Iniciales para la tarjeta de llamada: sin títulos (Ing., Lic.) ni apodos entre comillas. */
 function iniciales(nombre: string): string {
@@ -30,12 +31,23 @@ export function Dialogos() {
   const perder = usePartida((s) => s.perderLlamada);
   const enMenu = useEscena((s) => s.enMenu);
 
-  // Una llamada entrante suena un rato; si nadie contesta, se va al buzón (F4-04).
+  // Una llamada entrante suena un rato; si nadie contesta, se va al buzón (F4-04). Mientras, timbra (F4-10).
   useEffect(() => {
     if (!actual?.timbre || enMenu) return;
+    sonido.timbre();
+    const ring = window.setInterval(() => sonido.timbre(), 2500);
     const t = window.setTimeout(perder, SUENA_MS);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      window.clearInterval(ring);
+    };
   }, [actual, enMenu, perder]);
+
+  // Balbuceo de quien habla cuando aparece su globo (D-19); lo que piensas no suena.
+  useEffect(() => {
+    if (!actual || enMenu || actual.timbre || actual.forma === "pensamiento") return;
+    sonido.balbuceo(actual.quien, actual.texto);
+  }, [actual, enMenu]);
 
   useEffect(() => {
     if (!actual || enMenu) return;

@@ -19,9 +19,23 @@ export const useAjustes = create<Ajustes & { cambiar: (p: Partial<Ajustes>) => v
   ...cargar(),
   cambiar(p) {
     set(p);
-    const { reducirMovimiento, letra, contrasteAlto } = get();
+    const { reducirMovimiento, letra, contrasteAlto, silencio, teclear, general, efectos, voces, ambiente } =
+      get();
     try {
-      window.localStorage.setItem(CLAVE, JSON.stringify({ reducirMovimiento, letra, contrasteAlto }));
+      window.localStorage.setItem(
+        CLAVE,
+        JSON.stringify({
+          reducirMovimiento,
+          letra,
+          contrasteAlto,
+          silencio,
+          teclear,
+          general,
+          efectos,
+          voces,
+          ambiente,
+        }),
+      );
     } catch {
       // sin almacenamiento (ventana privada): el ajuste dura esta sesión
     }

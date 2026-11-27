@@ -90,7 +90,7 @@ Paleta base: gris claro de mampara, madera clara del escritorio, blanco cálido 
 | Música | Ninguna de fondo; solo el radio opcional del tiempo extra, si el jugador lo prende |
 | Ajustes | Volumen general, efectos, ambiente (apagable) y voces; "modo silencio" |
 
-Generación: los sonidos de interfaz y el murmullo de voces se sintetizan con Web Audio (sin archivos, sin licencias); los ambientales reales (impresora, voceo) son pocos archivos CC0 cortos registrados en `docs/diseno/assets.md`.
+Generación (F4-10): todo se sintetiza con Web Audio en `src/ui/audio.ts` (sin archivos ni licencias): clic al abrir un objeto, timbre de tu teléfono, plumón y lápiz, dos notas al cumplir un objetivo, balbuceo por personaje (tono de voz propio, sílabas según el largo del globo) y los cinco ambientales "a lo lejos" (filtrados y a un lado). Si algún día un ambiental necesita un archivo real, será CC0 y se registra en `docs/diseno/assets.md`. Cada ambiental sale con su subtítulo arriba al centro ("[Se cierra una puerta al fondo.]"), también en modo silencio.
 
 ## Referencias de juegos (por mecánica, no para copiar su aspecto)
 

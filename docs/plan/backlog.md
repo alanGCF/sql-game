@@ -214,7 +214,7 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** un personaje llega por el pasillo de la derecha (silueta sencilla), diálogo en subtítulo con departamento (D-22) y opciones de respuesta; se va al terminar.
 - **Listo cuando:** e2e de la visita de Don Chuy en T0; capturas aprobadas.
 
-### F4-10 · Audio escaso y subtítulos (D-19) · `pendiente` · depende: F4-04
+### F4-10 · Audio escaso y subtítulos (D-19) · `hecha (2026-11-27)` *(Web Audio sintetizado en `src/ui/audio.ts` con buses de efectos, voces y ambiente; planificador con semilla (`src/game/ambientales.ts`): uno cada 2–4 min, 1–3 s, nunca dos a la vez ni durante diálogos; subtítulo de cada ambiental; balbuceo por personaje; timbre mientras suena tu teléfono; plumón, lápiz y objetivo cumplido; teclado sin sonido por omisión; Ajustes con modo silencio, volumen general, efectos, voces y ambiente (guardados); pruebas del planificador y e2e de subtítulos y ajustes)* · depende: F4-04
 - **Hacer:** Web Audio sintetizado para interacción y murmullo de voces; ambientales a lo lejos (uno cada 2–4 min con la semilla, nunca durante diálogos); volúmenes y "modo silencio" en Ajustes; subtítulo para todo audio.
 - **Listo cuando:** pruebas del planificador de ambientales (frecuencia, sin simultaneidad) y e2e de subtítulos.
 

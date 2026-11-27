@@ -1425,3 +1425,27 @@ fieldset.ajuste label {
   outline: 3px solid var(--acento);
   outline-offset: 2px;
 }
+
+/* Sonido (F4-10): volúmenes en Ajustes y subtítulo de lo que suena a lo lejos. */
+.ajuste-volumen {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.ajuste-volumen input {
+  width: 10em;
+}
+.subtitulo-ambiente {
+  position: fixed;
+  top: 2.5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  max-width: min(36em, 80vw);
+  padding: 0.35em 1em;
+  border-radius: 999px;
+  background: rgb(14 15 18 / 78%);
+  color: #e8e4da;
+  font-size: calc(clamp(13px, 1.8vh, 18px) * var(--escala));
+  font-style: italic;
+  pointer-events: none;
+}
