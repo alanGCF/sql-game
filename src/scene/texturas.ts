@@ -9,7 +9,11 @@ const SANS = FUENTE_UI;
 // manuscrita OFL empaquetada (F4-05). Antes caía en una distinta en cada sistema (Segoe Print, DejaVu, cursiva).
 const MANO = FUENTE_UI;
 
-export function dibujarPantalla(ctx: CanvasRenderingContext2D, w: number, h: number) {
+export function dibujarPantalla(usuario: string) {
+  return (ctx: CanvasRenderingContext2D, w: number, h: number) => pantalla(ctx, w, h, usuario);
+}
+
+function pantalla(ctx: CanvasRenderingContext2D, w: number, h: number, usuario: string) {
   ctx.fillStyle = "#0b1110";
   ctx.fillRect(0, 0, w, h);
   ctx.fillStyle = "#1d2a27";
@@ -18,14 +22,14 @@ export function dibujarPantalla(ctx: CanvasRenderingContext2D, w: number, h: num
   ctx.font = `20px ${SANS}`;
   ctx.fillText("Planta 7 · srv-sistemas", 16, 24);
   const lineas = [
-    ["#7fd1a8", "becario@srv-sistemas:~$ ls"],
+    ["#7fd1a8", `${usuario}@srv-sistemas:~$ ls`],
     ["#e6e1d3", "LEEME.txt  tickets"],
-    ["#7fd1a8", "becario@srv-sistemas:~$ cat LEEME.txt"],
+    ["#7fd1a8", `${usuario}@srv-sistemas:~$ cat LEEME.txt`],
     ["#e6e1d3", "Para quien me reemplace:"],
     ["#e6e1d3", "no confíes en los números del"],
     ["#e6e1d3", "turno nocturno."],
     ["#e6e1d3", "— R."],
-    ["#7fd1a8", "becario@srv-sistemas:~$ █"],
+    ["#7fd1a8", `${usuario}@srv-sistemas:~$ █`],
   ] as const;
   ctx.font = `26px ${MONO}`;
   lineas.forEach(([color, texto], i) => {
@@ -206,7 +210,7 @@ export function dibujarPostIt(texto: string[], color = "#f4d35e") {
   };
 }
 
-/** Gafete del escritorio: nombre y número enmascarado (D-26); sin partida, el del becario genérico. */
+/** Gafete del escritorio: nombre y número enmascarado (D-26); sin partida, un gafete genérico. */
 export function dibujarGafete(nombre: string, numero: string) {
   return (ctx: CanvasRenderingContext2D, w: number, h: number) => gafete(ctx, w, h, nombre, numero);
 }

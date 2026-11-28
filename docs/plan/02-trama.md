@@ -64,7 +64,7 @@ Cada comentario es corto (≤ 280 caracteres), llega por visita o llamada y no g
 
 | Personaje | Rol | Usuario de sistema | Ext. | Voz | Función |
 |---|---|---|---|---|---|
-| **Jugador** | Técnico de sistemas, turno vespertino | `becario` | 210 | — (nombre elegido) | Protagonista; sus pensamientos aparecen como globo de pensamiento |
+| **Jugador** | Técnico de sistemas, turno vespertino | `{{usuario}}`: su primer nombre en minúsculas sin acentos (F4-17; `tecnico` si no tiene letras) | 210 | — (nombre elegido) | Protagonista; sus pensamientos aparecen como globo de pensamiento |
 | **Eduardo Téllez** *(D-13)* | Sistemas Sr., de tu mismo departamento, 4 años en la planta | `etellez` | 214 | Voz cálida y sarcástica, siempre con prisa ("ando en piso, márcame") | **Te da las pistas por teléfono.** Se presenta en T0 y te enseña a jugar. Fuente de rumores. |
 | **Jesús "Don Chuy" Ortega** | Supervisor de mantenimiento, 30 años en la planta | — | 301 | Coloquial, norteño, refranes, desconfía de "las máquinas" | Conecta lo físico con los datos ("la estación de fuga pita a las 11:59 y nadie la toca") |
 | **Ing. Rebeca Salcido ("R.")** | Ex ingeniera de sistemas y automatización | `rsalcido` | — | Precisa, escueta, irónica | Tutora indirecta vía notas escondidas; reaparece en T10 (D-12) |
@@ -115,7 +115,7 @@ Objetivo: aprender los controles del juego dentro de la historia. Sin conceptos 
 | **2** | Jue 29 oct | Lo que dejó R. | Linux 1 | `ls -la`, `head`/`tail`/`less`, `mkdir`, `cp`, `mv`, comodines, `>`/`>>` → lees las notas de R. y **respaldas `.r/`** ("hazte una copia antes de que la borren"). |
 | **3** | Vie 30 oct | Los registros no mienten | Linux 2 | `grep`, `\|`, `wc`, `sort`, `uniq`, `cut` → en `auth.log` aparece `delta_svc` entrando cada noche a las `{{hora_acceso}}`. **Evento:** `.r/` original desaparece; tu respaldo es lo único que queda. `grep -r` encuentra el lote `{{lote}}` y `mes.db`. |
 | **4** | Lun 2 nov | El MES | SQL 1 | `sqlite3`, `SELECT`, `WHERE`, `AND/OR`, `ORDER BY`, `LIMIT` → todas las inspecciones de fuga del lote `{{lote}}` dicen PASA, pero el log del T3 registró alarmas a esas horas. Las últimas modificaciones las firma `kibanez`. |
-| **5** | Mar 3 nov | ¿Quién está en mi red? | Redes 1 | `ip a`, subred, `ping`, `/etc/hosts`, `host`/`dig`, `traceroute` → arreglas la impresora (cable flojo: Don Chuy lo reconecta) y descubres `mantto-delta` (`{{ip_delta}}`), que no está en el inventario y entra por la VPN de proveedores. **Cierre del MVP:** `Broadcast message from delta_svc@mantto-delta: ¿Quién eres, becario?` |
+| **5** | Mar 3 nov | ¿Quién está en mi red? | Redes 1 | `ip a`, subred, `ping`, `/etc/hosts`, `host`/`dig`, `traceroute` → arreglas la impresora (cable flojo: Don Chuy lo reconecta) y descubres `mantto-delta` (`{{ip_delta}}`), que no está en el inventario y entra por la VPN de proveedores. **Cierre del MVP:** `Broadcast message from delta_svc@mantto-delta: ¿Quién eres, {{usuario}}?` |
 | **6** | Mié 4 nov | Cuadrar números | SQL 2 | `DISTINCT`, `LIKE`/`IN`/`BETWEEN`, `NULL`, agregaciones, `GROUP BY`, `HAVING` → el scrap del turno nocturno es 0 desde el 14 de agosto (alta de `delta_svc`); `kibanez` "inspecciona" `{{insp_por_hora}}` piezas por hora a las 23:59, imposible. |
 | **7** | Jue 5 nov | Permisos y procesos | Linux 3 | `whoami`/`id`, `rwx`, `chmod`, `sudo`, `ps`, `kill`, `find` → `find` muestra archivos de `delta_svc` tocados anoche; un proceso `sync_mes` corre como `delta_svc`; `Permission denied` → Treviño te da `sudo` "para lo de la impresora" (ironía). |
 | **8** | Vie 6 nov | Puertos y servicios | Redes 2 | puertos, TCP/UDP, `ss`, `nmap` (red propia, autorizado por ticket), `curl` → `ss` muestra conexiones a `{{ip_delta}}:{{puerto_api}}`; `curl` a `/api/ajustes` devuelve el JSON con los "ajustes" del lote. |
@@ -133,7 +133,7 @@ Objetivo: aprender los controles del juego dentro de la historia. Sin conceptos 
 |---|---|---|---|
 | Escritorio de bienvenida | 0 | Inicio | Decoración; desaparece en T1 (queda la taza) |
 | Aparece `.r/` | 1 | Primer `ls -a` en `~` | Carpeta oculta visible; nota de R. en `.r/hola` |
-| Borrado de `.r/` | 3 | Inicio de T3-M4 | `/home/becario/.r` deja de existir; el respaldo queda |
+| Borrado de `.r/` | 3 | Inicio de T3-M4 | `/home/{{usuario}}/.r` deja de existir; el respaldo queda |
 | Alarma de fuga | 3–4 | Reloj de juego 23:59 | Línea en `linea3.log`; sonido lejano; Don Chuy lo comenta |
 | `wall` de delta_svc | 5 | Completar T5-M4 | Mensaje en la terminal + sonido; cierre del MVP |
 | `sudo` concedido | 7 | Visita de Treviño | El jugador entra al grupo `sudo` |
@@ -167,9 +167,9 @@ Dominio interno `ocotillo.local`. Dominios externos con `.example` (reservado, n
 
 | Ruta | Contenido | Turno |
 |---|---|---|
-| `/home/becario/LEEME.txt` | Nota de R. | 1 |
-| `/home/becario/tickets/` | Un ticket por archivo | 1+ |
-| `/home/becario/.r/` | Notas ocultas de R. (`notas.txt`, `hola`, `.llaves/`) | 1–3 |
+| `/home/{{usuario}}/LEEME.txt` | Nota de R. | 1 |
+| `/home/{{usuario}}/tickets/` | Un ticket por archivo | 1+ |
+| `/home/{{usuario}}/.r/` | Notas ocultas de R. (`notas.txt`, `hola`, `.llaves/`) | 1–3 |
 | `/srv/lineas/linea{1,2,3}/estado.txt` | Estado de líneas | 1 |
 | `/var/log/lineas/linea3.log` | Log de estaciones (alarmas FUGA, generado por semilla) | 3 |
 | `/var/log/auth.log` | Accesos (aparece `delta_svc`, generado por semilla). Formato moderno de rsyslog: marca de tiempo ISO 8601 de alta precisión (`2026-10-27T23:58:01.003190-06:00 srv-sistemas sshd[1203]: Accepted publickey for delta_svc …`). El servidor de la planta tiene rsyslog; la libreta aclara que Debian 12+ usa `journalctl` por omisión | 3 |

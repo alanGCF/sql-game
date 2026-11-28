@@ -127,6 +127,8 @@ const Paso = z.union([
   z.string().min(1),
   z.strictObject({ responder: z.strictObject({ objetivo: z.string(), valor: z.string() }) }),
   z.strictObject({ sql: z.string().min(1) }),
+  /** Algo que el jugador hace en la interfaz (Turno 0, F4-14): deja esa bandera, como la deja la UI. */
+  z.strictObject({ accion: z.string().regex(/^[a-z0-9_]+$/) }),
 ]);
 export type Paso = z.infer<typeof Paso>;
 
@@ -200,21 +202,30 @@ const Efecto = z.discriminatedUnion("tipo", [
   z.strictObject({ tipo: z.literal("wall"), de: z.string(), texto: z.string() }),
 ]);
 
-const Objetivo = z.strictObject({
-  id: z.string().regex(/^[a-z0-9-]+$/),
-  pendiente: z.string().min(1).max(80),
-  cuando: PredicadoEsquema,
-  pistas: z.tuple([Texto280, Texto280, Texto280]).refine((p) => /`[^`]+`/.test(p[2]), {
-    message: "la pista 3 debe incluir el comando exacto entre backticks",
-  }),
-});
+const Objetivo = z
+  .strictObject({
+    id: z.string().regex(/^[a-z0-9-]+$/),
+    pendiente: z.string().min(1).max(80),
+    cuando: PredicadoEsquema,
+    pistas: z.tuple([Texto280, Texto280, Texto280]),
+  })
+  // La pista 3 dicta el comando exacto; un objetivo de interfaz (bandera, Turno 0) dice qué hacer.
+  .superRefine((o, ctx) => {
+    if (!("flag" in o.cuando) && !/`[^`]+`/.test(o.pistas[2]))
+      ctx.addIssue({
+        code: "custom",
+        path: ["pistas"],
+        message: "la pista 3 debe incluir el comando exacto entre backticks",
+      });
+  });
 
 export const MisionEsquema = z
   .strictObject({
     id: z.string().regex(/^t(\d{1,2}|e)-[mf]\d{2}-[a-z0-9-]+$/, "id tN-mNN-slug o tN-fNN-slug"),
     turno: z.union([z.number().int().min(0).max(13), z.literal("TE")]),
     orden: z.number().int().min(1),
-    tipo: z.enum(["ticket", "investigacion", "repaso", "evento", "final", "favor"]),
+    /** tutorial: el Turno 0 (controles del juego, sin conceptos técnicos; F4-14). */
+    tipo: z.enum(["ticket", "investigacion", "repaso", "evento", "final", "favor", "tutorial"]),
     titulo: z.string().min(1).max(40),
     duracion_estimada_min: z.number().int().min(1).max(15),
     ensena: z.array(Concepto).max(2),
@@ -286,7 +297,7 @@ export const MisionEsquema = z
           message: "un favor necesita disponible_desde",
           path: ["disponible_desde"],
         });
-    } else if (!["repaso", "final", "evento"].includes(m.tipo) && m.ensena.length === 0) {
+    } else if (!["repaso", "final", "evento", "tutorial"].includes(m.tipo) && m.ensena.length === 0) {
       ctx.addIssue({
         code: "custom",
         message: `una misión de tipo ${m.tipo} debe enseñar al menos un concepto`,

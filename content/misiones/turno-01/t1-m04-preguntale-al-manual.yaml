@@ -11,7 +11,7 @@ ensena: [linux.help.man, linux.nav.ocultos]
 requiere: [linux.nav.ls, linux.nav.cd, linux.files.cat]
 entrega: llamada
 host_inicial: srv-sistemas
-usuario_inicial: becario
+usuario_inicial: "{{usuario}}"
 cwd_inicial: /srv/lineas/linea3
 apps: [terminal, tickets]
 
@@ -39,7 +39,7 @@ objetivos:
   - id: leer-hola
     pendiente: Revisar si R. dejó algo oculto en tu carpeta
     cuando:
-      archivo_leido: { host: srv-sistemas, ruta: /home/becario/.r/hola }
+      archivo_leido: { host: srv-sistemas, ruta: "/home/{{usuario}}/.r/hola" }
     pistas:
       - Ya que sepas cómo, fíjate qué hay escondido en tu carpeta personal.
       - Con ls y la opción que viste en el manual salen los ocultos. Si ves una carpeta rara, asómate y abre lo que tenga.
@@ -54,8 +54,8 @@ solucion:
   - cat .r/hola
 
 soluciones_alternativas:
-  - - ls -a /home/becario
-    - cd /home/becario/.r
+  - - "ls -a /home/{{usuario}}"
+    - "cd /home/{{usuario}}/.r"
     - ls
     - cat hola
     - responder: { objetivo: responder-opcion, valor: "--all" }

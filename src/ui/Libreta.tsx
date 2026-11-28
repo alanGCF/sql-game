@@ -1,5 +1,6 @@
 import { Fragment, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { inicioTurno } from "../engine/calendario";
+import { usuarioDe } from "../engine/usuario";
 import { contenidoComun, turnoInicial } from "../game/contenido";
 import { type Bloque, type Inline, leerMarkdown } from "../game/markdown";
 import { LARGO_NOTA, MAX_NOTAS, usePartida } from "../game/partidaStore";
@@ -101,6 +102,7 @@ export function Libreta() {
   const agregarNota = usePartida((s) => s.agregarNota);
   const borrarNota = usePartida((s) => s.borrarNota);
   const turno = usePartida((s) => s.jornada.turno.turno);
+  const usuario = usuarioDe(usePartida((s) => s.nombre));
   const [borrador, setBorrador] = useState("");
   const [pagina, setPagina] = useState<string | null>(null);
   const raiz = useRef<HTMLElement>(null);
@@ -194,7 +196,7 @@ export function Libreta() {
         </ul>
         {abierta && (
           <article className="libreta-pagina">
-            <PaginaMd bloques={leerMarkdown(paginas[abierta] ?? "")} />
+            <PaginaMd bloques={leerMarkdown((paginas[abierta] ?? "").replaceAll("{{usuario}}", usuario))} />
           </article>
         )}
       </div>

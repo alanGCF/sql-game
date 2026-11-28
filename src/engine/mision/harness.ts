@@ -3,6 +3,7 @@ import { GameClock, Shell } from "../index";
 import type { MundoBase } from "../mundo-base";
 import { clasificar } from "../shell/classify";
 import { textoPlano } from "../shell/lexer";
+import { conUsuario } from "../usuario";
 import { plantilla, VariableDesconocida } from "../vars";
 import { vfsDesde } from "../vfs";
 import { diferencias } from "../vfs-diff";
@@ -28,17 +29,26 @@ export interface OpcionesHarness {
   mundo?: MundoBase;
 }
 
+/**
+ * El contenido debe funcionar con cualquier nombre de jugador (F4-17): cada semilla usa un usuario distinto.
+ */
+export const USUARIOS_DE_PRUEBA = ["sofia", "tecnico", "jose-luis", "ana_maria", "x", "root2"] as const;
+export const usuarioDePrueba = (semilla: number): string =>
+  USUARIOS_DE_PRUEBA[semilla % USUARIOS_DE_PRUEBA.length] ?? "tecnico";
+
 function iniciar(m: Mision, semilla: number, o: OpcionesHarness): MisionEnCurso {
-  if (o.mundo) return MisionEnCurso.sobreMundo(m, o.mundo, semilla);
-  const reloj = GameClock.desde(inicioTurno(m.turno));
-  const home = `/home/${m.usuario_inicial}`;
+  const jugador = usuarioDePrueba(semilla);
+  if (o.mundo) return MisionEnCurso.sobreMundo(m, o.mundo, semilla, new Set(), jugador);
+  const mi = conUsuario(m, jugador);
+  const reloj = GameClock.desde(inicioTurno(mi.turno));
+  const home = `/home/${mi.usuario_inicial}`;
   const shell = Shell.crear(
-    vfsDesde([{ ruta: `${home}/`, dueno: m.usuario_inicial }], reloj.now()),
+    vfsDesde([{ ruta: `${home}/`, dueno: mi.usuario_inicial }], reloj.now()),
     reloj,
-    { name: m.usuario_inicial, groups: [m.usuario_inicial, "sistemas"], home },
-    m.host_inicial,
+    { name: mi.usuario_inicial, groups: [mi.usuario_inicial, "sistemas"], home },
+    mi.host_inicial,
   );
-  return new MisionEnCurso(m, shell, semilla, {}, new Set());
+  return new MisionEnCurso(m, shell, semilla, { usuario: jugador }, new Set());
 }
 
 /** Valor que debe teclear el jugador para un objetivo de respuesta, en el mundo actual. */
@@ -62,6 +72,10 @@ async function correr(mc: MisionEnCurso, pasos: readonly Paso[]): Promise<string
       if (valor.includes("{{respuesta.")) valor = await respuestaEsperada(mc, p.responder.objetivo);
       else valor = plantilla(valor, mc.vars);
       await mc.responder(p.responder.objetivo, valor);
+    } else if ("accion" in p) {
+      // Lo que haría la interfaz al abrir la libreta, mirar alrededor, etc. (F4-14).
+      mc.flags.add(p.accion);
+      await mc.revisar();
     } else {
       problemas.push("pasos SQL llegan con el motor SQL (F5)");
     }
@@ -152,8 +166,11 @@ export async function revisarMision(datos: unknown, o: OpcionesHarness): Promise
   }
 
   // C5: el comando de la pista 3 resuelve el objetivo (o, si es de respuesta, se ejecuta sin error).
-  for (const obj of m.objetivos) {
+  for (const { id } of m.objetivos) {
     const mc = iniciar(m, 0, o);
+    // La misión ya con el usuario de prueba en lugar de {{usuario}}.
+    const obj = mc.mision.objetivos.find((x) => x.id === id);
+    if (!obj || "flag" in obj.cuando) continue; // objetivo de interfaz: la pista dice qué hacer, no un comando
     const cmds = comandosDePista(plantilla(obj.pistas[2], mc.vars));
     for (const cmd of cmds) {
       const r = await mc.ejecutar(cmd);

@@ -2,6 +2,7 @@ import { GameClock, Shell } from "./index";
 import { GENERADORES } from "./mision/generadores";
 import type { MundoBase } from "./mundo-esquema";
 import { crearRng, subSemilla } from "./rng";
+import { conUsuario, USUARIO_POR_OMISION } from "./usuario";
 import { plantilla, resolverVariables, type Variables } from "./vars";
 import { agregarEntradas, type Entrada, vfsDesde } from "./vfs";
 
@@ -14,6 +15,8 @@ export interface OpcionesSesion {
   /** Reloj de juego al iniciar (ISO 8601). */
   ahora: string;
   cwd?: string;
+  /** Tu usuario (F4-17): reemplaza `{{usuario}}` en el mundo y en la sesión; por omisión, "tecnico". */
+  jugador?: string;
 }
 
 /** Shell sobre el mundo base con las variables de partida resueltas con la semilla. */
@@ -22,11 +25,14 @@ export function crearShellBase(
   semilla: number,
   o: OpcionesSesion,
 ): { shell: Shell; vars: Variables } {
-  const host = mundo.hosts.find((h) => h.host === o.host);
-  if (!host) throw new Error(`host desconocido: ${o.host}`);
+  const jugador = o.jugador ?? USUARIO_POR_OMISION;
+  const crudo = mundo.hosts.find((h) => h.host === o.host);
+  if (!crudo) throw new Error(`host desconocido: ${o.host}`);
+  const host = conUsuario(crudo, jugador);
+  o = conUsuario(o, jugador);
   const u = host.usuarios[o.usuario];
   if (!u) throw new Error(`el usuario ${o.usuario} no existe en ${o.host}`);
-  const vars = resolverVariables(semilla, mundo.variables);
+  const vars = { ...resolverVariables(semilla, mundo.variables), usuario: jugador };
   const entradas = host.fs.map((e): Entrada => {
     const r: Entrada = { ruta: e.ruta };
     if (e.contenido !== undefined) r.contenido = plantilla(e.contenido, vars);

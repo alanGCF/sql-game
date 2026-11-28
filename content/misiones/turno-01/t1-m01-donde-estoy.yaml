@@ -10,8 +10,8 @@ ensena: [linux.nav.pwd, linux.nav.ls]
 requiere: []
 entrega: ticket
 host_inicial: srv-sistemas
-usuario_inicial: becario
-cwd_inicial: /home/becario
+usuario_inicial: "{{usuario}}"
+cwd_inicial: "/home/{{usuario}}"
 apps: [terminal, tickets]
 
 briefing:
@@ -27,11 +27,11 @@ objetivos:
       respuesta:
         donde: ticket
         esperado_de: { comando: pwd }
-        acepta_tambien: ["{{esperado}}/", "/home/becario", "/home/becario/"]
+        acepta_tambien: ["{{esperado}}/", "/home/{{usuario}}", "/home/{{usuario}}/"]
         comentarios:
           - si: ["~"]
             texto: Casi. ~ es el atajo de tu carpeta personal. Eduardo quiere la ruta completa, la que empieza con /.
-          - si: ["becario", "home/becario", "home"]
+          - si: ["{{usuario}}", "home/{{usuario}}", "home"]
             texto: Te falta parte de la ruta. La ruta completa empieza desde la raíz, con /.
     pistas:
       - La terminal te puede decir dónde estás parado. Hay un comando para eso.
@@ -42,7 +42,7 @@ objetivos:
     cuando:
       respuesta:
         donde: ticket
-        esperado_de: { comando: "ls /home/becario/tickets | wc -l" }
+        esperado_de: { comando: "ls /home/{{usuario}}/tickets | wc -l" }
         acepta_tambien: ["{{esperado}} tickets"]
         comentarios:
           - si: ["1"]
@@ -56,25 +56,25 @@ objetivos:
 
 solucion:
   - pwd
-  - responder: { objetivo: responder-carpeta, valor: /home/becario }
+  - responder: { objetivo: responder-carpeta, valor: "/home/{{usuario}}" }
   - ls
   - ls tickets
   - responder: { objetivo: responder-tickets, valor: "{{respuesta.responder-tickets}}" }
 
 soluciones_alternativas:
-  - - ls /home/becario/tickets
+  - - "ls /home/{{usuario}}/tickets"
     - responder: { objetivo: responder-tickets, valor: "{{respuesta.responder-tickets}}" }
     - pwd
-    - responder: { objetivo: responder-carpeta, valor: /home/becario/ }
+    - responder: { objetivo: responder-carpeta, valor: "/home/{{usuario}}/" }
   - - ls ~/tickets
     - pwd
-    - responder: { objetivo: responder-carpeta, valor: "  /home/becario " }
+    - responder: { objetivo: responder-carpeta, valor: "  /home/{{usuario}} " }
     - responder: { objetivo: responder-tickets, valor: "{{respuesta.responder-tickets}} tickets" }
 
 contraejemplos:
   - objetivo: responder-carpeta
     pasos:
-      - responder: { objetivo: responder-carpeta, valor: becario }
+      - responder: { objetivo: responder-carpeta, valor: "{{usuario}}" }
   - objetivo: responder-carpeta
     pasos:
       - responder: { objetivo: responder-carpeta, valor: "~" }
@@ -94,7 +94,7 @@ libreta:
   - pestana: comandos
     concepto: linux.nav.ls
   - pestana: historia
-    texto: Mi carpeta en el servidor es /home/becario. Ahí hay un LEEME.txt que dejó la ingeniera anterior.
+    texto: "Mi carpeta en el servidor es /home/{{usuario}}. Ahí hay un LEEME.txt que dejó la ingeniera anterior."
 
 recompensas:
   xp: 40

@@ -230,15 +230,35 @@ Salida de la fase: T0–T1 jugables de punta a punta; continuar con el código e
 - **Hacer:** al empezar el primer día se genera el código, se muestra grande con "anótalo" y queda en el gafete (menú y objeto del escritorio).
 - **Listo cuando:** e2e del primer día muestra el código y el gafete del escritorio lo tiene.
 
-### F4-14 · Turno 0: bienvenida y tutorial · `pendiente` · depende: F4-01, F4-05, F4-09, F4-13
-- **Hacer:** misiones de T0 según `02-trama.md` (mirar alrededor, post-it, libreta, calendario, marcar a Eduardo, iniciar sesión); decoración del escritorio (globos, letrero con el nombre, concha y taza); visita de Don Chuy; cierre de Eduardo.
-- **Listo cuando:** harness con 25 semillas, `revisor-curricular` y `disenador-narrativo` sin pendientes, e2e de T0 completo.
+### F4-14 · Turno 0: bienvenida y tutorial · `en-progreso` · depende: F4-01, F4-05, F4-09, F4-13, F4-17–F4-20
+- **Hacer (guion aprobado por el usuario, 2026-11-28):** escritorio decorado (globos, letrero con el nombre, concha y taza nueva; consulta estética de la decoración). Eduardo llega y se queda hasta terminar su parte; conversación guionada: saludo ("Pero me puedes decir Lalo si quieres"), el jugador dice que venía para mantenimiento (estudia mecatrónica), Eduardo lo revisará con Rafa (gerente), le da usuario y contraseña (se abre la libreta con ellos apuntados y el botón "Ya la apunté"), le explica el número de empleado (tarjeta con "Ya lo anoté" sin dejar de verlo), le pregunta si ha usado Linux (dos opciones; la respuesta se registra, F4-21), le dicta los comandos del T1 (la libreta los apunta solo con su nombre, sin explicación) y le explica los controles y su extensión antes de irse. Pensamiento: "Voy a apuntar todo en el pizarrón…" y aparecen los pendientes: un renglón por objeto del escritorio (clic basta), iniciar sesión en la computadora y llamar a Lalo. Al terminarlos pasa Don Chuy, se presenta y se va; Eduardo llama con el cierre. Botón "Checar salida" → pantalla negra con la fecha del turno siguiente (F4-20) → T1 con el sello "Bienvenida" en el calendario y el día actual marcado. Se quitan los post-its de contraseña y de número de empleado del monitor.
+- **Listo cuando:** harness con 25 semillas, `revisor-curricular` y `disenador-narrativo` sin pendientes, e2e de T0 completo hasta T1-M1, capturas aprobadas.
+
+### F4-17 · Tu usuario en el servidor lleva tu nombre · `hecha (2026-11-28)` *(`src/engine/usuario.ts`: `usuarioDe(nombre)` toma el primer nombre en minúsculas sin acentos, válido en Debian y sin chocar con cuentas del sistema o de la planta, `tecnico` si no tiene letras; `conUsuario` instancia `{{usuario}}` en el mundo base y en cada misión al crear la jornada; `vars.usuario` para los textos; el harness usa un usuario distinto por semilla; `man pwd` y la página de la libreta muestran tu carpeta; `npm run play -- --nombre`)* · depende: F4-12
+- **Hacer:** "becario" deja de existir: el usuario sale del primer nombre del gafete (minúsculas sin acentos, válido en Debian, sin chocar con otras cuentas; `tecnico` si no tiene letras). El mundo base y las misiones escriben `{{usuario}}`; la jornada los instancia; el harness prueba cada semilla con un usuario distinto.
+- **Listo cuando:** pruebas de `usuarioDe`, harness verde con 25 semillas, prompt y carpeta con el nombre en el juego.
+
+### F4-18 · Inicio de sesión al empezar cada turno y monitor bloqueado · `pendiente` · depende: F4-17
+- **Hacer:** la terminal empieza cada turno en el inicio de sesión de Debian 13 (`srv-sistemas login:`, `Password:` sin eco, `Login incorrect`, mensaje del día); al entrar se pone la bandera `inicio_sesion`. Mientras no estás en la computadora, el monitor muestra la pantalla de inicio de sesión (sin spoilers del LEEME).
+- **Listo cuando:** e2e de inicio de sesión correcto e incorrecto y captura del monitor.
+
+### F4-19 · La cámara voltea a quien te habla · `pendiente` · depende: F4-09
+- **Hacer:** mientras dura una visita la cámara deja de seguir al puntero y mira a quien vino; en una llamada, al teléfono. Al terminar, vuelve a seguir al puntero.
+- **Listo cuando:** e2e que revisa hacia dónde mira la cámara durante la visita y después.
+
+### F4-20 · Pantalla negra con la fecha al iniciar cada turno · `pendiente` · depende: F4-12
+- **Hacer:** al empezar un turno (y tras "Checar salida") pantalla negra con la fecha en grande; con "reducir movimiento" sin desvanecido.
+- **Listo cuando:** e2e de la pantalla de fecha al empezar y captura.
+
+### F4-21 · Registro de "¿has usado Linux?" · `pendiente` · depende: F4-14, F4-11
+- **Hacer:** la respuesta del T0 se guarda como bandera de la partida; el servidor la cuenta una vez por partida al guardar, en una tabla de totales que no se borra con la retención; consulta documentada en `docs/despliegue.md`.
+- **Listo cuando:** pruebas del servidor (cuenta una vez por partida, no cuenta respuestas inválidas) y `auditor-seguridad` sin hallazgos altos.
 
 ### F4-15 · Oficina viva básica · `hecha (2026-11-27)` *(planificador con semilla en `src/game/paseos.ts`: alguien cruza cada 1.5–3 min por el pasillo entre las filas de cubículos del fondo, en los dos sentidos, uno a la vez y nunca empieza durante un diálogo; figura de bloques (D-30) con ropa de oficina; `invalidate` solo mientras camina; sin paseos con "reducir movimiento"; gancho `cuadros` (cuadros dibujados) y e2e de que la escena quieta no dibuja, con y sin animaciones, y de que tras el paseo vuelve a quedarse quieta; captura `paseante`)* · depende: F4-10
 - **Hacer:** alguien pasa a lo lejos de vez en cuando (con la semilla), con `invalidate` solo mientras camina; nada durante diálogos.
 - **Listo cuando:** captura con la persona caminando y prueba de que la escena quieta no pide cuadros.
 
-### F4-16 · Playtest ronda 1 y release v0.1 · `pendiente` · depende: F4-14
+### F4-16 · Playtest ronda 1 y release v0.1 · `pendiente` · depende: F4-14, F4-21 *(develop → main al terminar todo F4, indicación del usuario 2026-11-28)*
 - **Hacer:** `playtester-novato` en T0–T1, playtest con personas, correcciones; revisión de seguridad y visual; `develop` → `main` con aprobación del usuario.
 - **Listo cuando:** T0–T1 de punta a punta en producción y continuar con código en otra computadora.
 

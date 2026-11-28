@@ -12,8 +12,8 @@ ensena: [linux.files.cat]
 requiere: [linux.nav.pwd, linux.nav.ls]
 entrega: ticket
 host_inicial: srv-sistemas
-usuario_inicial: becario
-cwd_inicial: /home/becario
+usuario_inicial: "{{usuario}}"
+cwd_inicial: "/home/{{usuario}}"
 apps: [terminal, tickets]
 
 briefing:
@@ -37,7 +37,7 @@ objetivos:
   - id: leer-leeme
     pendiente: Leer LEEME.txt
     cuando:
-      archivo_leido: { host: srv-sistemas, ruta: /home/becario/LEEME.txt }
+      archivo_leido: { host: srv-sistemas, ruta: "/home/{{usuario}}/LEEME.txt" }
     pistas:
       - La nota está en tu carpeta. Ya sabes ver qué hay ahí.
       - El comando que te muestra lo que tiene un archivo sirve para cualquier archivo de texto.
@@ -65,9 +65,9 @@ solucion:
   - responder: { objetivo: responder-firma, valor: R }
 
 soluciones_alternativas:
-  - - cat /home/becario/LEEME.txt
+  - - "cat /home/{{usuario}}/LEEME.txt"
     - responder: { objetivo: responder-firma, valor: r. }
-    - cat /home/becario/tickets/T-{{folio_karla}}.txt
+    - "cat /home/{{usuario}}/tickets/T-{{folio_karla}}.txt"
     - responder: { objetivo: responder-folio, valor: "T-{{respuesta.responder-folio}}" }
   - - cat ~/LEEME.txt
     - responder: { objetivo: responder-firma, valor: R }

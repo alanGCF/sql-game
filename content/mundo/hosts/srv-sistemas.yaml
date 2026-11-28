@@ -5,7 +5,7 @@
 host: srv-sistemas
 
 usuarios:
-  becario:  { grupos: [becario, sistemas], home: /home/becario }
+  "{{usuario}}": { grupos: ["{{usuario}}", sistemas], home: "/home/{{usuario}}" }
   etellez:  { grupos: [etellez, sistemas, sudo], home: /home/etellez }
   rsalcido: { grupos: [rsalcido, sistemas], home: /home/rsalcido }
   root:     { grupos: [root], home: /root }
@@ -20,9 +20,9 @@ fs:
 
   # Tu cuenta. La creó R. su última noche (vie 23) y te dejó notas como rsalcido, cuando aún tenía
   # sudo; ya se lo quitaron (T7 debe respetarlo).
-  - { ruta: /home/becario/, dueno: becario, modo: "700", mtime: "2026-10-23T23:50:00Z" }
-  - ruta: /home/becario/.bashrc
-    dueno: becario
+  - { ruta: "/home/{{usuario}}/", dueno: "{{usuario}}", modo: "700", mtime: "2026-10-23T23:50:00Z" }
+  - ruta: "/home/{{usuario}}/.bashrc"
+    dueno: "{{usuario}}"
     mtime: "2026-10-23T23:30:00Z"
     contenido: |
       # ~/.bashrc: executed by bash(1) for non-login shells.
@@ -38,8 +38,8 @@ fs:
           alias ls='ls --color=auto'
           #alias grep='grep --color=auto'
       fi
-  - ruta: /home/becario/.profile
-    dueno: becario
+  - ruta: "/home/{{usuario}}/.profile"
+    dueno: "{{usuario}}"
     mtime: "2026-10-23T23:30:00Z"
     contenido: |
       # ~/.profile: executed by the command interpreter for login shells.
@@ -50,30 +50,30 @@ fs:
               . "$HOME/.bashrc"
           fi
       fi
-  - ruta: /home/becario/.bash_logout
-    dueno: becario
+  - ruta: "/home/{{usuario}}/.bash_logout"
+    dueno: "{{usuario}}"
     mtime: "2026-10-23T23:30:00Z"
     contenido: |
       # ~/.bash_logout: executed by bash(1) when login shell exits.
-  - ruta: /home/becario/LEEME.txt
+  - ruta: "/home/{{usuario}}/LEEME.txt"
     dueno: rsalcido
     grupo: sistemas
     mtime: "2026-10-23T23:41:00Z"
     contenido: |
       Para quien me reemplace:
 
-      1. El usuario es "becario". La contraseña está en el post-it.
+      1. Ya te creé tu cuenta: {{usuario}}. La contraseña te la da Eduardo.
       2. Los tickets llegan a ~/tickets/. Uno por archivo.
       3. Si la impresora de la Línea 2 falla, casi siempre es el cable. Nadie me cree.
 
       Y una cosa más: no confíes en los números del turno nocturno.
       Revisa todo dos veces.
       — R.
-  - { ruta: /home/becario/tickets/, dueno: becario }
+  - { ruta: "/home/{{usuario}}/tickets/", dueno: "{{usuario}}" }
   # Oculta: aparece con ls -a (T1-M4). Todo lo de R. ya está aquí desde su última noche: notas.txt se
   # lee y se respalda en T2 (antes de que .r/ desaparezca en T3); .llaves/ sirve en T10.
-  - { ruta: /home/becario/.r/, dueno: rsalcido, grupo: sistemas, mtime: "2026-10-23T23:50:00Z" }
-  - ruta: /home/becario/.r/hola
+  - { ruta: "/home/{{usuario}}/.r/", dueno: rsalcido, grupo: sistemas, mtime: "2026-10-23T23:50:00Z" }
+  - ruta: "/home/{{usuario}}/.r/hola"
     dueno: rsalcido
     grupo: sistemas
     mtime: "2026-10-23T23:50:00Z"
@@ -81,7 +81,7 @@ fs:
       Si encontraste esto, leíste el manual.
       Ya vas mejor que la mayoría.
       — R.
-  - ruta: /home/becario/.r/notas.txt
+  - ruta: "/home/{{usuario}}/.r/notas.txt"
     dueno: rsalcido
     grupo: sistemas
     mtime: "2026-10-23T23:48:00Z"
@@ -98,7 +98,7 @@ fs:
 
       Parte 3: Si me sacan
       Hazte una copia de esta carpeta. Hoy.
-  - { ruta: /home/becario/.r/.llaves/, dueno: rsalcido, grupo: sistemas, modo: "750", mtime: "2026-10-23T23:46:00Z" }
+  - { ruta: "/home/{{usuario}}/.r/.llaves/", dueno: rsalcido, grupo: sistemas, modo: "750", mtime: "2026-10-23T23:46:00Z" }
 
   # Estado de las líneas de producción (lo actualiza el MES; T1-M3 y T1-F1).
   - { ruta: /srv/, dueno: root, mtime: "2025-06-02T09:00:00Z" }
@@ -130,4 +130,4 @@ fs:
 # Generados con la semilla al crear la partida.
 generadores:
   # Tu bandeja: {{n_tickets}} tickets de rutina; uno es de Karla (T1-M2).
-  - { generador: bandeja_t1, destino: /home/becario/tickets/, cantidad: "{{n_tickets}}", dueno: becario }
+  - { generador: bandeja_t1, destino: "/home/{{usuario}}/tickets/", cantidad: "{{n_tickets}}", dueno: "{{usuario}}" }

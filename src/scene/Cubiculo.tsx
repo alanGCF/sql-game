@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { DoubleSide, type Group, type MeshStandardMaterial, Vector3 } from "three";
 import { enmascararCodigo } from "../../shared/codigo";
 import { inicioTurno } from "../engine/calendario";
+import { usuarioDe } from "../engine/usuario";
 import { useAjustes } from "../game/ajustes";
 import { diaDeCalendario, resumenDelDia } from "../game/calendario";
 import { contenidoComun } from "../game/contenido";
@@ -47,10 +48,10 @@ const C = {
   plasticoOscuro: "#2b2d31",
   teclado: "#d9d6cf",
   piso: "#6c7077",
+  taza: "#e9e4da",
   techo: "#b9b8b2",
   pared: "#e4e2dc",
   libreta: "#3d5a80",
-  taza: "#e9e4da",
   lonchera: "#3d6e8f",
   planta: "#4a7c59",
   maceta: "#a0522d",
@@ -137,7 +138,8 @@ function Escritorio() {
 }
 
 function Monitor() {
-  const pantalla = useTexturaCanvas(1024, 600, dibujarPantalla);
+  const usuario = usuarioDe(usePartida((s) => s.nombre));
+  const pantalla = useTexturaCanvas(1024, 600, dibujarPantalla(usuario), usuario);
   const vista = useEscena((s) => s.vista);
   const postIt = useTexturaCanvas(160, 160, dibujarPostIt(["pass:", "duna47"]));
   const postIt2 = useTexturaCanvas(160, 160, dibujarPostIt(["Eduardo", "ext. 214"]));
@@ -542,7 +544,7 @@ function ObjetosEscritorio() {
   const gafete = useTexturaCanvas(
     320,
     160,
-    dibujarGafete(nombre || "Becario", numero),
+    dibujarGafete(nombre || "Nuevo ingreso", numero),
     `${nombre}|${numero}`,
   );
   const foto = useTexturaCanvas(200, 160, dibujarFoto);

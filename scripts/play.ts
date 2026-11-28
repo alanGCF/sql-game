@@ -14,6 +14,7 @@ import { type Fragmento, GameClock, Shell } from "../src/engine";
 import { inicioTurno } from "../src/engine/calendario";
 import { type GuardadoMision, MisionEnCurso } from "../src/engine/mision/runtime";
 import { crearShellBase } from "../src/engine/mundo-base";
+import { usuarioDe } from "../src/engine/usuario";
 import { type Entrada, vfsDesde } from "../src/engine/vfs";
 import { buscarMision, cargarMundo } from "./lib/contenido";
 import { correrSolucion, presentar, procesar, sinAnsi } from "./lib/jugar";
@@ -28,8 +29,11 @@ const { values } = parseArgs({
     solucion: { type: "boolean", default: false },
     sesion: { type: "string" },
     cmd: { type: "string" },
+    /** Tu nombre en el gafete: de él sale tu usuario en el servidor (F4-17). */
+    nombre: { type: "string", default: "Sofía" },
   },
 });
+const jugador = usuarioDe(values.nombre);
 
 const escribir = (t: string) => process.stdout.write(process.stdout.isTTY ? t : sinAnsi(t));
 
@@ -50,7 +54,13 @@ async function jugarMision(id: string): Promise<number> {
       semilla = s.semilla;
     }
   }
-  const mc = MisionEnCurso.sobreMundo(buscarMision(id), cargarMundo(), semilla, new Set(previa?.flags));
+  const mc = MisionEnCurso.sobreMundo(
+    buscarMision(id),
+    cargarMundo(),
+    semilla,
+    new Set(previa?.flags),
+    jugador,
+  );
   if (previa) mc.cargar(previa.guardado);
   const guardar = () => {
     if (!values.sesion) return;
@@ -128,8 +138,9 @@ const shell = values.fixture
   ? desdeFixture(values.fixture)
   : crearShellBase(cargarMundo(), Number(values.semilla), {
       host: "srv-sistemas",
-      usuario: "becario",
+      usuario: "{{usuario}}",
       ahora: inicioTurno(1),
+      jugador,
     }).shell;
 
 if (values.exec !== undefined) {

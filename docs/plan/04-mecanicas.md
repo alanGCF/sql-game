@@ -53,10 +53,10 @@ Datos y Red son ayudas visuales, no atajos: el mapa solo muestra lo que descubri
 
 ## Terminal
 
-- Prompt real: `becario@srv-sistemas:~$` (cambia con `cd`, `ssh`).
+- Prompt real: `sofia@srv-sistemas:~$` con tu usuario, que es tu primer nombre en minúsculas sin acentos (F4-17); cambia con `cd`, `ssh`.
 - **Salida idéntica a la del sistema real** (inglés, locale C). Debajo de errores y salidas nuevas aparece una **glosa** en español, desactivable:
   ```
-  becario@srv-sistemas:~$ cat leeme.txt
+  sofia@srv-sistemas:~$ cat leeme.txt
   cat: leeme.txt: No such file or directory
   ↳ No existe "leeme.txt" aquí. Linux distingue mayúsculas: ¿será LEEME.txt?
   ```

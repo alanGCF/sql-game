@@ -21,7 +21,8 @@ function iniciar(semilla = 42) {
     { name: "becario", groups: ["becario", "sistemas"], home: "/home/becario" },
     "srv-sistemas",
   );
-  return new MisionEnCurso(mision(), shell, semilla, {}, new Set());
+  // El ejemplo trae {{usuario}} (F4-17): aquí la cuenta se llama becario.
+  return new MisionEnCurso(mision(), shell, semilla, { usuario: "becario" }, new Set());
 }
 
 async function numTickets(m: MisionEnCurso): Promise<string> {
@@ -131,7 +132,13 @@ describe("misión en curso (ejemplo T1-M02)", () => {
         reloj.now(),
       );
       const usuario = { name: "becario", groups: ["becario"], home: "/home/becario" };
-      return new MisionEnCurso(m, Shell.crear(vfs, reloj, usuario, "srv-sistemas"), 1, {}, new Set());
+      return new MisionEnCurso(
+        m,
+        Shell.crear(vfs, reloj, usuario, "srv-sistemas"),
+        1,
+        { usuario: "becario" },
+        new Set(),
+      );
     };
     const a = nueva();
     await a.ejecutar("cat LEEME.txt");
@@ -152,7 +159,13 @@ describe("misión en curso (ejemplo T1-M02)", () => {
     const reloj = GameClock.desde("2026-10-28T15:40:00Z");
     const vfs = vfsDesde([{ ruta: "/home/becario/", dueno: "becario" }], reloj.now());
     const usuario = { name: "becario", groups: ["becario"], home: "/home/becario" };
-    const mc = new MisionEnCurso(m, Shell.crear(vfs, reloj, usuario, "srv-sistemas"), 1, {}, new Set());
+    const mc = new MisionEnCurso(
+      m,
+      Shell.crear(vfs, reloj, usuario, "srv-sistemas"),
+      1,
+      { usuario: "becario" },
+      new Set(),
+    );
     expect((await mc.responder("responder-firma", "  REBECA ")).comentario).toBe(
       "Te pido la inicial, no el nombre.",
     );

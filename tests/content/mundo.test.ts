@@ -7,7 +7,7 @@ import { revisarMision } from "../../src/engine/mision/harness";
 import { crearShellBase } from "../../src/engine/mundo-base";
 
 const mundo = cargarMundo();
-const T1 = { host: "srv-sistemas", usuario: "becario", ahora: "2026-10-28T15:30:00Z" };
+const T1 = { host: "srv-sistemas", usuario: "{{usuario}}", ahora: "2026-10-28T15:30:00Z", jugador: "sofia" };
 
 async function salida(shell: Shell, linea: string): Promise<string> {
   const r = await shell.ejecutar(linea, { sinTerminal: true });

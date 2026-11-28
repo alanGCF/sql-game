@@ -78,6 +78,7 @@ export class Jornada {
     mundo: MundoBase,
     semilla: number,
     flags = new Set<string>(),
+    jugador?: string,
   ): Jornada {
     const primera = turno.misiones[0];
     if (!primera) throw new Error(`el turno ${turno.turno} no tiene misiones`);
@@ -85,6 +86,7 @@ export class Jornada {
       host: primera.host_inicial,
       usuario: primera.usuario_inicial,
       ahora: inicioTurno(turno.turno),
+      ...(jugador ? { jugador } : {}),
     });
     const j = new Jornada(turno, shell, semilla, vars, flags);
     j.siguiente();
@@ -95,7 +97,13 @@ export class Jornada {
    * Retoma un turno guardado: reconstruye el mundo, el reloj, la misión en curso y su avance, y los favores
    * pendientes (desde cero). No vuelve a encolar briefings ni diálogos.
    */
-  static restaurar(turno: TurnoCompilado, mundo: MundoBase, semilla: number, e: EstadoJornada): Jornada {
+  static restaurar(
+    turno: TurnoCompilado,
+    mundo: MundoBase,
+    semilla: number,
+    e: EstadoJornada,
+    jugador?: string,
+  ): Jornada {
     const indice = e.mision ? turno.misiones.findIndex((m) => m.id === e.mision?.id) : turno.misiones.length;
     if (indice < 0) throw new Error(`la partida va en una misión que ya no existe: ${e.mision?.id}`);
     const ref = turno.misiones[Math.min(indice, turno.misiones.length - 1)];
@@ -104,6 +112,7 @@ export class Jornada {
       host: ref.host_inicial,
       usuario: ref.usuario_inicial,
       ahora: inicioTurno(turno.turno),
+      ...(jugador ? { jugador } : {}),
     });
     const j = new Jornada(turno, shell, semilla, vars, new Set(e.flags));
     shell.mundo.vfs.root.children = aplicarDiferencias(j.mundoInicial, e.mundo).root.children;

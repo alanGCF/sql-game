@@ -39,7 +39,7 @@ test("la terminal usa el motor real, bloquea lo fuera de alcance y no deja pegar
   await input.pressSequentially("pwd");
   await input.press("Enter");
   await expect(input).toHaveValue("");
-  await expect(terminal).toContainText("/home/becario");
+  await expect(terminal).toContainText("/home/tecnico");
 
   await input.pressSequentially("ls");
   await input.press("Enter");
@@ -115,9 +115,9 @@ test("T1-M1 se cumple desde la terminal y la partida avanza a T1-M2", async ({ p
 
   await input.fill("pwd");
   await input.press("Enter");
-  await expect(terminal).toContainText("/home/becario");
+  await expect(terminal).toContainText("/home/tecnico");
   const carpeta = await page.evaluate(() =>
-    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
   );
   expect(carpeta?.correcta).toBe(true);
 
@@ -147,7 +147,7 @@ test("el pizarrón muestra los pendientes de la misión y tacha los cumplidos", 
   ]);
   expect((await pizarron())?.favores).toEqual([]);
   await page.evaluate(() =>
-    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
   );
   expect((await pizarron())?.renglones[0]).toBe(
     "[x] Ticket de Eduardo: ¿en qué carpeta estás? (ruta completa)",
@@ -169,7 +169,7 @@ test("la app Tickets responde tecleando, comenta la respuesta equivocada y no de
   await respuesta.press("Enter");
   await expect(tickets.getByRole("status")).toContainText("~ es el atajo de tu carpeta personal");
 
-  await respuesta.fill("/home/becario");
+  await respuesta.fill("/home/tecnico");
   await respuesta.press("Enter");
   await expect(tickets.getByRole("status")).toContainText("Ticket resuelto");
   await expect(tickets.getByRole("button", { name: /¿En qué carpeta estás\?.*Resuelto/ })).toBeVisible();
@@ -203,7 +203,7 @@ test("diálogos: el briefing va en subtítulo con el departamento y la llamada e
   await page.evaluate(
     (valor) =>
       Promise.all([
-        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
         window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", valor),
       ]),
     n,
@@ -266,8 +266,8 @@ test("T1 completo se juega en el navegador: terminal + Tickets hasta terminar el
   };
 
   // T1-M1
-  await comando("pwd", /^\/home\/becario$/);
-  await ticket(/¿En qué carpeta estás\?/, "/home/becario");
+  await comando("pwd", /^\/home\/tecnico$/);
+  await ticket(/¿En qué carpeta estás\?/, "/home/tecnico");
   const n = await comando("ls tickets | wc -l", /^\d+$/);
   await ticket(/¿Cuántos tickets hay/, n);
   expect(await mision()).toBe("t1-m02-el-leeme");
@@ -345,7 +345,7 @@ test("ajustes: letra, contraste y reducir movimiento se aplican y se conservan a
 });
 
 /** Termina T1-M1 desde la terminal y los ganchos de prueba (como el jugador en Tickets). */
-async function terminarT1M1(page: Page) {
+async function terminarT1M1(page: Page, usuario: string) {
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
   const input = page.getByLabel("Comando");
   await input.fill("ls tickets | wc -l");
@@ -354,12 +354,12 @@ async function terminarT1M1(page: Page) {
   await expect(ultima).toHaveText(/^\d+$/);
   const n = (await ultima.textContent())?.trim() ?? "";
   await page.evaluate(
-    (v) =>
+    ([v, u]) =>
       Promise.all([
-        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", `/home/${u}`),
         window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v),
       ]),
-    n,
+    [n, usuario] as const,
   );
   await expect
     .poll(() => page.evaluate(() => window.__planta7?.partida?.()))
@@ -384,7 +384,7 @@ test("guardado (F4-12): termina T1-M1 y en otra computadora checa entrada con su
 }, info) => {
   test.setTimeout(120_000);
   await empezarPrimerDia(page, "Ale");
-  await terminarT1M1(page);
+  await terminarT1M1(page, "ale");
   const codigo = (await page.evaluate(() => window.__planta7?.partida?.()))?.codigo ?? "";
   expect(codigo).toMatch(/^[0-9A-HJKMNP-TV-Z]{12}$/);
 
@@ -420,7 +420,7 @@ test("guardado (F4-12): al recargar, el gafete ofrece seguir la partida de este 
 }) => {
   test.setTimeout(120_000);
   await empezarPrimerDia(page, "Mar");
-  await terminarT1M1(page);
+  await terminarT1M1(page, "mar");
   const codigo = (await page.evaluate(() => window.__planta7?.partida?.()))?.codigo ?? "";
   await page.reload();
   await page.waitForFunction(() => window.__planta7?.ready === true);
@@ -653,7 +653,7 @@ async function cerrarT1M1SinContestar(page: Page) {
   await page.evaluate(
     (valor) =>
       Promise.all([
-        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
         window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", valor),
       ]),
     n,
@@ -711,7 +711,7 @@ test("libreta (F4-05): apuntes de la misión, comando aprendido y pista en su pe
   await page.keyboard.press("Escape");
   await page.evaluate(() => window.__planta7?.setVista?.("libreta"));
   const libreta = page.getByTestId("libreta");
-  await expect(libreta).toContainText("Mi carpeta en el servidor es /home/becario");
+  await expect(libreta).toContainText("Mi carpeta en el servidor es /home/tecnico");
   await libreta.getByRole("tab", { name: "Comandos" }).click();
   await expect(libreta.getByRole("button", { name: "pwd" })).toBeVisible();
   await libreta.getByRole("button", { name: "pwd" }).click();
@@ -830,7 +830,7 @@ test("pizarrón (F4-07): el plumón raya el pendiente y el post-it del favor cae
     page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
   await cerrar();
   // T1-M1: el primer pendiente se raya con animación.
-  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/becario");
+  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico");
   await expect.poll(async () => (await animacion(page))?.vistos.tachados).toBe(1);
   await expect.poll(async () => (await animacion(page))?.tachando).toBe(0);
   const n = await teclear(page, "ls tickets | wc -l");
@@ -863,7 +863,7 @@ test("pizarrón (F4-07): con reducir movimiento se tacha sin animación", async 
   await page.getByLabel(/Reducir movimiento/).check();
   await page.getByRole("button", { name: "Cerrar" }).click();
   await page.evaluate(() =>
-    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
   );
   await expect
     .poll(async () => (await page.evaluate(() => window.__planta7?.pizarron?.()))?.renglones[0])
@@ -886,7 +886,7 @@ test("calendario (F4-08): con T1 terminado, el día trae sus estrellas y su resu
   await expect(dias).toContainText("hoy");
   await page.evaluate(() => window.__planta7?.setVista?.("general"));
   // T1 completo con la solución de cada misión.
-  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/becario");
+  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico");
   await responder("t1-m01-donde-estoy", "responder-tickets", await teclear(page, "ls tickets | wc -l"));
   await cerrar();
   const folio = /T-(\d+)/.exec(await teclear(page, "grep -r Karla tickets"))?.[1] ?? "";
@@ -912,7 +912,7 @@ test("calendario (F4-08): con T1 terminado, el día trae sus estrellas y su resu
   await expect(resumen).toContainText("Turno 1");
   await expect(resumen).toContainText("¿Dónde estoy?");
   await expect(resumen.getByRole("img", { name: "3 de 3 estrellas" })).toHaveCount(5);
-  await expect(resumen).toContainText("Mi carpeta en el servidor es /home/becario");
+  await expect(resumen).toContainText("Mi carpeta en el servidor es /home/tecnico");
   await resumen.getByRole("button", { name: "Cerrar" }).click();
   await expect(resumen).toBeHidden();
 });
@@ -928,7 +928,7 @@ async function hastaLaVisitaDeDonChuy(page: Page, url = "/?test=1") {
   const responder = (m: string, o: string, v: string) =>
     page.evaluate(([m, o, v]) => window.__planta7?.responder?.(m, o, v), [m, o, v] as const);
   await cerrar();
-  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/becario");
+  await responder("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico");
   await responder("t1-m01-donde-estoy", "responder-tickets", await teclear(page, "ls tickets | wc -l"));
   await cerrar();
   const folio = /T-(\d+)/.exec(await teclear(page, "grep -r Karla tickets"))?.[1] ?? "";

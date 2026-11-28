@@ -12,7 +12,7 @@ const Ruta = z.string().startsWith("/", "ruta absoluta");
 const HostEsquema = z.strictObject({
   host: z.string().regex(/^[a-z0-9-]+$/),
   usuarios: z.record(
-    z.string().regex(/^[a-z_][a-z0-9_-]*$/),
+    z.string().regex(/^([a-z_][a-z0-9_-]*|\{\{usuario\}\})$/, "usuario o {{usuario}}"),
     z.strictObject({ grupos: z.array(z.string()).min(1), home: Ruta }),
   ),
   fs: z.array(

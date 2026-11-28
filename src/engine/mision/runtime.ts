@@ -2,6 +2,7 @@ import { inicioTurno } from "../calendario";
 import type { ResultadoLinea, Shell } from "../index";
 import { crearShellBase, type MundoBase } from "../mundo-base";
 import { crearRng, subSemilla } from "../rng";
+import { conUsuario } from "../usuario";
 import { plantilla, resolverVariables, type Variables } from "../vars";
 import { agregarEntradas, type Entrada, normalizar, type Vfs } from "../vfs";
 import { aplicarDiferencias, type DiffVfs, diferencias } from "../vfs-diff";
@@ -49,11 +50,13 @@ export class MisionEnCurso {
     mundo: MundoBase,
     semilla: number,
     flags = new Set<string>(),
+    jugador?: string,
   ): MisionEnCurso {
     const { shell, vars } = crearShellBase(mundo, semilla, {
       host: mision.host_inicial,
       usuario: mision.usuario_inicial,
       ahora: inicioTurno(mision.turno),
+      ...(jugador ? { jugador } : {}),
     });
     return new MisionEnCurso(mision, shell, semilla, vars, flags);
   }
@@ -62,11 +65,13 @@ export class MisionEnCurso {
   readonly respuestas = new Map<string, string>();
   readonly pistasUsadas = new Map<string, number>();
   readonly vars: Variables;
+  /** La misión con tu usuario en lugar de `{{usuario}}` (F4-17). */
+  readonly mision: Mision;
   private readonly base: Vfs;
   private completada = false;
 
   constructor(
-    readonly mision: Mision,
+    mision: Mision,
     readonly shell: Shell,
     semilla: number,
     varsPartida: Variables,
@@ -77,6 +82,7 @@ export class MisionEnCurso {
      */
     opciones: { colocarSesion?: boolean; restaurando?: boolean } = {},
   ) {
+    this.mision = varsPartida.usuario ? conUsuario(mision, varsPartida.usuario) : mision;
     this.vars = { ...varsPartida, ...resolverVariables(semilla, mision.variables ?? {}) };
     if (!opciones.restaurando) this.aplicarParches(semilla);
     // shortcut: restaurando, el "inicio de la misión" (restaurar()) es el momento de cargar la partida.

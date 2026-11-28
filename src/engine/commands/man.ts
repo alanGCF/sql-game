@@ -18,7 +18,7 @@ export const PAGINAS: Record<string, Pagina> = {
     nombre: "pwd - muestra el nombre del directorio de trabajo actual",
     sinopsis: "pwd",
     descripcion: "Imprime la ruta completa del directorio en el que estás parado.",
-    ejemplos: [["pwd", "muestra, por ejemplo, /home/becario"]],
+    ejemplos: [["pwd", "muestra, por ejemplo, {carpeta personal}"]],
   },
   ls: {
     nombre: "ls - lista el contenido de directorios",
@@ -237,7 +237,8 @@ function envolver(texto: string, sangria: number): string {
   return lineas.map((l) => " ".repeat(sangria) + l).join("\n");
 }
 
-export function formatearPagina(cmd: string, p: Pagina): string {
+/** `{carpeta personal}` en una página se cambia por tu carpeta personal, p. ej. /home/sofia (F4-17). */
+export function formatearPagina(cmd: string, p: Pagina, home = "/home/tecnico"): string {
   let s = `${encabezado(cmd)}\n\nNOMBRE\n${envolver(p.nombre, 7)}\n\nSINOPSIS\n${envolver(p.sinopsis, 7)}\n\nDESCRIPCIÓN\n${envolver(p.descripcion, 7)}\n`;
   if (p.opciones?.length) {
     s += "\nOPCIONES\n";
@@ -248,7 +249,7 @@ export function formatearPagina(cmd: string, p: Pagina): string {
     s += "\nEJEMPLOS\n";
     for (const [ej, desc] of p.ejemplos) s += `       ${ej}\n${envolver(desc, 14)}\n`;
   }
-  return s;
+  return s.replaceAll("{carpeta personal}", home);
 }
 
 export function man(ctx: Contexto): number {
@@ -263,14 +264,14 @@ export function man(ctx: Contexto): number {
     ctx.err(`No manual entry for ${tema}\n`);
     return 16;
   }
-  ctx.out(formatearPagina(tema, pagina));
+  ctx.out(formatearPagina(tema, pagina, ctx.sesion.usuario.home));
   return 0;
 }
 
 /** `--help`: en Linux real imprime la ayuda completa en inglés; aquí, la página en español (desviación documentada). */
 export function ayuda(ctx: Contexto, cmd: string): number {
   const pagina = PAGINAS[cmd];
-  if (pagina) ctx.out(formatearPagina(cmd, pagina));
+  if (pagina) ctx.out(formatearPagina(cmd, pagina, ctx.sesion.usuario.home));
   ctx.glosa("En Linux real, --help muestra la ayuda en inglés y más larga. Aquí ves la versión en español.");
   return 0;
 }

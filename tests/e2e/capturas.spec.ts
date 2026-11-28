@@ -105,7 +105,7 @@ test("libreta (D-29 B): Historia y Comandos con lo de T1-M1", async ({ page }) =
   await page.evaluate(
     (v) =>
       Promise.all([
-        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
         window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v),
       ]),
     n,
@@ -126,7 +126,7 @@ test("pizarrón (F4-07): antes y después de cumplir un pendiente", async ({ pag
   await page.evaluate(() => window.__planta7?.setVista?.("pizarron"));
   await captura(page, "pizarron-antes.png");
   await page.evaluate(() =>
-    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
   );
   await expect
     .poll(async () => (await page.evaluate(() => window.__planta7?.pizarron?.()))?.renglones[0])
@@ -138,7 +138,7 @@ test("calendario (F4-08): días trabajados y resumen del día en curso", async (
   await abrir(page);
   await cerrarDialogos(page);
   await page.evaluate(() =>
-    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
   );
   await page.evaluate(() => window.__planta7?.setVista?.("calendario"));
   await page.getByRole("navigation", { name: "Días trabajados" }).getByRole("button").click();
@@ -159,7 +159,7 @@ test("visita (D-30 B): Don Chuy se asoma sobre la mampara y te deja contestar", 
   await page.evaluate(
     (v) =>
       Promise.all([
-        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+        window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
         window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-tickets", v),
       ]),
     n,
@@ -211,7 +211,7 @@ test("llamada entrante y en tarjeta al cerrar T1-M1", async ({ page }) => {
   await abrir(page);
   await cerrarDialogos(page);
   await page.evaluate(() =>
-    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/becario"),
+    window.__planta7?.responder?.("t1-m01-donde-estoy", "responder-carpeta", "/home/tecnico"),
   );
   await page.evaluate(() => window.__planta7?.setVista?.("monitor"));
   const input = page.getByLabel("Comando");

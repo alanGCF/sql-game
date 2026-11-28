@@ -1,6 +1,6 @@
 # Personajes y contactos del teléfono (docs/plan/02-trama.md). Los ids son estables.
 personajes:
-  jugador: { nombre: "{{nombre}}", departamento: Sistemas, rol: "Técnico de sistemas, turno vespertino", extension: 210, usuario: becario }
+  jugador: { nombre: "{{nombre}}", departamento: Sistemas, rol: "Técnico de sistemas, turno vespertino", extension: 210, usuario: "{{usuario}}" }
   companero: { nombre: Eduardo Téllez, departamento: Sistemas, rol: Sistemas Sr.; da las pistas, corto: Eduardo, extension: 214, usuario: etellez, paciencia: 2 }
   don_chuy: { nombre: Jesús "Don Chuy" Ortega, departamento: Mantenimiento, rol: Supervisor de mantenimiento, corto: Don Chuy, extension: 301, paciencia: 2 }
   rsalcido: { nombre: Ing. Rebeca Salcido (R.), departamento: Sistemas, rol: Ex ingeniera de sistemas y automatización, usuario: rsalcido }

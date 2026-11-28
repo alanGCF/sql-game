@@ -12,8 +12,8 @@ disponible_desde: t1-m04-preguntale-al-manual
 requiere: [linux.nav.cd, linux.files.cat]
 entrega: visita
 host_inicial: srv-sistemas
-usuario_inicial: becario
-cwd_inicial: /home/becario
+usuario_inicial: "{{usuario}}"
+cwd_inicial: "/home/{{usuario}}"
 apps: [terminal]
 
 briefing:

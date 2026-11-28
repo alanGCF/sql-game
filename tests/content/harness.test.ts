@@ -186,3 +186,38 @@ describe("harness de contenido: reglas del currículo", () => {
     );
   });
 });
+
+describe("objetivos de interfaz del Turno 0 (F4-14)", () => {
+  /** El ejemplo convertido en una misión de T0: un objetivo que se cumple abriendo la libreta. */
+  const deInterfaz = (m: Yaml) => {
+    m.id = "t0-m02-tus-herramientas";
+    m.turno = 0;
+    m.tipo = "tutorial";
+    m.ensena = [];
+    m.requiere = [];
+    m.objetivos = [
+      {
+        id: "abrir-libreta",
+        pendiente: "Abrir la libreta",
+        cuando: { flag: { nombre: "abrio_libreta" } },
+        pistas: ["¿Ya viste tu libreta?", "Está a la derecha del teclado.", "Dale clic a la libreta azul."],
+      },
+    ];
+    m.solucion = [{ accion: "abrio_libreta" }];
+    m.soluciones_alternativas = [["ls", { accion: "abrio_libreta" }]];
+    m.contraejemplos = [{ objetivo: "abrir-libreta", pasos: ["ls"] }];
+    m.libreta = [];
+    m.eventos = {};
+  };
+
+  it("una acción de la interfaz (paso accion) cumple su objetivo y la pista 3 no necesita comando", async () => {
+    expect(await reglas(deInterfaz)).toEqual([]);
+  });
+
+  it("un objetivo de comando sigue pidiendo el comando exacto en la pista 3", async () => {
+    const errores = await reglas((m) => {
+      m.objetivos[0].pistas[2] = "Dale clic a la libreta azul.";
+    });
+    expect(errores.join("\n")).toMatch(/C1: .*pista 3/);
+  });
+});

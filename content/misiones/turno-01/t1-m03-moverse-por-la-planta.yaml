@@ -11,8 +11,8 @@ ensena: [linux.nav.cd, linux.shell.atajos]
 requiere: [linux.nav.pwd, linux.nav.ls, linux.files.cat]
 entrega: ticket
 host_inicial: srv-sistemas
-usuario_inicial: becario
-cwd_inicial: /home/becario
+usuario_inicial: "{{usuario}}"
+cwd_inicial: "/home/{{usuario}}"
 apps: [terminal, tickets]
 
 briefing:

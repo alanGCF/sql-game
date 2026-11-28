@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { esPartidaNueva, type MensajeBuzon, type Partida, type PistaAnotada } from "../../shared/partida";
 import type { ResultadoLinea } from "../engine";
 import { QUIEN_DA_PISTAS } from "../engine/llamadas";
+import { usuarioDe } from "../engine/usuario";
 import { isTestMode } from "../test-hooks";
 import { almacenIndexedDb } from "./almacen-idb";
 import { crearApiPartidas, type Motivo } from "./api";
@@ -185,13 +186,15 @@ function desdeJornada(j: Jornada) {
 
 /** Jornada de una partida: nueva → primer turno; a medias → se restaura sin repetir diálogos. */
 function jornadaDe(p: Partida): Jornada {
-  if (esPartidaNueva(p)) return Jornada.iniciar(turnoInicial(), mundo, p.semilla);
+  // Tu cuenta en el servidor lleva tu nombre (F4-17).
+  const jugador = usuarioDe(p.nombre);
+  if (esPartidaNueva(p)) return Jornada.iniciar(turnoInicial(), mundo, p.semilla, new Set(), jugador);
   try {
-    return Jornada.restaurar(turnoInicial(), mundo, p.semilla, estadoDe(p));
+    return Jornada.restaurar(turnoInicial(), mundo, p.semilla, estadoDe(p), jugador);
   } catch {
     // shortcut: si el contenido cambió y la misión guardada ya no existe, el turno empieza de nuevo con la
     // misma semilla (05-arquitectura.md §Persistencia pide reiniciar solo esa misión; llega con T2).
-    return Jornada.iniciar(turnoInicial(), mundo, p.semilla);
+    return Jornada.iniciar(turnoInicial(), mundo, p.semilla, new Set(), jugador);
   }
 }
 

@@ -8,7 +8,7 @@
 
 ```
 $ pwd
-/home/becario
+/home/{{usuario}}
 ```
 
 ## En este servidor
